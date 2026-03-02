@@ -1,22 +1,25 @@
-# Backend API - Veterinaria
+# 🐾 Backend API - Veterinaria
 
-## Descripción
-Este proyecto corresponde al backend principal del sistema de gestión para una veterinaria.  
-La API está desarrollada con Node.js y Express y permite gestionar información almacenada en una base de datos MySQL.
+## 📖 Descripción
 
-------------------------------------------------------------
+Este proyecto corresponde al **backend principal del sistema de gestión para una veterinaria**.
 
-# Tecnologías utilizadas
+La API está desarrollada utilizando **Node.js y Express**, y permite gestionar la información almacenada en una base de datos **MySQL**, como dueños, mascotas, citas y otros registros del sistema.
 
-- Node.js  
-- Express.js  
-- MySQL  
-- Postman para pruebas de la API  
+---
 
-------------------------------------------------------------
+# 🚀 Tecnologías utilizadas
 
-# Estructura del proyecto
+- **Node.js**
+- **Express.js**
+- **MySQL**
+- **Postman** (para pruebas de la API)
 
+---
+
+# 📂 Estructura del proyecto
+
+```
 backend
 │
 ├── src
@@ -33,291 +36,369 @@ backend
 ├── .gitignore
 ├── package.json
 └── server.js
+```
 
-------------------------------------------------------------
+---
 
-# Requisitos
+# 📋 Requisitos
 
-Antes de iniciar el proyecto debes tener instalado:
+Antes de ejecutar el proyecto debes tener instalado:
 
 - Node.js
 - MySQL
 - Git
 - Postman (opcional para pruebas)
 
-------------------------------------------------------------
+---
 
-# Instalación del proyecto
+# ⚙️ Instalación del proyecto
 
-1. Clonar el repositorio
+### 1️⃣ Clonar el repositorio
 
+```bash
 git clone URL_DEL_REPOSITORIO
+```
 
-2. Entrar al proyecto
+### 2️⃣ Entrar al proyecto
 
+```bash
 cd backend
+```
 
-3. Instalar dependencias
+### 3️⃣ Instalar dependencias
 
+```bash
 npm install
+npm install express cors mysql2 dotenv
+```
 
-------------------------------------------------------------
+---
 
-# Configurar variables de entorno
+# 🔐 Configuración de variables de entorno
 
-Crear un archivo .env en la raíz del proyecto.
+Debes crear un archivo `.env` en la **raíz del proyecto**.
 
 Ejemplo:
 
+```env
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=1234
 DB_NAME=db_veterinaria
 PORT=3000
+```
 
-------------------------------------------------------------
+---
 
-# Ejecutar el proyecto
+# ▶️ Ejecutar el proyecto
 
-Para iniciar el servidor:
+Para iniciar el servidor puedes utilizar:
 
+```bash
 npm run dev
+```
 
 o
 
+```bash
 node server.js
+```
 
 El servidor se ejecutará en:
 
+```
 http://localhost:3000
+```
 
-------------------------------------------------------------
+---
 
-# Endpoints principales (Ejemplo)
+# 🔗 Endpoints principales (Ejemplo)
 
-Obtener todos los dueños
+## Obtener todos los dueños
 
+```
 GET /api/users
+```
 
+---
 
-Obtener dueño por ID
+## Obtener dueño por ID
 
+```
 GET /api/users/:id
+```
 
+---
 
-Crear dueño
+## Crear dueño
 
+```
 POST /api/users
+```
 
-Ejemplo de body:
+### Ejemplo de body
 
+```json
 {
- "nombreDueno": "Carlos",
- "apellidosDueno": "Ramirez",
- "telefono": "78945612",
- "correoElectronico": "carlos@email.com"
+  "nombreDueno": "Carlos",
+  "apellidosDueno": "Ramirez",
+  "telefono": "78945612",
+  "correoElectronico": "carlos@email.com"
 }
+```
 
+---
 
-Actualizar dueño
+## Actualizar dueño
 
+```
 PUT /api/users/:id
+```
 
-Ejemplo de body:
+### Ejemplo de body
 
+```json
 {
- "nombreDueno": "Carlos",
- "apellidosDueno": "Ramirez",
- "telefono": "78945612",
- "correoElectronico": "carlos@email.com"
+  "nombreDueno": "Carlos",
+  "apellidosDueno": "Ramirez",
+  "telefono": "78945612",
+  "correoElectronico": "carlos@email.com"
 }
+```
 
+---
 
-Eliminar dueño
+## Eliminar dueño
 
+```
 DELETE /api/users/:id
+```
 
-------------------------------------------------------------
+---
 
-# Pruebas de la API
+# 🧪 Pruebas de la API
 
-Las pruebas pueden realizarse utilizando:
+Puedes probar los endpoints utilizando:
 
-- Postman
-- Thunder Client en Visual Studio Code
+- **Postman**
+- **Thunder Client** (extensión de Visual Studio Code)
 
-------------------------------------------------------------
+---
 
-# Guía básica de ramas en Git
+# 🌿 Guía básica de ramas en Git
 
-Las ramas (branches) permiten trabajar en nuevas funcionalidades sin afectar la rama principal del proyecto.
+Las **ramas (branches)** permiten trabajar en nuevas funcionalidades sin afectar la rama principal del proyecto.
 
-Normalmente el proyecto tiene una rama principal llamada:
+La rama principal normalmente se llama:
 
+```
 main
+```
 
 Cada desarrollador puede crear su propia rama para trabajar.
 
-------------------------------------------------------------
+---
 
-1. Ver las ramas del proyecto
+# 🔎 1. Ver ramas del proyecto
 
-Para ver las ramas que existen en tu repositorio local:
+Ver ramas locales:
 
+```bash
 git branch
+```
 
-Para ver también las ramas del repositorio remoto:
+Ver ramas locales y remotas:
 
+```bash
 git branch -a
+```
 
-------------------------------------------------------------
+---
 
-2. Crear una nueva rama
+# 🌱 2. Crear una nueva rama
 
-Para crear una nueva rama:
-
+```bash
 git branch nombre-rama
+```
 
 Ejemplo:
 
+```bash
 git branch feature-login
+```
 
-------------------------------------------------------------
+---
 
-3. Cambiarse a una rama
+# 🔄 3. Cambiarse a una rama
 
-Para moverte a otra rama:
-
+```bash
 git checkout nombre-rama
+```
 
 Ejemplo:
 
+```bash
 git checkout feature-login
+```
 
-------------------------------------------------------------
+---
 
-4. Crear y cambiar a la rama al mismo tiempo
+# ⚡ 4. Crear y cambiar a una rama al mismo tiempo
 
-Puedes crear la rama y moverte a ella en un solo comando:
-
+```bash
 git checkout -b nombre-rama
+```
 
 Ejemplo:
 
+```bash
 git checkout -b feature-crud-usuarios
+```
 
-------------------------------------------------------------
+---
 
-5. Guardar cambios en la rama
+# 💾 5. Guardar cambios en la rama
 
-Primero agregas los archivos modificados:
+Agregar archivos modificados:
 
+```bash
 git add .
+```
 
-Luego haces el commit:
+Crear commit:
 
+```bash
 git commit -m "Se agregó CRUD de usuarios"
+```
 
-------------------------------------------------------------
+---
 
-6. Subir la rama a GitHub
+# ☁️ 6. Subir la rama a GitHub
 
-Para subir tu rama al repositorio remoto:
-
+```bash
 git push origin nombre-rama
+```
 
 Ejemplo:
 
+```bash
 git push origin feature-crud-usuarios
+```
 
-------------------------------------------------------------
+---
 
-7. Actualizar tu repositorio con cambios de GitHub
+# 🔄 7. Actualizar tu repositorio con cambios de GitHub
 
-Para traer cambios del repositorio remoto:
-
+```bash
 git pull origin main
+```
 
-------------------------------------------------------------
+---
 
-8. Cambiar a la rama principal
+# 🔙 8. Cambiar a la rama principal
 
+```bash
 git checkout main
+```
 
-------------------------------------------------------------
+---
 
-9. Unir una rama a main (merge)
+# 🔀 9. Unir una rama a main (merge)
 
-Primero debes estar en main:
+Primero debes estar en `main`:
 
+```bash
 git checkout main
+```
 
 Luego unir la rama:
 
+```bash
 git merge nombre-rama
+```
 
 Ejemplo:
 
+```bash
 git merge feature-crud-usuarios
+```
 
-------------------------------------------------------------
+---
 
-10. Borrar una rama local
+# 🗑 10. Borrar una rama local
 
-Cuando ya no se necesita una rama:
-
+```bash
 git branch -d nombre-rama
+```
 
 Ejemplo:
 
+```bash
 git branch -d feature-crud-usuarios
+```
 
-------------------------------------------------------------
+---
 
-11. Borrar una rama en GitHub
+# ❌ 11. Borrar una rama en GitHub
 
-Para eliminar una rama del repositorio remoto:
-
+```bash
 git push origin --delete nombre-rama
+```
 
 Ejemplo:
 
+```bash
 git push origin --delete feature-crud-usuarios
+```
 
-------------------------------------------------------------
+---
 
-12. Flujo de trabajo recomendado en equipo
+# 👥 Flujo de trabajo recomendado en equipo
 
-1) Actualizar proyecto
+### 1️⃣ Actualizar proyecto
 
+```bash
 git pull origin main
+```
 
-2) Crear rama
+### 2️⃣ Crear rama
 
+```bash
 git checkout -b feature-nueva-funcion
+```
 
-3) Trabajar y guardar cambios
+### 3️⃣ Trabajar y guardar cambios
 
+```bash
 git add .
 git commit -m "Nueva funcionalidad"
+```
 
-4) Subir la rama
+### 4️⃣ Subir la rama
 
+```bash
 git push origin feature-nueva-funcion
+```
 
-5) Crear Pull Request en GitHub.
+### 5️⃣ Crear Pull Request en GitHub
 
-------------------------------------------------------------
+---
 
-Buenas prácticas
+# ✅ Buenas prácticas
 
-Nunca trabajar directamente en main.
+- ❌ Nunca trabajar directamente en **main**
+- 🌿 Crear siempre una **rama por funcionalidad**
+- 🧾 Usar nombres claros en las ramas
 
-Siempre crear una rama para cada funcionalidad.
+### Ejemplos de nombres de ramas
 
-Ejemplos de nombres de ramas:
-
+```
 feature-login
 feature-crud-mascotas
 feature-crud-clientes
 fix-error-login
+```
+
+---
+
+💡 **Autor:** Equipo de desarrollo del sistema de gestión veterinaria.
