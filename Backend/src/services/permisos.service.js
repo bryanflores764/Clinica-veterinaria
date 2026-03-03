@@ -9,7 +9,7 @@
 //    • No conoce req / res; es independiente de Express.
 // ============================================================
 
-const PermisosRepository = require('../repositories/permisos.repository');
+const PermisosRepository = require('../repository/permisos.repository');
 
 // Acciones válidas que se pueden consultar en un permiso
 const ACCIONES_VALIDAS = ['Puede_Crear', 'Puede_Leer', 'Puede_Editar', 'Puede_Eliminar'];
