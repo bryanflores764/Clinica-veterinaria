@@ -1,0 +1,280 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Baloo Da 2";
+}
+
+.layout{
+    display: grid;
+
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: 90px 1fr;
+
+    grid-template-areas: 
+        "sidebar header"
+        "sidebar main";
+    height: 100vh;
+}
+
+/*--------------------------------------------------------------------HEADER------------------------------------------------*/
+
+.header{
+    padding-left: 20px;
+    padding-right: 60px;
+    background-color: #ffffff;
+    display: flex;
+    font-family: "Baloo Da 2";
+    font-size: 25px;
+    font-weight: 800;
+    text-align: center;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header a{
+    padding: 5px 20px;
+    display: flex;
+    background-color: #42AB49;
+    border-radius: 10px;
+    list-style: none;
+    text-decoration: none;
+    text-align: center;
+    transition: 0.5s;
+    color: #ffffff;
+    align-items: center;
+    gap: 10px;
+    font-size: 25px;
+    font-weight: 600;
+}
+
+header a:hover{
+    background-color: #0071BC;
+    color: #ffffff;
+}
+
+.header img{
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+}
+
+.header{
+    grid-area: header;
+    background: white;
+}
+
+/*-------------------------------------------------------MENU LATERAL------------------------------------------------------------------*/
+
+.logo{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.logo img{
+    width: 200px;
+    height: 200px;
+}
+
+.sidebar{
+    grid-area: sidebar;
+    background: #ffffff;
+    padding: 10px;
+    padding-left: 25px;
+    padding-right: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar ul li a img{
+    width: 30px;
+    height: 30px;
+}
+
+.sidebar ul{
+    margin-top: 50px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;    
+}
+
+.sidebar li a{
+    border: 1px solid rgb(165, 165, 165);
+    font-family: "Baloo Da 2";
+    font-weight: 800;
+    font-size: 20px;
+    color: #000000;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 8px;
+    text-decoration: none;
+    width: 100%;
+    border-radius: 8px;
+    transition: 0.5s;
+}
+
+.sidebar li:hover a{
+    background-color: #42AB49;
+    color: #ffffff;
+    transform: translateY(-1px);
+
+}
+
+/*Cerrar Sesion*/
+.sesion{
+    margin-top: auto;
+    margin-bottom: 20px;
+}
+
+.sesion img{
+    width: 30px;
+    height: 30px;
+}
+
+.sesion a{
+    border: 1px solid rgb(165, 165, 165);
+    font-family: "Baloo Da 2";
+    font-weight: 800;
+    font-size: 20px;
+    color: #000000;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 8px;
+    text-decoration: none;
+    width: 100%;
+    border-radius: 8px;
+    transition: 0.5s;
+}
+
+.sesion a:hover{
+    background-color: #42AB49;
+    color: #ffffff;
+}
+
+/*--------------------------------------------------------MAIN-----------------------------------------------------------------------*/
+
+.main{
+    grid-area: main;
+    background: #f5f7f8;
+}
+
+.header-main{
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    margin-left: 40px;
+    margin-bottom: 20px;
+}
+
+.header-main span{
+    color: #0071BC;
+    font-size: 20px;
+}
+
+.cards-grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: 40px;
+  margin-top: 20px;
+  margin-left: 25px;
+}
+
+.card{
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.card-top{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.pet{
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.pet-avatar{
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: #ddd;
+  flex: 0 0 42px;
+}
+
+.pet-info h3{
+  margin: 0;
+  font-size: 18px;
+}
+.pet-info small{
+  color: #777;
+}
+
+.badge{
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.badge.confirmada{ background: #dff3e3; color:#2e7d32; }
+.badge.pendiente{ background: #ffe8d9; color:#c76a1e; }
+.badge.cancelado{ background: #ffd9d9; color:#c62828; }
+.badge.finalizado{ background: #e6e6e6; color:#666; }
+
+.tag-control{
+    background-color: #b4e1ff;
+    padding: 0px 10px 0px 10px;
+    color: #0040ff;
+    border-radius: 100px;
+    font-size: 10px;
+}
+
+.card-meta{
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+.card-actions{
+  margin-top: 14px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.btn-lite{
+  flex: 1;
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #eef6ef;
+  color: #2e7d32;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.btn-green{
+  flex: 1;
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #42AB49;
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 13px;
+}
