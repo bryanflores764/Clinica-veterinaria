@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VetCare - Administrador</title>
+    <link rel="icon" type="image/x-icon" href="../assets/icons/Logo-de-clínica-Veterinaria-azul.ico">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../../css/administrador/crear-usuario.css">
+</head>
+
+<body>
+
+    <main class="layout">
+
+        <aside class="sidebar">
+
+            <a href="interfazAdmin.html" class="logo"><img src="../../assets/img/Logo de clínica Veterinaria azul.png" alt="Logo de VetCare" class="logo"></a>
+
+            <nav class="menu-lateral">
+
+                <div class="menu-grupo">
+                    <a href="#" class="item">Gestión de usuarios</a>
+
+                    <div class="submenu">
+                        <a href="ver-usuario.html" class="sub-item">Ver usuarios</a>
+                        <a href="crear-usuario.html" class="sub-item">Crear usuario</a>
+                    </div>
+                </div>
+
+                <div class="menu-grupo">
+                    <a href="#" class="item">Gestión de clientes</a>
+                    <div class="submenu">
+                        <a href="#" class="sub-item">Ver clientes</a>
+                        <a href="#" class="sub-item">Crear cliente</a>
+                    </div>
+                </div>
+
+                <div class="menu-grupo">
+                    <a href="#" class="item">Gestión de mascotas</a>
+                    <div class="submenu">
+                        <a href="#" class="sub-item">Ver mascotas</a>
+                        <a href="#" class="sub-item">Crear mascota</a>
+                    </div>
+                </div>
+
+                <div class="menu-grupo">
+                    <a href="#" class="item">Sistema</a>
+                    <div class="submenu">
+                        <a href="#" class="sub-item">Cerrar sesión</a>
+                    </div>
+                </div>
+
+            </nav>
+
+        </aside>
+
+        <section class="main-container">
+            <h1>Crear Usuario</h1>
+            
+            <div class="form-container">
+
+                <form id="crearUsuarioForm">
+
+                    <div class="form-group">
+
+                        <div class="usuario-componente">
+                            <label for="nombreUsuario">Nombre de usuario:</label>
+                            <input type="text" id="nombreUsuario" name="nombreUsuario" required>
+                        </div>
+                        
+                        <div class="contrasenia-componente">
+                            <label for="contrasenia">Contraseña:</label>
+                            <input type="password" id="contrasenia" name="contrasenia" required>
+                        </div>
+                        
+                        <div class="rol-componente">
+                            <label for="rol">Rol:</label>
+                            <select id="rol" name="rol" required>
+                                <option value="">Seleccione un rol</option>
+                                <option value="administrador">Administrador</option>
+                                <option value="veterinario">Veterinario</option>
+                                <option value="recepcionista">Recepcionista</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn-crear">Crear Usuario</button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+    <script src="../../js/administrador/interfazAdmin.js"></script>
+</body>
+
+</html>

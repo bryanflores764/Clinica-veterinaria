@@ -1,0 +1,97 @@
+/* Reset Básico para consistencia */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: 'Inter', sans-serif;
+}
+
+.layout{
+    display: grid;
+    height: 100vh;
+    grid-template-columns: 250px 1fr;
+}
+
+/* Estilos para la barra lateral */
+.sidebar{
+    background-color: #F3F3F3;
+    display: flex;
+    flex-direction: column;
+    height: 100%;        /* ✅ ocupa toda la altura del grid */
+    overflow-y: auto;    /* ✅ si el menú crece, scroll solo aquí */
+}
+/** Estilos para el logo */
+.logo {
+    width: 152px;
+    height: 152px;
+    margin: 0 auto 31px auto;
+}
+
+/* Estilos para los enlaces de navegación */
+.menu-lateral{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+}
+
+/* Estilos para los elementos del menú */
+.item {
+    display: block;
+    width: 100%;
+    color: #000;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 23px 18px 26px 13px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.item:hover {
+    background-color: #42AB49;
+    color: #fff;
+}
+
+.item.active {
+    background-color: #42AB49;
+    color: white;
+}
+
+/* Submenu oculto por defecto */
+.submenu {
+    display: none;
+
+}
+/* Estilos para los elementos del submenu */
+.submenu .sub-item {
+    display: block;
+    width: 100%;
+    color: #000;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 23px 18px 26px 13px;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 0.3s ease;
+}
+.submenu .sub-item:hover {
+    text-decoration-color: #42AB49;
+}
+
+.sub-item.active {
+    text-decoration-color: #42AB49;
+}
+/* Cuando está abierto */
+.menu-grupo.open{
+    border: #42AB49 2px solid;
+    background-color: #64f46e;
+}
+.menu-grupo.open .submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
