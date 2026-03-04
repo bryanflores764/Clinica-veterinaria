@@ -30,3 +30,10 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
+
+// ── HU-03: Módulo Usuarios ────────────────────────────────────
+const usuariosRoutes = require('./src/routes/usuarios.routes');
+app.use('/api/usuarios', usuariosRoutes);
+// ── HU-04: Módulo Auth ────────────────────────────────────────
+const authRoutes = require('./src/routes/auth.routes');
+app.use('/api/auth', authRoutes);
