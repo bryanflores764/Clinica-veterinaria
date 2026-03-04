@@ -70,6 +70,7 @@ cd backend
 ```bash
 npm install
 npm install express cors mysql2 dotenv
+npm install jsonwebtoken bcryptjs
 ```
 
 ---
