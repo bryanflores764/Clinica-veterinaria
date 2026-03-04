@@ -1,0 +1,168 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body{
+    display: flex; /*Center*/
+    justify-content: center; /*Centramos todo*/
+    align-items: center; /*Centramos los items*/
+    min-height: 100vh;
+    background: linear-gradient(90deg, #e2e2e2, #c9d6ff); /*Color de Fondo*/ 
+}
+
+.contenedor{
+    position: relative;
+    width: 850px;
+    height: 550px;
+    background: #fff;
+    border-radius: 30px;
+    box-shadow: 0 0 30px rgba(0,0,0, .2);
+    overflow: hidden;
+}
+
+
+
+.form-box{
+    position: absolute;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background: #fff; /*Color de Fondo*/
+    display: flex; /*Centro*/
+    align-items: center;/*Centramos todo*/
+    color: #333; /*Color Texto*/
+    text-align: center; /*Centramos el Texto*/
+    padding: 40px;
+    z-index: 1; /*Division de Pantalla*/
+}
+
+.form-box.registrar{
+    visibility: hidden;
+}
+
+form{
+    width:100%;
+}
+
+.contenedor h1{
+    font-size: 36px; /*Tamano de login*/
+    margin: 30px 0;
+}
+
+.input-box{
+    position: relative;
+    margin: 30px 0;
+}
+
+.input-box input{
+    width: 100%;
+    padding: 13px 50px  13px 20px; /*Tamano de Cuadrante*/
+    background: #eee; /*Color dentro del cuadrante*/
+    border-radius: 8px; /*Rectangular */
+    border: none; 
+    outline: none;
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+}
+
+.input-box input::placeholder{
+    color: #888;
+    font-weight: 400;
+}
+
+.input-box i{
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: #888; /*Color de Iconos*/
+}
+
+.btn{
+    width: 100%; /*Largo*/
+    height: 48px; /*Ancho*/
+    background: #7494ec; /*Color de Boton*/
+    border-radius: 8px; /*Cuadrante del boton*/
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    border: none; /*Rectangular el cuadrante*/
+    cursor: pointer; /*Se ponga la manito al pasar mouse*/
+    font-size: 16px; /*Tamano de texto*/
+    color: #fff; /*Color De Fondo*/
+    font-weight: 600;/*Resalta el texto dentro del  botton*/
+}
+
+.toggle-box{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.toggle-panel::before{
+    content: '';
+    position: absolute;
+    left: -200%;
+    width: 300%;
+    height: 100%;
+    background: #7494ec;
+    border-radius: 150px; /*Como Rectangular*/
+    z-index:-1;
+    transition: 1.8s ease-in-out;
+}
+
+
+.toggle-panel{
+    position: absolute; /*Se adapta El Button*/
+    width: 50%;
+    height: 100%;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; /*Centrar todos los elementos*/
+    z-index:2;
+    left: 0;
+    top: 0;
+}
+
+.logo{
+    position: absolute;
+    top: 35px;/*Ajustamos Imagen*/
+    left: 50%;
+    transform: translateX(-50%);
+    width: 270px;
+}
+
+.toggle-panel h1{
+    margin-top: 140px; /*Separa El Logo*/
+    font-size: 28px; /*Reaziona un poco mas pequeno*/
+    font-weight: 700; 
+    text-align: center; /*Centrar texto*/
+}
+
+.main-text{
+    margin-top: 10px; /*Separa El Texto*/
+    font-size: 15px; /*Reacciona un poco mas pequeno*/
+    font-weight: 600;
+}
+
+.sub-text{
+    margin-top: 12px; /*Separa El Texto*/
+    font-size: 13px; /*Reacciona un poco mas pequeno*/
+    line-height: 1.5;
+    opacity: .85;
+    max-width: 260px;
+    text-align: center; /*Centramos El Texto*/
+}
+
+
+
+
+
+
