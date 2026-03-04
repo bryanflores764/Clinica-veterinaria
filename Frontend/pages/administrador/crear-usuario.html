@@ -83,10 +83,15 @@
                             <label for="rol">Rol:</label>
                             <select id="rol" name="rol" required>
                                 <option value="">Seleccione un rol</option>
-                                <option value="administrador">Administrador</option>
-                                <option value="veterinario">Veterinario</option>
-                                <option value="recepcionista">Recepcionista</option>
+                                <option value="1">Administrador</option>
+                                <option value="2">Veterinario</option>
+                                <option value="3">Recepcionista</option>
                             </select>
+                        </div>
+
+                        <div class="correo-componente">
+                            <label for="correo">Correo:</label>
+                            <input type="email" id="correo" name="correo" required>
                         </div>
 
                         <button type="submit" class="btn-crear">Crear Usuario</button>
@@ -101,6 +106,7 @@
 
     </main>
     <script src="../../js/administrador/interfazAdmin.js"></script>
+    <script src="../../js/administrador/crear-usuario.js"></script>
 </body>
 
 </html>
