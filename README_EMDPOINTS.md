@@ -17,43 +17,43 @@ Backend REST API para la gestión de una clínica veterinaria, desarrollado con 
 
 ## 🔐 Autenticación
 
-Todos los endpoints protegidos requieren que el middleware de autenticación inyecte req.usuario con la siguiente forma:
+Todos los endpoints protegidos requieren que el middleware de autenticación inyecte `req.usuario` con la siguiente forma:
 
-js
+```js
 req.usuario = {
   id   : 1,   // Usuarios.id
   RolId: 1    // Usuarios.RolId ← usado por verificarPermiso
 }
+```
 
-
-> Mientras no exista el módulo de Login, agregar temporalmente en index.js:
-> js
+> Mientras no exista el módulo de Login, agregar temporalmente en `index.js`:
+> ```js
 > app.use((req, res, next) => {
 >   req.usuario = { id: 1, RolId: 1 };
 >   next();
 > });
-> 
+> ```
 
 ---
 
 ## 📦 HU-02: Módulo Permisos
 
-Base: /api/permisos
+Base: `/api/permisos`
 
-Requiere que el rol autenticado tenga permisos sobre el módulo Permisos.
+Requiere que el rol autenticado tenga permisos sobre el módulo `Permisos`.
 
 ---
 
-### POST /api/permisos
+### `POST /api/permisos`
 Crea un nuevo permiso o actualiza uno existente para un rol y módulo.
 
-*Headers*
-
+**Headers**
+```
 Content-Type: application/json
+```
 
-
-*Body*
-json
+**Body**
+```json
 {
   "RolId"         : 1,
   "Modulo"        : "Usuarios",
@@ -62,10 +62,10 @@ json
   "Puede_Editar"  : 1,
   "Puede_Eliminar": 1
 }
+```
 
-
-*Respuesta exitosa — permiso creado 200*
-json
+**Respuesta exitosa — permiso creado `200`**
+```json
 {
   "ok"     : true,
   "mensaje": "Permiso creado correctamente.",
@@ -74,10 +74,10 @@ json
     "afectados": 1
   }
 }
+```
 
-
-*Respuesta exitosa — permiso actualizado 200*
-json
+**Respuesta exitosa — permiso actualizado `200`**
+```json
 {
   "ok"     : true,
   "mensaje": "Permiso actualizado correctamente.",
@@ -86,54 +86,54 @@ json
     "afectados": 2
   }
 }
+```
 
-
-*Error — RolId inválido 400*
-json
+**Error — RolId inválido `400`**
+```json
 {
   "ok"     : false,
   "mensaje": "RolId es obligatorio y debe ser un número válido."
 }
+```
 
-
-*Error — Modulo vacío 400*
-json
+**Error — Modulo vacío `400`**
+```json
 {
   "ok"     : false,
   "mensaje": "Modulo es obligatorio y debe ser una cadena no vacía."
 }
+```
 
-
-*Error — sin autenticación 401*
-json
+**Error — sin autenticación `401`**
+```json
 {
   "ok"     : false,
   "mensaje": "No autenticado. Se requiere token de sesión."
 }
+```
 
-
-*Error — sin permiso 403*
-json
+**Error — sin permiso `403`**
+```json
 {
   "ok"     : false,
   "mensaje": "Acceso denegado. No tienes permiso \"Puede_Crear\" sobre el módulo \"Permisos\"."
 }
-
+```
 
 ---
 
-### GET /api/permisos
+### `GET /api/permisos`
 Lista todos los permisos registrados con su nombre de rol.
 
-*Headers*
-
+**Headers**
+```
 Content-Type: application/json
+```
 
+**Body:** ninguno
 
-*Body:* ninguno
-
-*Respuesta exitosa 200*
-json
+**Respuesta exitosa `200`**
+```json
 {
   "ok"  : true,
   "data": [
@@ -159,41 +159,41 @@ json
     }
   ]
 }
+```
 
-
-*Error — sin autenticación 401*
-json
+**Error — sin autenticación `401`**
+```json
 {
   "ok"     : false,
   "mensaje": "No autenticado. Se requiere token de sesión."
 }
+```
 
-
-*Error — sin permiso 403*
-json
+**Error — sin permiso `403`**
+```json
 {
   "ok"     : false,
   "mensaje": "Acceso denegado. No tienes permiso \"Puede_Leer\" sobre el módulo \"Permisos\"."
 }
-
+```
 
 ---
 
-### GET /api/permisos/rol/:rolId
+### `GET /api/permisos/rol/:rolId`
 Lista todos los permisos de un rol específico.
 
-*Parámetros de URL*
+**Parámetros de URL**
 | Parámetro | Tipo   | Descripción     |
 |-----------|--------|-----------------|
-| rolId   | number | ID del rol      |
+| `rolId`   | number | ID del rol      |
 
-*Ejemplo*
-
+**Ejemplo**
+```
 GET http://localhost:3000/api/permisos/rol/1
+```
 
-
-*Respuesta exitosa 200*
-json
+**Respuesta exitosa `200`**
+```json
 {
   "ok"  : true,
   "data": [
@@ -217,87 +217,87 @@ json
     }
   ]
 }
+```
 
-
-*Respuesta — rol sin permisos 200*
-json
+**Respuesta — rol sin permisos `200`**
+```json
 {
   "ok"  : true,
   "data": []
 }
+```
 
-
-*Error — sin autenticación 401*
-json
+**Error — sin autenticación `401`**
+```json
 {
   "ok"     : false,
   "mensaje": "No autenticado. Se requiere token de sesión."
 }
+```
 
-
-*Error — sin permiso 403*
-json
+**Error — sin permiso `403`**
+```json
 {
   "ok"     : false,
   "mensaje": "Acceso denegado. No tienes permiso \"Puede_Leer\" sobre el módulo \"Permisos\"."
 }
-
+```
 
 ---
 
-### DELETE /api/permisos/rol/:rolId/modulo/:modulo
+### `DELETE /api/permisos/rol/:rolId/modulo/:modulo`
 Elimina el permiso de un rol sobre un módulo específico.
 
-*Parámetros de URL*
+**Parámetros de URL**
 | Parámetro | Tipo   | Descripción             |
 |-----------|--------|-------------------------|
-| rolId   | number | ID del rol              |
-| modulo  | string | Nombre del módulo       |
+| `rolId`   | number | ID del rol              |
+| `modulo`  | string | Nombre del módulo       |
 
-*Ejemplo*
-
+**Ejemplo**
+```
 DELETE http://localhost:3000/api/permisos/rol/1/modulo/Usuarios
+```
 
-
-*Respuesta exitosa 200*
-json
+**Respuesta exitosa `200`**
+```json
 {
   "ok"     : true,
   "mensaje": "Permiso eliminado correctamente."
 }
+```
 
-
-*Error — no encontrado 404*
-json
+**Error — no encontrado `404`**
+```json
 {
   "ok"     : false,
   "mensaje": "No se encontró ningún permiso con esos parámetros."
 }
+```
 
-
-*Error — sin autenticación 401*
-json
+**Error — sin autenticación `401`**
+```json
 {
   "ok"     : false,
   "mensaje": "No autenticado. Se requiere token de sesión."
 }
+```
 
-
-*Error — sin permiso 403*
-json
+**Error — sin permiso `403`**
+```json
 {
   "ok"     : false,
   "mensaje": "Acceso denegado. No tienes permiso \"Puede_Eliminar\" sobre el módulo \"Permisos\"."
 }
-
+```
 
 ---
 
-## 🛡️ Middleware verificarPermiso — Uso en otros módulos
+## 🛡️ Middleware `verificarPermiso` — Uso en otros módulos
 
 Para proteger cualquier endpoint de cualquier módulo, importar y usar así:
 
-js
+```js
 const { verificarPermiso } = require('../middlewares/permisos.middleware');
 
 // Crear
@@ -311,15 +311,15 @@ router.put('/citas/:id',    verificarPermiso('Citas', 'Puede_Editar'),   CitasCo
 
 // Eliminar
 router.delete('/citas/:id', verificarPermiso('Citas', 'Puede_Eliminar'), CitasController.eliminar);
+```
 
-
-*Módulos disponibles (configurables desde BD)*
+**Módulos disponibles (configurables desde BD)**
 | Modulo       | Descripción              |
 |--------------|--------------------------|
-| Permisos   | Gestión de permisos      |
-| Usuarios   | Gestión de usuarios      |
-| Pacientes  | Gestión de pacientes     |
-| Citas      | Gestión de citas         |
+| `Permisos`   | Gestión de permisos      |
+| `Usuarios`   | Gestión de usuarios      |
+| `Pacientes`  | Gestión de pacientes     |
+| `Citas`      | Gestión de citas         |
 
 ---
 
@@ -327,16 +327,16 @@ router.delete('/citas/:id', verificarPermiso('Citas', 'Puede_Eliminar'), CitasCo
 
 | Método   | Ruta                                        | Descripción                        | Permiso requerido          |
 |----------|---------------------------------------------|------------------------------------|----------------------------|
-| POST   | /api/permisos                             | Crear o actualizar permiso         | Permisos → Puede_Crear |
-| GET    | /api/permisos                             | Listar todos los permisos          | Permisos → Puede_Leer  |
-| GET    | /api/permisos/rol/:rolId                  | Listar permisos de un rol          | Permisos → Puede_Leer  |
-| DELETE | /api/permisos/rol/:rolId/modulo/:modulo   | Eliminar permiso de un rol/módulo  | Permisos → Puede_Eliminar |
+| `POST`   | `/api/permisos`                             | Crear o actualizar permiso         | `Permisos` → `Puede_Crear` |
+| `GET`    | `/api/permisos`                             | Listar todos los permisos          | `Permisos` → `Puede_Leer`  |
+| `GET`    | `/api/permisos/rol/:rolId`                  | Listar permisos de un rol          | `Permisos` → `Puede_Leer`  |
+| `DELETE` | `/api/permisos/rol/:rolId/modulo/:modulo`   | Eliminar permiso de un rol/módulo  | `Permisos` → `Puede_Eliminar` |
 
 ---
 
-## 🗄️ Estructura de la tabla permisos
+## 🗄️ Estructura de la tabla `permisos`
 
-sql
+```sql
 CREATE TABLE permisos (
   id             INT         NOT NULL AUTO_INCREMENT,
   RolId          INT         NOT NULL,
@@ -349,6 +349,7 @@ CREATE TABLE permisos (
   UNIQUE KEY uq_Permisos_Rol_Modulo (RolId, Modulo),
   FOREIGN KEY (RolId) REFERENCES roles(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
+```
 #### POST `/api/auth/login` — Iniciar sesión
 ```json
 // Body
