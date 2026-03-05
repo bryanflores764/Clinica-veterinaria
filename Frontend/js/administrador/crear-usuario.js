@@ -6,7 +6,7 @@ const form = document.getElementById("crearUsuarioForm");
 
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
+    
   //valores del form
     const nombre_usuario = document.getElementById("nombreUsuario").value.trim();
     const correo = document.getElementById("correo").value.trim();
