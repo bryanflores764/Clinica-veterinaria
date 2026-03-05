@@ -1,0 +1,156 @@
+*{/*Reset de Pagina*/
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Baloo Da 2";
+}
+
+.layout{
+    display: grid;
+
+    grid-template-columns: 300px 1fr;  /*Disminuye el ancho*/
+    grid-template-rows: 90px 1fr; /*Anchura de la fila*/
+
+    grid-template-areas: /*Esta es la Estructura de la pagina donde estara ubicado cada contenedor*/
+        "sidebar header"
+        "sidebar main";
+    height: 100vh;
+}
+
+/*--------------------------------------------------------------------HEADER------------------------------------------------*/
+
+.header{
+    padding-left: 20px;
+    padding-right: 60px;
+    background-color: #ffffff;
+    display: flex;
+    font-family: "Baloo Da 2";
+    font-size: 25px;
+    font-weight: 800;
+    text-align: center;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+/*Cuadrante de bienvenida*/
+.header{
+    grid-area: header;
+    background: white;
+}
+
+/*-------------------------------------------------------MENU LATERAL------------------------------------------------------------------*/
+
+.logo{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.logo img{
+    width: 200px;
+    height: 200px;
+}
+
+.sidebar{
+    grid-area: sidebar; /*Bajar el boton hacia abajo*/
+    background: #ffffff; /*Color de fondo lateral*/
+    padding: 10px;
+    padding-left: 25px;
+    padding-right: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar ul li a img{
+    width: 30px; /*Tamano de img*/
+    height: 30px;/*Ancho de img*/
+}
+
+.sidebar ul{
+    margin-top: 50px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;    
+}
+
+.sidebar li a{
+    border: 1px solid rgb(165, 165, 165);
+    font-family: "Baloo Da 2";
+    font-weight: 800;
+    font-size: 20px;
+    color: #000000;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 8px;
+    text-decoration: none;
+    width: 100%;
+    border-radius: 8px;
+    transition: 0.5s;
+}
+
+.sidebar li:hover a{
+    background-color: #42AB49;
+    color: #ffffff;
+    transform: translateY(-1px);
+
+}
+
+/*Cerrar Sesion*/
+.sesion{
+    margin-top: auto;
+    margin-bottom: 20px;
+}
+
+.sesion img{
+    width: 30px;
+    height: 30px;
+}
+
+.sesion a{
+    border: 1px solid rgb(165, 165, 165);
+    font-family: "Baloo Da 2";
+    font-weight: 800;
+    font-size: 20px;
+    color: #000000;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 8px;
+    text-decoration: none;
+    width: 100%;
+    border-radius: 8px;
+    transition: 0.5s;
+}
+
+.sesion a:hover{
+    background-color: #42AB49;
+    color: #ffffff;
+}
+
+/*--------------------------------------------------------MAIN-----------------------------------------------------------------------*/
+
+.main{
+    grid-area: main;
+    background: #f5f7f8;
+}
+
+.header-main{
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    margin-left: 40px;
+    margin-bottom: 20px;
+}
+
+.header-main span{
+    color: #0071BC;
+    font-size: 20px;
+}
+
+
