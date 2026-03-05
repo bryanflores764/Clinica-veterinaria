@@ -31,6 +31,7 @@
     justify-content: space-between;
     align-items: center;
 }
+/*----------------------------------------------------------------- Boton cita------------------------------------------------------ */
 
 .header a{
     padding: 5px 20px;
@@ -70,7 +71,6 @@
   gap: 12px;
 }
 
-/* Tu botón verde (Nueva Cita) ahora con clase */
 .header a.btn-new{
   padding: 5px 20px;
   display: flex;
@@ -89,7 +89,8 @@
   background-color: #0071BC;
 }
 
-/* Botón secundario (Cerrar sesión) */
+/*----------------------------------------------------------------- Boton cerrar sesion------------------------------------------------------ */
+
 .header a.btn-logout{
   padding: 5px 16px;
   display: flex;
@@ -222,6 +223,8 @@
     color: #ffffff;
 }
 
+/*=======================================SIDEBAR RESPONSIVE============================================================================*/
+
 /* Botón hamburguesa (solo móvil) */
 .menu-toggle{
   display: none;
@@ -316,10 +319,7 @@
 }
 
 /*-------------------------------------------------------responsive----------------------------------------------------------------*/
-/* =======================
-   RESPONSIVE <= 800px
-   Sidebar pasa debajo del header y se vuelve horizontal
-======================= */
+/* =======================RESPONSIVE <= 800pxSidebar pasa debajo del header y se vuelve horizontal======================= */
 @media (max-width: 900px){
 
   /* 1) Reordenar el grid */
