@@ -11,6 +11,7 @@
     <title>RECEPCIONISTA</title>
 </head>
 <body>
+<div class="sidebar-backdrop"></div>
     <div class="layout">
 
         <aside class="sidebar">
@@ -48,22 +49,26 @@
                         historial Citas
                     </a>
                 </li>
-            </ul>
-
-            <div class="sesion">
-                <a href="#">
-                    <img src="../../assets/icons/icon-sesion.png" alt="cerrar-sesion">
-                    Cerrar Sesion
-                </a>
-            </div>
+            </ul>                    
         </aside>
 
         <header class="header">
             <h1>Citas</h1>
-            <a href="">
-                <img src="../../assets/icons/icon-newcita.png" alt="">
-                Nueva Cita
-            </a>
+
+            <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">
+                ☰
+            </button>
+            <div class="header-actions">
+                <a class="btn-new" href="#">
+                    <img src="../../assets/icons/icon-newcita.png" alt="">
+                    Nueva Cita
+                </a>
+
+                <a class="btn-logout" href="#">
+                    <img src="../../assets/icons/icon-sesion.png" alt="">
+                    Cerrar Sesion
+                </a>
+            </div>
         </header>
 
         <main class="main">
@@ -72,7 +77,6 @@
                 <span>Recepcion | Control de agenda diaria</span>
             </header>
             
-            <div class="cards-grid">
                 <!-------------------------------------------CARDS DE CITAS----------------------------------------------------------->
                 <div class="cards-grid">
                     <article class="card">
@@ -210,9 +214,9 @@
                             <a class="btn-green" href="#">En Atención</a>
                         </div>
                     </article>
-            </div>
+                </div>
         </main>
-
     </div>
+    <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
 </body>
 </html>
