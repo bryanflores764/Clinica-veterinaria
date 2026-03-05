@@ -9,7 +9,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet" href="../../css/administrador/ver-usuario.css">
 </head>
@@ -20,7 +22,8 @@
 
         <aside class="sidebar">
 
-            <a href="interfazAdmin.html" class="logo"><img src="../../assets/img/Logo de clínica Veterinaria azul.png" alt="Logo de VetCare" class="logo"></a>
+            <a href="interfazAdmin.html" class="logo"><img src="../../assets/img/Logo de clínica Veterinaria azul.png"
+                    alt="Logo de VetCare" class="logo"></a>
 
             <nav class="menu-lateral">
 
@@ -62,15 +65,42 @@
 
         <section class="main-container">
             <h1>Ver Usuario</h1>
-            
-            <div class="form-container">
-                
+
+            <div class="table-container">
+
+                <div class="table-header">
+                    <h2 class="table-title">Usuarios registrados</h2>
+                    <input id="search" class="search" type="text" placeholder="Buscar por usuario, correo o rol...">
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Correo</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th class="actions-col">Acciones</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="users-tbody">
+                            <!-- JS inyecta filas -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <p id="empty-msg" class="empty-msg" style="display:none;">No hay usuarios para mostrar.</p>
+
             </div>
 
         </section>
 
     </main>
     <script src="../../js/administrador/interfazAdmin.js"></script>
+    <script src="../../js/administrador/ver-usuario.js"></script>
 </body>
 
 </html>

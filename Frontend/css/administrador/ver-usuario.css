@@ -95,3 +95,122 @@ body{
     flex-direction: column;
     gap: 8px;
 }
+/*Ver usuario*/
+
+.table-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.table-title{
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.search{
+    width: 320px;
+    max-width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #d9d9d9;
+    outline: none;
+    background: #fff;
+}
+
+.table-wrapper{
+    width: 100%;
+    overflow-x: auto;
+}
+
+.users-table{
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.users-table thead th{
+    text-align: left;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 14px 12px;
+    background: #eaeaea;
+    border-bottom: 1px solid #ddd;
+}
+
+.users-table tbody td{
+    padding: 14px 12px;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.users-table tbody tr:hover{
+    background: #f7f7f7;
+}
+
+.actions-col{
+    width: 220px;
+    text-align: right;
+}
+
+.btn{
+    border: none;
+    padding: 9px 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.05s ease, opacity 0.2s ease;
+}
+
+.btn-activate{
+    background: #42AB49;
+    color: #fff;
+}
+
+.btn-delete{
+    background: #e53935;
+    color: #fff;
+}
+
+.btn:active{ transform: scale(0.98); }
+.btn:hover{ opacity: 0.9; }
+
+.btn-edit{
+    background: #42AB49;
+    color: #fff;
+    margin-right: 8px;
+}
+
+.btn-delete{
+    background: #e53935;
+    color: #fff;
+}
+
+.badge{
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.badge-active{
+    background: rgba(66, 171, 73, 0.15);
+    color: #2e7d32;
+}
+
+.badge-inactive{
+    background: rgba(229, 57, 53, 0.12);
+    color: #c62828;
+}
+
+.empty-msg{
+    margin-top: 12px;
+    font-size: 14px;
+    opacity: 0.8;
+}
