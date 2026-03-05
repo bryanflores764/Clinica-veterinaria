@@ -460,11 +460,22 @@ CREATE TABLE permisos (
 #### PUT `/api/usuarios/:id` — Editar usuario
 ```json
 // Body
+// Body sin cambiar contraseña
 {
   "nombre_usuario": "Bryan García López",
   "correo": "bryan.nuevo@gmail.com",
   "rolId": 2
 }
+
+// Body cambiando contraseña (opcional)
+{
+  "nombre_usuario": "Bryan García López",
+  "correo": "bryan.nuevo@gmail.com",
+  "rolId": 2,
+  "contrasena": "nuevaPassword123"
+}
+
+
 
 // ✅ Respuesta 200
 {
@@ -510,7 +521,26 @@ CREATE TABLE permisos (
     "activo": 0
   }
 }
+
+
+#### DELETE http://localhost:3000/api/usuarios/1
+// Sin body
+
+// ✅ 200
+{
+  "success": true,
+  "message": "Usuario \"Bryan García\" eliminado exitosamente"
+}
+
+// ❌ 404 - No existe
+{
+  "success": false,
+  "message": "No existe un usuario con id 1"
+}
 ```
+
+
+
 
 ---
 

@@ -27,8 +27,8 @@ const getAllUsuarios = async (req, res) => {
 const updateUsuario = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre_usuario, correo, rolId } = req.body;
-    const updated = await usuariosService.updateUsuario(id, nombre_usuario, correo, rolId);
+    const { nombre_usuario, correo, rolId, contrasena } = req.body;
+    const updated = await usuariosService.updateUsuario(id, nombre_usuario, correo, rolId, contrasena);
     return res.status(200).json({ success: true, message: 'Usuario actualizado exitosamente', data: updated });
   } catch (err) {
     return res.status(err.status || 500).json({ success: false, message: err.message || 'Error interno del servidor' });
@@ -45,4 +45,14 @@ const toggleActivo = async (req, res) => {
   }
 };
 
-module.exports = { createUsuario, getAllUsuarios, updateUsuario, toggleActivo };
+const deleteUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await usuariosService.deleteUsuario(id);
+    return res.status(200).json({ success: true, message: result.mensaje });
+  } catch (err) {
+    return res.status(err.status || 500).json({ success: false, message: err.message || 'Error interno del servidor' });
+  }
+};
+
+module.exports = { createUsuario, getAllUsuarios, updateUsuario, toggleActivo, deleteUsuario };
