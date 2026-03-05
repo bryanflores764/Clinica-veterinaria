@@ -28,9 +28,9 @@ const getAllUsuarios = async () => {
   return usuarios;
 };
 
-const updateUsuario = async (id, nombre, correo, rolId) => {
+const updateUsuario = async (id, nombre, correo, rolId, contrasena) => {
   if (!nombre || !correo || !rolId) {
-    throw { status: 400, message: 'Todos los campos son obligatorios' };
+    throw { status: 400, message: 'Nombre, correo y rol son obligatorios' };
   }
 
   const usuario = await usuariosRepository.findUsuarioById(id);
@@ -43,7 +43,13 @@ const updateUsuario = async (id, nombre, correo, rolId) => {
     throw { status: 409, message: `El correo "${correo}" ya está en uso` };
   }
 
-  await usuariosRepository.updateUsuario(id, nombre, correo, rolId);
+  // Si viene contraseña la encripta, si no usa la actual
+  let contrasenaFinal = usuario.Contrasena;
+  if (contrasena && contrasena.trim() !== '') {
+    contrasenaFinal = await bcrypt.hash(contrasena, 10);
+  }
+
+  await usuariosRepository.updateUsuario(id, nombre, correo, rolId, contrasenaFinal);
   return { id, Nombre_Usuario: nombre, Correo: correo, RolId: rolId };
 };
 
@@ -58,4 +64,14 @@ const toggleActivo = async (id) => {
   return updated;
 };
 
-module.exports = { createUsuario, getAllUsuarios, updateUsuario, toggleActivo };
+const deleteUsuario = async (id) => {
+  const usuario = await usuariosRepository.findUsuarioById(id);
+  if (!usuario) {
+    throw { status: 404, message: `No existe un usuario con id ${id}` };
+  }
+
+  await usuariosRepository.deleteUsuario(id);
+  return { id, mensaje: `Usuario "${usuario.Nombre_Usuario}" eliminado exitosamente` };
+};
+
+module.exports = { createUsuario, getAllUsuarios, updateUsuario, toggleActivo, deleteUsuario };

@@ -26,13 +26,18 @@ const findUsuarioByCorreo = async (correo) => {
   return rows[0] || null;
 };
 
-const updateUsuario = async (id, nombre, correo, rolId) => {
-  const [result] = await connection.execute(UsuariosQueries.UPDATE, [nombre, correo, rolId, id]);
+const updateUsuario = async (id, nombre, correo, rolId, contrasena) => {
+  const [result] = await connection.execute(UsuariosQueries.UPDATE, [nombre, correo, rolId, contrasena, id]);
   return result.affectedRows;
 };
 
 const toggleActivo = async (id) => {
   const [result] = await connection.execute(UsuariosQueries.TOGGLE_ACTIVO, [id]);
+  return result.affectedRows;
+};
+
+const deleteUsuario = async (id) => {
+  const [result] = await connection.execute(UsuariosQueries.DELETE, [id]);
   return result.affectedRows;
 };
 
@@ -43,4 +48,5 @@ module.exports = {
   findUsuarioByCorreo,
   updateUsuario,
   toggleActivo,
+  deleteUsuario,
 };

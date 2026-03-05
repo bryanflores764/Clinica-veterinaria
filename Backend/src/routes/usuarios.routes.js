@@ -9,9 +9,10 @@ const { verifyAdmin } = require('../middlewares/usuarios.middleware');
 
 const router = Router();
 
-router.get('/',           verifyAdmin, usuariosController.getAllUsuarios);
-router.post('/',          verifyAdmin, usuariosController.createUsuario);
-router.put('/:id',        verifyAdmin, usuariosController.updateUsuario);
+router.get('/',             verifyAdmin, usuariosController.getAllUsuarios);
+router.post('/',            verifyAdmin, usuariosController.createUsuario);
+router.put('/:id',          verifyAdmin, usuariosController.updateUsuario);
 router.patch('/:id/toggle', verifyAdmin, usuariosController.toggleActivo);
+router.delete('/:id',       verifyAdmin, usuariosController.deleteUsuario);
 
 module.exports = router;

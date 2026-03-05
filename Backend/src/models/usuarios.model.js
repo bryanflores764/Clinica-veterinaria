@@ -18,7 +18,7 @@ const UsuariosQueries = {
   `,
 
   FIND_BY_ID: `
-    SELECT u.id, u.Nombre_Usuario, u.Correo, u.activo, u.RolId, r.Nombre_Rol
+    SELECT u.id, u.Nombre_Usuario, u.Correo, u.activo, u.RolId, u.Contrasena, r.Nombre_Rol
     FROM usuarios u
     INNER JOIN roles r ON r.id = u.RolId
     WHERE u.id = ?
@@ -34,13 +34,18 @@ const UsuariosQueries = {
 
   UPDATE: `
     UPDATE usuarios
-    SET Nombre_Usuario = ?, Correo = ?, RolId = ?
+    SET Nombre_Usuario = ?, Correo = ?, RolId = ?, Contrasena = ?
     WHERE id = ?
   `,
 
   TOGGLE_ACTIVO: `
     UPDATE usuarios
     SET activo = NOT activo
+    WHERE id = ?
+  `,
+
+  DELETE: `
+    DELETE FROM usuarios
     WHERE id = ?
   `,
 
