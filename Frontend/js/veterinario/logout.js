@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1 Limpia y redirige INMEDIATO (rápido)
     localStorage.clear();/*Borrar los daatos guardados localstorage como token usuario o rol*/
     sessionStorage.clear();/*Borra todos los datos guardados en localStorage*/
-    window.location.href = "http://127.0.0.1:5500/Frontend/index.html"; /*Redirige el usuario a otra pagina como Frontend/index.html que es el login*/
+    window.location.href = "../../index.html"; /*Redirige el usuario a otra pagina como Frontend/index.html que es el login*/
 
     // 2 Notifica al backend SIN esperar respuesta (no bloquea)
     fetch("http://localhost:3000/api/auth/logout", {/*Envia solicitud al backend para avisar que usuario cerro sesion*/
@@ -17,3 +17,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }).catch(() => {});
   });
 });
+
