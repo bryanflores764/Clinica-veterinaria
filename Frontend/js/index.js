@@ -2,21 +2,55 @@ document.addEventListener("DOMContentLoaded", function(){
 
     const form = document.querySelector("form");
 
-    form.addEventListener("submit", function(e){
+    form.addEventListener("submit", async function(e){
         e.preventDefault();
 
         const user = document.querySelector("input[type='text']").value.trim();
         const pass = document.querySelector("input[type='password']").value.trim();
 
-/*Si se utiliza el user  y pass tendria q dar la alerta de formulario valido*/ 
-/*Si Falta campos que rellenar daria una alerta*/ 
-
+        // Validación
         if(user === "" || pass === ""){
             alert("Por favor completa todos los campos");
             return;
         }
 
-        alert("Formulario válido");
+        try{
+
+          const respuesta = await fetch("http://localhost:3000/api/auth/login",{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body: JSON.stringify({
+                    usuario:user,
+                    password:pass
+                })
+            });
+
+            const data = await respuesta.json();
+
+            if(data.success){
+
+                if(data.rol === "admin"){
+                    window.location.href = "pages/administrador/interfazAdmin.html";
+                }
+
+                if(data.rol === "recepcionista"){
+                    window.location.href = "pages/recepcionista/interfazRecepcionista.html";
+                }
+
+                if(data.rol === "veterinario"){
+                    window.location.href = "pages/veterinario/interfazveterinario.html";
+                }
+
+            }else{
+                alert("Usuario o contraseña incorrectos");
+            }
+
+        }catch(error){
+            alert("Error al conectar con el servidor");
+        }
+
     });
 
 });

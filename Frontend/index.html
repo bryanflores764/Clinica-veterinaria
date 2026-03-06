@@ -2,33 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=
-    , initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Veterinaria</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel="stylesheet">
     <link rel="shortcut icon" href="../Frontend/assets/icons/Logo-de-clínica-Veterinaria-azul.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/index.css">
+  
 </head>
 <body>
     
     <div class="contenedor">
         <div class="form-box login">
-            <form action="">
+            <form  id="loginForm">
                 <h1>Login</h1> <!--Titulo-->
                 <div class="input-box">
-                    <input type="text" placeholder="Usuario"
+                    <input type="text" name="usuario" placeholder="Usuario"
                     required>
                     <i class="bx bx-user"></i> <!--Emoticones-->
                 </div>
                 <div class="input-box">
-                    <input type="password" placeholder="Password"
+                    <input type="password" name="password" placeholder="Password"
                     required>
                     <i class="bx bx-lock"></i> <!--Emoticones-->
                 </div>
                 <div class="Enlaze">
                   <!-- <a href="#">Has Olvidado tu contrasena</a>--> 
                 </div>
-                <button type="submit" class="btn">Login</button> <!--Login Boton-->
+                <button type="submit" class="btn" >Login</button> <!--Login Boton-->
             </form>
         </div>
         <div class="toggle-box">
@@ -44,6 +44,7 @@
         </div>
         
     </div>
-
+  <script src="js/index.js"></script>
 </body>
+
 </html>

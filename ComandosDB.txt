@@ -1,0 +1,211 @@
+use VetCare
+CREATE TABLE Permisos (
+    id INT IDENTITY(1,1) NOT NULL,
+    RolId INT NOT NULL,
+    Modulo VARCHAR(100) NOT NULL,
+    Puede_Crear BIT NOT NULL DEFAULT 0,
+    Puede_Leer BIT NOT NULL DEFAULT 0,
+    Puede_Editar BIT NOT NULL DEFAULT 0,
+    Puede_Eliminar BIT NOT NULL DEFAULT 0, 
+    CONSTRAINT PK_Permisos PRIMARY KEY (id),   
+    CONSTRAINT UQ_Permisos_Rol_Modulo 
+        UNIQUE (RolId, Modulo),    
+    CONSTRAINT FK_Permisos_Roles 
+        FOREIGN KEY (RolId) 
+        REFERENCES Roles(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+--Tabla de propietarios
+CREATE TABLE Propietarios (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre VARCHAR(150) NOT NULL,
+    Telefono VARCHAR(20),
+    Correo VARCHAR(150) UNIQUE,
+    Direccion VARCHAR(250)
+);
+--Tablas para manejo de datos de mascotas
+CREATE TABLE Especies (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre_Especie VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE Razas (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Id_Especie INT NOT NULL,
+    Nombre_Raza VARCHAR(100) NOT NULL,
+  CONSTRAINT fk_Especie_Raza  FOREIGN KEY (Id_Especie) REFERENCES Especies(Id)
+);
+
+CREATE TABLE Mascotas (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Id_Propietario INT NOT NULL,
+    Id_Raza INT NOT NULL,
+    Nombre VARCHAR(100) NOT NULL,
+    Fecha_Nacimiento DATE,
+    Peso DECIMAL(5,2),
+    Color VARCHAR(50),
+    CONSTRAINT fk_Propietario_Mascotas FOREIGN KEY (Id_Propietario) REFERENCES Propietarios(Id),
+    CONSTRAINT fk_Raza_Mascotas FOREIGN KEY (Id_Raza) REFERENCES Razas(Id)
+);
+--Tablas para las citas y consultas
+CREATE TABLE EstadoCita (
+    Id INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    Estado VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE TipoConsulta (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+   Tipo_Consulta VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE Citas (
+    IdCita INT IDENTITY(1,1) PRIMARY KEY,
+    Id_Mascota INT NOT NULL,
+    Id_Veterinario INT NOT NULL,
+    IdTipoConsulta INT NOT NULL,
+    IdEstadoCita INT NOT NULL,
+    FechaHora DATETIME NOT NULL,
+    FOREIGN KEY (Id_Mascota) REFERENCES Mascotas(Id),
+    FOREIGN KEY (Id_Veterinario) REFERENCES Usuarios(Id),
+    FOREIGN KEY (IdTipoConsulta) REFERENCES TipoConsulta(Id),
+    FOREIGN KEY (IdEstadoCita) REFERENCES EstadoCita(Id)
+);
+
+--Tablas para historial clinico y medicmentos
+
+CREATE TABLE HistorialClinico (
+    Id INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    Id_Mascota INT NOT NULL,
+    Fecha_Consulta DATETIME NOT NULL,
+    Motivo_Consulta VARCHAR(250),
+    Diagnostico VARCHAR(500),
+    Peso_Actual DECIMAL(5,2),
+    Proxima_Cita DATE,
+   CONSTRAINT fk_HistorialClinico_Mascota
+   FOREIGN KEY (Id_Mascota) REFERENCES Mascotas(Id)
+);
+
+CREATE TABLE Medicamentos (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre_Medicamento VARCHAR(150) NOT NULL
+);
+
+CREATE TABLE Historial_Medicamentos (
+    Id_Historial INT NOT NULL,
+    Id_Medicamento INT NOT NULL,
+    Dosis VARCHAR(100),
+    PRIMARY KEY (Id_Historial, Id_Medicamento),
+    FOREIGN KEY (Id_Historial) REFERENCES HistorialClinico(Id),
+    FOREIGN KEY (Id_Medicamento) REFERENCES Medicamentos(Id)
+);
+
+--Tablas para productos y manejo de las ventas
+
+CREATE TABLE Categorias (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre_Categoria VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE Productos (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Id_Categoria INT NOT NULL,
+    Nombre_Producto VARCHAR(150) NOT NULL,
+    Precio DECIMAL(10,2) NOT NULL,
+    Stock INT NOT NULL DEFAULT 0,
+   CONSTRAINT fk_Productos_Categorias
+   FOREIGN KEY (Id_Categoria) REFERENCES Categorias(Id)
+);
+
+ --Tablas para manejo de ventas
+ CREATE TABLE Ventas (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Id_Propietario INT NOT NULL,
+    Fecha_Venta DATETIME NOT NULL DEFAULT GETDATE(),
+   CONSTRAINT fk_Ventas_Propietarios
+   FOREIGN KEY (Id_Propietario) REFERENCES Propietarios(Id)
+);
+
+CREATE TABLE DetalleVenta (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Id_Venta INT NOT NULL,
+    Id_Producto INT NOT NULL,
+    Cantidad INT NOT NULL,
+    Precio_Unitario DECIMAL(10,2) NOT NULL,
+    CONSTRAINT fk_DetalleVenta_Ventas 
+    FOREIGN KEY (Id_Venta) REFERENCES Ventas(Id),
+    CONSTRAINT fk_DetalleVenta_Productos
+    FOREIGN KEY (Id_Producto) REFERENCES Productos(Id)
+);
+
+-- Tablas para facturacion electronica
+
+CREATE TABLE ClientesFacturacion (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Id_Propietario INT NOT NULL,
+    NombreFiscal VARCHAR(150) NOT NULL,
+    NIT VARCHAR(30) NOT NULL UNIQUE ,
+    NRC VARCHAR(30)NOT NULL UNIQUE,
+    DUI VARCHAR(20)NOT NULL UNIQUE,
+    DireccionFiscal VARCHAR(250) NOT NULL,
+    Correo VARCHAR(150)NOT NULL UNIQUE,
+
+    CONSTRAINT FK_ClientesFacturacion_Propietarios
+    FOREIGN KEY (Id_Propietario)
+    REFERENCES Propietarios(Id)
+);
+
+CREATE TABLE TiposDocumento (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Tipo_Documento VARCHAR(50) NOT NULL UNIQUE
+);
+
+INSERT INTO TiposDocumento (Tipo_Documento)
+VALUES 
+('Factura'),
+('Crédito Fiscal'),
+('Nota de Crédito'),
+('Consumidor Final');
+
+CREATE TABLE EstadosFactura (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Estado VARCHAR(50) NOT NULL UNIQUE
+);
+
+INSERT INTO EstadosFactura (Estado)
+VALUES 
+('Pendiente'),
+('Enviada'),
+('Aceptada'),
+('Rechazada');
+
+CREATE TABLE FacturaElectronica (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Id_Venta INT NOT NULL,
+    Id_Cliente INT NOT NULL,
+    Id_TipoDocumento INT NOT NULL,
+    Id_EstadoFactura INT NOT NULL,
+
+    NumeroControl VARCHAR(50),
+    CodigoGeneracion VARCHAR(100),
+    SelloRecepcion VARCHAR(200),
+
+    FechaEmision DATETIME NOT NULL DEFAULT GETDATE(),
+
+    CONSTRAINT FK_FacturaElectronica_Venta
+    FOREIGN KEY (Id_Venta)
+    REFERENCES Ventas(Id),
+
+    CONSTRAINT FK_FacturaElectronica_Cliente
+    FOREIGN KEY (Id_Cliente)
+    REFERENCES ClientesFacturacion(Id),
+
+    CONSTRAINT FK_FacturaElectronica_TipoDocumento
+    FOREIGN KEY (Id_TipoDocumento)
+    REFERENCES TiposDocumento(Id),
+
+    CONSTRAINT FK_FacturaElectronica_Estado
+    FOREIGN KEY (Id_EstadoFactura)
+    REFERENCES EstadosFactura(Id)
+);
+
