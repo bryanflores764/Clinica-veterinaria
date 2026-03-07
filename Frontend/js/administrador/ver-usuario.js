@@ -2,19 +2,28 @@
 //  Archivo: js/administrador/ver-usuario.js
 // ============================================================
 
+//define la url de la API
 const API_URL = "http://localhost:3000";
 
-
-//Referencias principales
-
+//variables del DOM del html
 const tbody = document.getElementById("users-tbody");
 const emptyMsg = document.getElementById("empty-msg");
 const searchInput = document.getElementById("search");
 
+//almacena temporalmente los usuarios de la api
 let usuariosCache = [];
 
+//obtnener los web token y guardadrlo
+function getAuthHeaders(extra = {}) {
+  const token = localStorage.getItem("token");
 
-//Utilidades visuales
+  return {
+    ...extra,
+    Authorization: `Bearer ${token}`,
+  };
+}
+
+//validacion para evitar inyeccion de codigo
 function escapeHtml(text) {
   return String(text ?? "")
     .replaceAll("&", "&amp;")
@@ -24,6 +33,7 @@ function escapeHtml(text) {
     .replaceAll("'", "&#039;");
 }
 
+//funcion que muestra el estado del usuario
 function estadoBadge(activo) {
   const isActive = Number(activo) === 1;
   return isActive
@@ -31,9 +41,7 @@ function estadoBadge(activo) {
     : `<span class="badge badge-inactive">Inactivo</span>`;
 }
 
-
-//Render de tabla
-
+//funcion que renderiza la tabla de la bd
 function renderUsuarios(lista) {
   tbody.innerHTML = "";
 
@@ -83,9 +91,7 @@ function renderUsuarios(lista) {
     .join("");
 }
 
-
-//Filtro de búsqueda
-
+//filtro de busqueda
 function aplicarFiltro() {
   const q = searchInput.value.trim().toLowerCase();
 
@@ -105,12 +111,20 @@ function aplicarFiltro() {
   renderUsuarios(filtrados);
 }
 
-
-//Carga de usuarios
-
+//cargar los usuarios de la API
 async function cargarUsuarios() {
   try {
-    const res = await fetch(`${API_URL}/api/usuarios`);
+    const res = await fetch(`${API_URL}/api/usuarios`, {
+      headers: getAuthHeaders(),
+    });
+
+    if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.replace("../../index.html");
+      return;
+    }
+
     const json = await res.json();
 
     if (!res.ok || !json.success) {
@@ -130,18 +144,14 @@ async function cargarUsuarios() {
 
 searchInput.addEventListener("input", aplicarFiltro);
 
-
-//Roles fijos para select
-
+//catalogo de roles local
 const ROLES = [
   { id: 1, nombre: "Administrador" },
   { id: 2, nombre: "Veterinario" },
   { id: 3, nombre: "Recepcionista" },
 ];
 
-
-//Modal de edición
-
+//modificacion del dom para el modal
 const modalOverlay = document.createElement("div");
 modalOverlay.className = "modal-overlay";
 modalOverlay.innerHTML = `
@@ -153,7 +163,6 @@ modalOverlay.innerHTML = `
 
     <form id="editUserForm">
       <div class="modal-body">
-
         <input type="hidden" id="editId" />
 
         <div class="form-row">
@@ -178,7 +187,6 @@ modalOverlay.innerHTML = `
           <label for="editRol">Rol</label>
           <select id="editRol" required></select>
         </div>
-
       </div>
 
       <div class="modal-footer">
@@ -192,9 +200,7 @@ modalOverlay.innerHTML = `
 
 document.body.appendChild(modalOverlay);
 
-
-//Referencias del modal
-
+//variables del modal
 const editForm = document.getElementById("editUserForm");
 const btnCancelEdit = document.getElementById("btnCancelEdit");
 const btnClose = modalOverlay.querySelector(".modal-close");
@@ -206,9 +212,7 @@ const editCorreo = document.getElementById("editCorreo");
 const editContrasena = document.getElementById("editContrasena");
 const editRol = document.getElementById("editRol");
 
-
-//Funciones del modal
-
+//funcion qie controla el modal
 function openModal() {
   modalOverlay.classList.add("show");
   setTimeout(() => editNombre.focus(), 0);
@@ -223,6 +227,7 @@ function closeModal() {
   btnToggleUser.textContent = "Desactivar usuario";
 }
 
+//carga dinamica de los roles
 function fillRolesSelect(selectedRolNombre) {
   editRol.innerHTML = ROLES.map((r) => {
     const selected =
@@ -238,9 +243,7 @@ function fillRolesSelect(selectedRolNombre) {
   }
 }
 
-
-//Cierre del modal
-
+//evento que cierr el modal
 modalOverlay.addEventListener("click", (e) => {
   if (e.target === modalOverlay) closeModal();
 });
@@ -254,9 +257,7 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-
-//Eliminar usuario
-
+//eliminacion del usuario
 tbody.addEventListener("click", async (e) => {
   const btn = e.target.closest(".btn-delete-user");
   if (!btn) return;
@@ -270,7 +271,15 @@ tbody.addEventListener("click", async (e) => {
   try {
     const res = await fetch(`${API_URL}/api/usuarios/${id}`, {
       method: "DELETE",
+      headers: getAuthHeaders(),
     });
+
+    if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.replace("../../index.html");
+      return;
+    }
 
     const json = await res.json();
 
@@ -286,9 +295,7 @@ tbody.addEventListener("click", async (e) => {
   }
 });
 
-
-//Abrir modal de edición
-
+//apertura del modal para editar
 tbody.addEventListener("click", (e) => {
   const btn = e.target.closest(".btn-open-edit");
   if (!btn) return;
@@ -314,9 +321,7 @@ tbody.addEventListener("click", (e) => {
   openModal();
 });
 
-
-//   Editar usuario
-
+//envio del formulario para actualizar
 editForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -335,14 +340,22 @@ editForm.addEventListener("submit", async (e) => {
 
   const btnSave = document.getElementById("btnSaveEdit");
   btnSave.disabled = true;
-  btnSave.textContent = "Guardando...";
 
   try {
     const res = await fetch(`${API_URL}/api/usuarios/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders({
+        "Content-Type": "application/json",
+      }),
       body: JSON.stringify(payload),
     });
+
+    if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.replace("../../index.html");
+      return;
+    }
 
     const json = await res.json().catch(() => ({}));
 
@@ -362,9 +375,7 @@ editForm.addEventListener("submit", async (e) => {
   }
 });
 
-
-//Activar / desactivar desde modal
-
+//activar/desactivar usuario
 btnToggleUser.addEventListener("click", async () => {
   const id = btnToggleUser.dataset.id;
   const activoActual = Number(btnToggleUser.dataset.activo);
@@ -376,7 +387,15 @@ btnToggleUser.addEventListener("click", async () => {
   try {
     const res = await fetch(`${API_URL}/api/usuarios/${id}/toggle`, {
       method: "PATCH",
+      headers: getAuthHeaders(),
     });
+
+    if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.replace("../../index.html");
+      return;
+    }
 
     const json = await res.json();
 
@@ -393,8 +412,10 @@ btnToggleUser.addEventListener("click", async () => {
   }
 });
 
-
-//Inicialización
-
+//carga todo al abrir la pagina 
 cargarUsuarios();
-setInterval(cargarUsuarios, 5000);
+
+//recargar los usuarios de la bd
+setInterval(() => {
+  cargarUsuarios();
+}, 5000);

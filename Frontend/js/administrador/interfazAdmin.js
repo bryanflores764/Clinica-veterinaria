@@ -3,12 +3,12 @@
 // ============================================================
 
 //Saludo
+// Saludo
 const saludo = document.getElementById("saludo");
-const usuario = JSON.parse(localStorage.getItem("usuario"));
+const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
 
-if (usuario) {
+if (saludo && usuario && usuario.Nombre_Usuario) {
     saludo.textContent = `Bienvenido Administrador ${usuario.Nombre_Usuario}`;
-
 }
 
 //Proteccion de ruta 
