@@ -1,3 +1,7 @@
+// ============================================================
+//  Archivo: js/administrador/crear-usuario.js
+// ============================================================
+
 // URL base de tu API
 const API_URL = "http://localhost:3000";
 
