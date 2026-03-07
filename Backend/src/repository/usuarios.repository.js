@@ -41,12 +41,20 @@ const deleteUsuario = async (id) => {
   return result.affectedRows;
 };
 
+const findUsuarioByNombre = async (nombre) => {
+  const [rows] = await connection.execute(UsuariosQueries.FIND_BY_NOMBRE, [nombre]);
+  return rows[0] || null;
+};
+
+// Y agrégalo al module.exports
 module.exports = {
   createUsuario,
   findAllUsuarios,
   findUsuarioById,
   findUsuarioByCorreo,
+  findUsuarioByNombre, // ← nueva
   updateUsuario,
   toggleActivo,
   deleteUsuario,
 };
+

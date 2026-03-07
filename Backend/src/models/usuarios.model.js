@@ -49,6 +49,14 @@ const UsuariosQueries = {
     WHERE id = ?
   `,
 
+
+  FIND_BY_NOMBRE: `
+  SELECT id, Nombre_Usuario, Correo, Contrasena, RolId, activo
+  FROM usuarios
+  WHERE Nombre_Usuario = ?
+  LIMIT 1
+`,
+
 };
 
 module.exports = UsuariosQueries;
