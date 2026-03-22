@@ -17,6 +17,8 @@ La API está desarrollada utilizando **Node.js y Express**, y permite gestionar 
 
 ---
 
+# 📂 Estructura del proyecto
+
 ```
 backend
 │
@@ -37,9 +39,6 @@ backend
 ```
 
 ---
-
-
-📂 Estructura del proyecto
 
 ```
 frontend
