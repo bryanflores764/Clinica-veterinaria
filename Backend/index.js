@@ -37,3 +37,6 @@ app.use('/api/usuarios', usuariosRoutes);
 // ── HU-04: Módulo Auth ────────────────────────────────────────
 const authRoutes = require('./src/routes/auth.routes');
 app.use('/api/auth', authRoutes);
+
+const propetarioRoutes = require('./src/routes/propetario.routes');
+app.use('/api/propetarios', propetarioRoutes);
