@@ -22,6 +22,10 @@ app.use('/api/roles', rolesRoutes);
 const permisosRoutes = require('./src/routes/permisos.routes');
 app.use('/api/permisos', permisosRoutes);
 
+// ── HU-05: Módulo Propietarios ────────────────────────────────
+const propietariosRoutes = require('./src/routes/propietarios.routes');
+app.use('/api/propietarios', propietariosRoutes);
+
 // ── Health check ──────────────────────────────────────────────
 app.get('/', (req, res) => {
     res.json({ mensaje: "API Veterinaria funcionando 🐾" });
