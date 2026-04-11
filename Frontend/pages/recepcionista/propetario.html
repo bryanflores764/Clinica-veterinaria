@@ -116,51 +116,7 @@
 
         </div>
     </div>
-
-    <script>
-const btnNuevo = document.getElementById("nuevo-propietario");
-const modal = document.getElementById("modalOverlay");
-const cerrarModal = document.getElementById("cerrarModal");
-const cancelar = document.getElementById("cancelar");
-const form = document.getElementById("formNuevoPropietario");
-
-// Abrir modal
-btnNuevo.addEventListener("click", (e) => {
-    e.preventDefault();
-    modal.classList.remove("hidden");
-});
-
-// Cerrar modal
-function cerrar() {
-    modal.classList.add("hidden");
-}
-
-cerrarModal.addEventListener("click", cerrar);
-cancelar.addEventListener("click", cerrar);
-
-// Cerrar al dar click fuera
-modal.addEventListener("click", (e) => {
-    if (e.target === modal) cerrar();
-});
-
-// Capturar datos
-form.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const propietario = {
-        nombre: document.getElementById("nombre").value.trim(),
-        telefono: document.getElementById("telefono").value.trim(),
-        correo: document.getElementById("correo").value.trim(),
-        direccion: document.getElementById("direccion").value.trim()
-    };
-
-    console.log("Nuevo propietario:", propietario);
-
-    cerrar();
-    form.reset();
-});
-</script>
-    <script src="../../js/recepcionista/modal.js"></script>
+    <script src="../../js/recepcionista/validacion.js"></script>
     <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
     <script src="../../js/recepcionista/logout.js"></script>
 </body>
