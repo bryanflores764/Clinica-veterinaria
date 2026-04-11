@@ -3,10 +3,11 @@
 // ============================================================
 
 // ===== Protección de ruta =====
+/*
 const token = localStorage.getItem("token");
 if (!token) {
     window.location.href = "../../index.html";
-}
+} */
 
 // ===== Cerrar sesión =====
 const cerrarSesion = document.querySelector('a[href="../../index.html"]');
