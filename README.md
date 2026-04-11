@@ -40,6 +40,39 @@ backend
 
 ---
 
+```
+frontend
+│
+├── assets
+│   ├── icons
+│   └── img
+│
+├── css
+│   ├── administrador
+│   ├── recepcionista
+│   ├── veterinario
+│   └── index.css
+│
+├── js
+│   ├── administrador
+│   ├── recepcionista
+│   ├── veterinario
+│   └── index.js
+│
+├── pages
+│   ├── administrador
+│   ├── recepcionista
+│   ├── veterinario
+│
+├── index.html
+│
+├── .gitignore
+├── package.json
+├── package-lock.json
+│
+├── README.md
+└── VetCare.sql
+```
 # 📋 Requisitos
 
 Antes de ejecutar el proyecto debes tener instalado:
