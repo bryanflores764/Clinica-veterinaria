@@ -1,0 +1,67 @@
+/*PRUEBAS CHATGPT*/
+.owners-container {
+  padding: 25px 30px;
+}
+
+.owners-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.owners-toolbar input,
+.owners-toolbar select {
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.owners-toolbar input {
+  flex: 1;
+  min-width: 250px;
+}
+
+.owners-table-wrapper {
+  background: white;
+  border-radius: 12px;
+  overflow-x: auto;
+  padding: 10px;
+}
+
+.owners-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.owners-table th,
+.owners-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.owners-table th {
+  background: #f0f3f5;
+  font-size: 18px;
+}
+
+.owners-table td {
+  font-size: 16px;
+}
+
+.owners-table button {
+    background-color: #28a745;
+    padding: 6px 10px;
+    margin-right: 6px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.owners-table button:hover {
+    background-color: #b1b1b1;
+    transition: 0.5s;
+}
