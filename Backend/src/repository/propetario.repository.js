@@ -1,6 +1,6 @@
 // ============================================================
 //  CAPA: Repository
-//  Archivo: propietario.repository.js
+//  Archivo: propietarios.repository.js
 // ============================================================
 
 const connection = require('../database/connection');
@@ -19,7 +19,8 @@ const createPropietario = async (nombre, telefono, correo, direccion) => {
     Nombre: nombre,
     Telefono: telefono,
     Correo: correo,
-    Direccion: direccion
+    Direccion: direccion,
+    Estado: 'activo'
   };
 };
 
@@ -57,6 +58,20 @@ const deletePropietario = async (id) => {
   return result.affectedRows;
 };
 
+// 🔥 Toggle Estado
+const toggleEstado = async (id) => {
+  const [result] = await connection.execute(`
+    UPDATE propietarios
+    SET Estado = CASE 
+      WHEN Estado = 'activo' THEN 'inactivo'
+      ELSE 'activo'
+    END
+    WHERE id = ?
+  `, [id]);
+
+  return result.affectedRows;
+};
+
 module.exports = {
   createPropietario,
   findAllPropietarios,
@@ -64,4 +79,5 @@ module.exports = {
   findPropietarioByCorreo,
   updatePropietario,
   deletePropietario,
+  toggleEstado
 };
