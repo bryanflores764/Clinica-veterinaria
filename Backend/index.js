@@ -31,6 +31,15 @@ app.use('/api/auth', authRoutes);
 // ── HU-05: Módulo Propietarios ───────────────────────────────
 const propietariosRoutes = require('./src/routes/propietario.routes');
 app.use('/api/propietarios', propietariosRoutes);
+// ── HU-06: Módulo Mascotas────
+const especiesRoutes = require('./src/routes/especies.routes');
+app.use('/api/especies', especiesRoutes);
+
+const razasRoutes = require('./src/routes/razas.routes');
+app.use('/api/razas', razasRoutes);
+
+const mascotasRoutes = require('./src/routes/mascota.routes');
+app.use('/api/mascotas', mascotasRoutes);
 
 
 // ── Health check ──────────────────────────────────────────────
