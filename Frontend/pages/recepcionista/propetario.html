@@ -72,46 +72,44 @@
                 </a>
             </div>
         </header>
-
         <main class="main">
+            <!-------------------------------TABLA DE PROPIETARIOS-------------------------------------------------------------------------->
             <section class="owners-container">
-        <div class="owners-toolbar">
-            <input type="text" id="buscarPropietario" placeholder="Buscar por nombre o correo">
-            
-            <select id="filtroEstado">
-                <option value="activos">Activos</option>
-                <option value="todos">Todos</option>
-                <option value="inactivos">Inactivos</option>
-            </select>
-        </div>
+    <div class="owners-toolbar">
+        <input type="text" id="buscarPropietario" placeholder="Buscar por nombre o correo">
 
-        <div class="owners-table-wrapper">
-            <table class="owners-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Teléfono</th>
-                        <th>Correo</th>
-                        <th>Dirección</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="ownersTableBody">
-                    <!-- Aquí se insertan los propietarios con JS -->
-                </tbody>
-            </table>
-        </div>
-    </section>
-        </main>
+        <select id="filtroEstado">
+            <option value="activos">Activos</option>
+            <option value="todos">Todos</option>
+            <option value="inactivos">Inactivos</option>
+        </select>
     </div>
 
+    <div class="owners-table-wrapper">
+        <table class="owners-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Dirección</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="ownersTableBody"></tbody>
+        </table>
+    </div>
+</section>
+        </main>
+    </div>
+<!-----------------MODAL PARA REGISTRAR Y EDITAR PROPIETARIO------------------------------------------------->
     <div id="modalOverlay" class="modal-overlay hidden">
         <div class="modal">
 
             <div class="modal-header">
-                <h2>Nuevo Propietario</h2>
+                <h2 id="modalTitle">Nuevo Propietario</h2>
                 <span class="close-btn" id="cerrarModal">&times;</span>
             </div>
 
@@ -146,9 +144,8 @@
 
         </div>
     </div>
-    <script src="../../js/recepcionista/validacion.js"></script>
     <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
-    <script src="../../js/recepcionista/logout.js"></script>
     <script src="../../js/recepcionista/propietario.js"></script>
+    <script src="../../js/recepcionista/logout.js"></script>
 </body>
 </html>

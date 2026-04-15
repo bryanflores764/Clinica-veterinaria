@@ -1,117 +1,266 @@
-let propietarios = [
-    {
-        id: 1,
-        nombre: "Juan Pérez",
-        telefono: "7777-7777",
-        correo: "juan@gmail.com",
-        direccion: "San Miguel",
-        activo: true
-    },
-    {
-        id: 2,
-        nombre: "María López",
-        telefono: "7888-9999",
-        correo: "maria@gmail.com",
-        direccion: "Usulután",
-        activo: false
-    },
-    {
-        id: 3,
-        nombre: "Carlos Ramírez",
-        telefono: "7555-1234",
-        correo: "carlos@gmail.com",
-        direccion: "La Unión",
-        activo: true
+(() => {
+    const API_URL = "http://localhost:3000/api/propietarios";
+    const token = localStorage.getItem("token");
+
+    let propietarios = [];
+
+    /*Constantes para el modal dinamico */
+    let modoModal = "crear";
+    let propietariosEditandoId = null;
+    const modalTitle = document.getElementById("modalTitle");
+
+    const tableBody = document.getElementById("ownersTableBody");
+    const buscarInput = document.getElementById("buscarPropietario");
+    const filtroEstado = document.getElementById("filtroEstado");
+
+    const modalOverlay = document.getElementById("modalOverlay");
+    const btnNuevoPropietario = document.getElementById("nuevo-propietario");
+    const btnCerrarModal = document.getElementById("cerrarModal");
+    const btnCancelar = document.getElementById("cancelar");
+    const formNuevoPropietario = document.getElementById("formNuevoPropietario");
+
+    async function obtenerPropietarios() {
+        try {
+            const response = await fetch(API_URL, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            const result = await response.json();
+            console.log("GET propietarios:", result);
+
+            if (!response.ok) {
+                throw new Error(result.message || "Error al obtener propietarios");
+            }
+
+            propietarios = result.data || [];
+            aplicarFiltros();
+
+        } catch (error) {
+            console.error("Error al cargar propietarios:", error.message);
+            alert("No se pudieron cargar los propietarios");
+        }
     }
-];
 
-const tableBody = document.getElementById("ownersTableBody");
-const buscarInput = document.getElementById("buscarPropietario");
-const filtroEstado = document.getElementById("filtroEstado");
+    function renderizarPropietarios(lista) {
+        tableBody.innerHTML = "";
 
-function renderizarPropietarios(lista) {
-    tableBody.innerHTML = "";
+        if (!lista.length) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7">No se encontraron propietarios.</td>
+                </tr>
+            `;
+            return;
+        }
 
-    if (lista.length === 0) {
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="7">No se encontraron propietarios.</td>
-            </tr>
-        `;
-        return;
+        lista.forEach(prop => {
+            tableBody.innerHTML += `
+                <tr>
+                    <td>${prop.id}</td>
+                    <td>${prop.Nombre}</td>
+                    <td>${prop.Telefono ?? ""}</td>
+                    <td>${prop.Correo ?? ""}</td>
+                    <td>${prop.Direccion ?? ""}</td>
+                    <td>${prop.Estado}</td>
+                    <td>
+                        <button type="button" class="btn-editar" data-id="${prop.id}">Editar</button>
+                        <button type="button" class="btn-toggle" data-id="${prop.id}">
+                            ${prop.Estado.toLowerCase() === "activo" ? "Desactivar" : "Activar"}
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        document.querySelectorAll(".btn-editar").forEach(btn => {
+            btn.addEventListener("click", () => editarPropietario(btn.dataset.id));
+        });
+
+        document.querySelectorAll(".btn-toggle").forEach(btn => {
+            btn.addEventListener("click", () => toggleEstadoPropietario(btn.dataset.id));
+        });
     }
 
-    lista.forEach(propietario => {
-        tableBody.innerHTML += `
-            <tr>
-                <td>${propietario.id}</td>
-                <td>${propietario.nombre}</td>
-                <td>${propietario.telefono}</td>
-                <td>${propietario.correo}</td>
-                <td>${propietario.direccion}</td>
-                <td>${propietario.activo ? "Activo" : "Inactivo"}</td>
-                <td>
-                    <button onclick="verPropietario(${propietario.id})">Ver</button>
-                    <button onclick="editarPropietario(${propietario.id})">Editar</button>
-                    <button onclick="toggleEstado(${propietario.id})">
-                        ${propietario.activo ? "Desactivar" : "Activar"}
-                    </button>
-                </td>
-            </tr>
-        `;
+    function aplicarFiltros() {
+        const texto = buscarInput?.value.toLowerCase().trim() || "";
+        const estadoFiltro = filtroEstado?.value || "activos";
+
+        const filtrados = propietarios.filter(prop => {
+            const nombre = (prop.Nombre || "").toLowerCase();
+            const correo = (prop.Correo || "").toLowerCase();
+            const estado = (prop.Estado || "").toLowerCase();
+
+            const coincideTexto =
+                nombre.includes(texto) ||
+                correo.includes(texto);
+
+            let coincideEstado = true;
+
+            if (estadoFiltro === "activos") {
+                coincideEstado = estado === "activo";
+            } else if (estadoFiltro === "inactivos") {
+                coincideEstado = estado === "inactivo";
+            }
+
+            return coincideTexto && coincideEstado;
+        });
+
+        renderizarPropietarios(filtrados);
+    }
+
+    function abrirModalPropietario() {
+        modalOverlay?.classList.remove("hidden");
+    }
+
+    function cerrarModalPropietario() {
+        modalOverlay?.classList.add("hidden");
+        formNuevoPropietario?.reset();
+    }
+
+    btnNuevoPropietario?.addEventListener("click", function (e) {
+        e.preventDefault();
+        abrirModalPropietario();
     });
-}
 
-function aplicarFiltros() {
-    const texto = buscarInput.value.toLowerCase().trim();
-    const estado = filtroEstado.value;
+    btnCerrarModal?.addEventListener("click", cerrarModalPropietario);
+    btnCancelar?.addEventListener("click", cerrarModalPropietario);
 
-    let filtrados = propietarios.filter(prop => {
-        const coincideTexto =
-            prop.nombre.toLowerCase().includes(texto) ||
-            prop.correo.toLowerCase().includes(texto);
-
-        let coincideEstado = true;
-
-        if (estado === "activos") coincideEstado = prop.activo === true;
-        if (estado === "inactivos") coincideEstado = prop.activo === false;
-
-        return coincideTexto && coincideEstado;
+    modalOverlay?.addEventListener("click", function (e) {
+        if (e.target === modalOverlay) {
+            cerrarModalPropietario();
+        }
     });
 
-    renderizarPropietarios(filtrados);
-}
+    formNuevoPropietario?.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-buscarInput.addEventListener("input", aplicarFiltros);
-filtroEstado.addEventListener("change", aplicarFiltros);
+        const nuevoPropietario = {
+            nombre: document.getElementById("nombre").value.trim(),
+            telefono: document.getElementById("telefono").value.trim(),
+            correo: document.getElementById("correo").value.trim(),
+            direccion: document.getElementById("direccion").value.trim()
+        };
 
-renderizarPropietarios(propietarios);
+        console.log("Enviando propietario:", nuevoPropietario);
 
-function verPropietario(id) {
-    const propietario = propietarios.find(p => p.id === id);
-    alert(`
-Nombre: ${propietario.nombre}
-Teléfono: ${propietario.telefono}
-Correo: ${propietario.correo}
-Dirección: ${propietario.direccion}
-Estado: ${propietario.activo ? "Activo" : "Inactivo"}
-    `);
-}
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(nuevoPropietario)
+            });
 
-function editarPropietario(id) {
-    const propietario = propietarios.find(p => p.id === id);
-    alert("Aquí luego abrirás el modal de editar de: " + propietario.nombre);
-}
+            const result = await response.json();
+            console.log("POST propietario:", result);
 
-function toggleEstado(id) {
-    const propietario = propietarios.find(p => p.id === id);
+            if (!response.ok) {
+                throw new Error(result.message || "Error al crear propietario");
+            }
 
-    const confirmacion = confirm(
-        `¿Seguro que deseas ${propietario.activo ? "desactivar" : "activar"} a ${propietario.nombre}?`
-    );
+            alert(result.message || "Propietario creado exitosamente");
+            cerrarModalPropietario();
+            await obtenerPropietarios();
 
-    if (!confirmacion) return;
+        } catch (error) {
+            console.error("Error al crear propietario:", error.message);
+            alert(error.message);
+        }
+    });
 
-    propietario.activo = !propietario.activo;
-    aplicarFiltros();
-}
+    async function editarPropietario(id) {
+        const propietario = propietarios.find(p => p.id == id);
+        if (!propietario) return;
+
+        const nombre = prompt("Nuevo nombre:", propietario.Nombre || "");
+        if (nombre === null) return;
+
+        const telefono = prompt("Nuevo teléfono:", propietario.Telefono || "");
+        if (telefono === null) return;
+
+        const correo = prompt("Nuevo correo:", propietario.Correo || "");
+        if (correo === null) return;
+
+        const direccion = prompt("Nueva dirección:", propietario.Direccion || "");
+        if (direccion === null) return;
+
+        const datosActualizados = {
+            nombre: nombre.trim(),
+            telefono: telefono.trim(),
+            correo: correo.trim(),
+            direccion: direccion.trim()
+        };
+
+        try {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(datosActualizados)
+            });
+
+            const result = await response.json();
+            console.log("PUT propietario:", result);
+
+            if (!response.ok) {
+                throw new Error(result.message || "Error al actualizar propietario");
+            }
+
+            alert(result.message || "Propietario actualizado");
+            await obtenerPropietarios();
+
+        } catch (error) {
+            console.error("Error al editar propietario:", error.message);
+            alert(error.message);
+        }
+    }
+
+    async function toggleEstadoPropietario(id) {
+        const propietario = propietarios.find(p => p.id == id);
+        if (!propietario) return;
+
+        const accion = propietario.Estado.toLowerCase() === "activo" ? "desactivar" : "activar";
+        const confirmar = confirm(`¿Seguro que deseas ${accion} a ${propietario.Nombre}?`);
+
+        if (!confirmar) return;
+
+        try {
+            const response = await fetch(`${API_URL}/${id}/toggle`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            const result = await response.json();
+            console.log("PATCH propietario:", result);
+
+            if (!response.ok) {
+                throw new Error(result.message || "Error al cambiar estado");
+            }
+
+            alert(result.message || "Estado actualizado");
+            await obtenerPropietarios();
+
+        } catch (error) {
+            console.error("Error al cambiar estado:", error.message);
+            alert(error.message);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        obtenerPropietarios();
+    });
+
+    buscarInput?.addEventListener("input", aplicarFiltros);
+    filtroEstado?.addEventListener("change", aplicarFiltros);
+})();
