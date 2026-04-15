@@ -15,12 +15,13 @@
 
 <body>
     <div class="sidebar-backdrop"></div>
-    <div class="layout">
 
+    <div class="layout">
         <aside class="sidebar">
             <div class="logo">
                 <img id="logo" src="../../assets/img/Logo de clínica Veterinaria azul.png" alt="logo">
             </div>
+
             <ul>
                 <li>
                     <a href="interfazRecepcionista.html">
@@ -54,67 +55,68 @@
                 </li>
             </ul>
         </aside>
-        
+
         <header class="header">
             <h1>PROPIETARIOS</h1>
 
             <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">
                 ☰
             </button>
+
             <div class="header-actions">
                 <a class="btn-new" href="#" id="nuevo-propietario">
                     <img src="../../assets/icons/icon-newcita.png" alt="">
                     Nuevo Propietario
                 </a>
+
                 <a class="btn-logout" id="cerrar-sesion" href="#">
                     <img src="../../assets/icons/icon-sesion.png" alt="cerrar-sesion">
                     Cerrar Sesion
                 </a>
             </div>
         </header>
+
         <main class="main">
-            <!-------------------------------TABLA DE PROPIETARIOS-------------------------------------------------------------------------->
             <section class="owners-container">
-    <div class="owners-toolbar">
-        <input type="text" id="buscarPropietario" placeholder="Buscar por nombre o correo">
+                <div class="owners-toolbar">
+                    <input type="text" id="buscarPropietario" placeholder="Buscar por nombre o correo">
 
-        <select id="filtroEstado">
-            <option value="activos">Activos</option>
-            <option value="todos">Todos</option>
-            <option value="inactivos">Inactivos</option>
-        </select>
-    </div>
+                    <select id="filtroEstado">
+                        <option value="activos">Activos</option>
+                        <option value="todos">Todos</option>
+                        <option value="inactivos">Inactivos</option>
+                    </select>
+                </div>
 
-    <div class="owners-table-wrapper">
-        <table class="owners-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Teléfono</th>
-                    <th>Correo</th>
-                    <th>Dirección</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="ownersTableBody"></tbody>
-        </table>
-    </div>
-</section>
+                <div class="owners-table-wrapper">
+                    <table class="owners-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Teléfono</th>
+                                <th>Correo</th>
+                                <th>Dirección</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ownersTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
         </main>
     </div>
-<!-----------------MODAL PARA REGISTRAR Y EDITAR PROPIETARIO------------------------------------------------->
+
+    <!----------------- MODAL PARA REGISTRAR / EDITAR / VER ----------------->
     <div id="modalOverlay" class="modal-overlay hidden">
         <div class="modal">
-
             <div class="modal-header">
                 <h2 id="modalTitle">Nuevo Propietario</h2>
                 <span class="close-btn" id="cerrarModal">&times;</span>
             </div>
 
             <form id="formNuevoPropietario" class="modal-body">
-
                 <div class="form-group">
                     <label>Nombre</label>
                     <input type="text" id="nombre" required>
@@ -139,11 +141,26 @@
                     <button type="button" id="cancelar">Cancelar</button>
                     <button type="submit" class="btn-guardar">Guardar</button>
                 </div>
-
             </form>
-
         </div>
     </div>
+
+    <!---------------------------- MODAL DE CONFIRMACIÓN ---------------------------->
+    <div id="modalConfirmacion" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="mensajeConfirmacion">¿Estás seguro?</h3>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btnCancelarConfirm">Cancelar</button>
+                <button type="button" id="btnAceptarConfirm" class="btn-guardar">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="contenedorNotificaciones" class="contenedor-notificaciones"></div>
+
     <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
     <script src="../../js/recepcionista/propietario.js"></script>
     <script src="../../js/recepcionista/logout.js"></script>

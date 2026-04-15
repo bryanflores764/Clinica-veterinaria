@@ -3,100 +3,270 @@
     const token = localStorage.getItem("token");
 
     let propietarios = [];
-
-    /*Constantes para el modal dinamico */
     let modoModal = "crear";
     let propietarioEditandoId = null;
-    const modalTitle = document.getElementById("modalTitle");
-    /*Constantes para el modal dinamico */
 
+    // Elementos del DOM
     const tableBody = document.getElementById("ownersTableBody");
     const buscarInput = document.getElementById("buscarPropietario");
     const filtroEstado = document.getElementById("filtroEstado");
 
     const modalOverlay = document.getElementById("modalOverlay");
+    const modalTitle = document.getElementById("modalTitle");
     const btnNuevoPropietario = document.getElementById("nuevo-propietario");
     const btnCerrarModal = document.getElementById("cerrarModal");
     const btnCancelar = document.getElementById("cancelar");
     const formNuevoPropietario = document.getElementById("formNuevoPropietario");
+    const btnGuardar = document.querySelector(".btn-guardar");
 
-    /*MODAL DINAMICO*/
-    function abrirModalCrear(){
+    const inputNombre = document.getElementById("nombre");
+    const inputTelefono = document.getElementById("telefono");
+    const inputCorreo = document.getElementById("correo");
+    const inputDireccion = document.getElementById("direccion");
+
+    const contenedorNotificaciones = document.getElementById("contenedorNotificaciones");
+
+    // =========================
+    // Helpers UI
+    // =========================
+    function mostrarNotificacion(mensaje, tipo = "info") {
+        if (!contenedorNotificaciones) return;
+
+        const notificacion = document.createElement("div");
+        notificacion.className = `notificacion ${tipo}`;
+        notificacion.textContent = mensaje;
+
+        contenedorNotificaciones.appendChild(notificacion);
+
+        setTimeout(() => {
+            notificacion.remove();
+        }, 3000);
+    }
+
+    function setInputsDisabled(disabled) {
+        [inputNombre, inputTelefono, inputCorreo, inputDireccion].forEach(input => {
+            if (input) input.disabled = disabled;
+        });
+    }
+
+    function limpiarFormulario() {
+        formNuevoPropietario?.reset();
+        setInputsDisabled(false);
+
+        if (btnGuardar) {
+            btnGuardar.disabled = false;
+            btnGuardar.style.display = "inline-block";
+        }
+    }
+
+    function llenarFormulario(propietario) {
+        inputNombre.value = propietario?.Nombre || "";
+        inputTelefono.value = propietario?.Telefono || "";
+        inputCorreo.value = propietario?.Correo || "";
+        inputDireccion.value = propietario?.Direccion || "";
+    }
+
+    function abrirModalCrear() {
         modoModal = "crear";
         propietarioEditandoId = null;
+        modalTitle.textContent = "Nuevo Propietario";
 
-        modalTitle.textContent = "Nuevo Propietario"
-        formNuevoPropietario.reset();
-
+        limpiarFormulario();
         modalOverlay?.classList.remove("hidden");
     }
 
     function abrirModalEditar(propietario) {
         modoModal = "editar";
         propietarioEditandoId = propietario.id;
-
         modalTitle.textContent = "Editar Propietario";
 
-        document.getElementById("nombre").value = propietario.Nombre || "";
-        document.getElementById("telefono").value = propietario.Telefono || "";
-        document.getElementById("correo").value = propietario.Correo || "";
-        document.getElementById("direccion").value = propietario.Direccion || "";
+        limpiarFormulario();
+        llenarFormulario(propietario);
+        modalOverlay?.classList.remove("hidden");
+    }
+
+    function abrirModalVer(propietario) {
+        modoModal = "ver";
+        propietarioEditandoId = propietario.id;
+        modalTitle.textContent = "Detalle del Propietario";
+
+        limpiarFormulario();
+        llenarFormulario(propietario);
+        setInputsDisabled(true);
+
+        // En modo ver, ocultamos guardar para evitar envíos accidentales
+        if (btnGuardar) {
+            btnGuardar.style.display = "none";
+        }
 
         modalOverlay?.classList.remove("hidden");
     }
-    /*------------------------------------------------- */
 
+    function cerrarModalPropietario() {
+        modalOverlay?.classList.add("hidden");
 
-    /**VER DATOS DEL PROPIETARIO  */
-    
-    function verPropietario(id) {
-    const propietario = propietarios.find(p => p.id == id);
-    if (!propietario) return;
+        modoModal = "crear";
+        propietarioEditandoId = null;
+        modalTitle.textContent = "Nuevo Propietario";
 
-    modoModal = "ver";
+        limpiarFormulario();
+    }
 
-    modalTitle.textContent = "Detalle del Propietario";
+    function obtenerDatosFormulario() {
+        return {
+            nombre: inputNombre.value.trim(),
+            telefono: inputTelefono.value.trim(),
+            correo: inputCorreo.value.trim(),
+            direccion: inputDireccion.value.trim()
+        };
+    }
 
-    document.getElementById("nombre").value = propietario.Nombre || "";
-    document.getElementById("telefono").value = propietario.Telefono || "";
-    document.getElementById("correo").value = propietario.Correo || "";
-    document.getElementById("direccion").value = propietario.Direccion || "";
+    // =========================
+    // Confirmación
+    // =========================
+    function mostrarConfirmacion(mensaje) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById("modalConfirmacion");
+            const texto = document.getElementById("mensajeConfirmacion");
+            const btnAceptar = document.getElementById("btnAceptarConfirm");
+            const btnCancelarConfirm = document.getElementById("btnCancelarConfirm");
 
-    // Desactivar inputs
-    document.querySelectorAll("#formNuevoPropietario input").forEach(input => {
-        input.disabled = true;
-    });
-
-    modalOverlay.classList.remove("hidden");
-}
-/**---------------------------------------------------------------------------------------------------------- */
-    async function obtenerPropietarios() {
-        try {
-            const response = await fetch(API_URL, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            const result = await response.json();
-            console.log("GET propietarios:", result);
-
-            if (!response.ok) {
-                throw new Error(result.message || "Error al obtener propietarios");
+            if (!modal || !texto || !btnAceptar || !btnCancelarConfirm) {
+                resolve(false);
+                return;
             }
 
+            texto.textContent = mensaje;
+            modal.classList.remove("hidden");
+
+            btnAceptar.onclick = null;
+            btnCancelarConfirm.onclick = null;
+
+            btnAceptar.onclick = () => {
+                modal.classList.add("hidden");
+                resolve(true);
+            };
+
+            btnCancelarConfirm.onclick = () => {
+                modal.classList.add("hidden");
+                resolve(false);
+            };
+        });
+    }
+
+    // =========================
+    // API
+    // =========================
+    async function request(url, options = {}) {
+        const response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            ...options
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Ocurrió un error en la solicitud");
+        }
+
+        return result;
+    }
+
+    async function obtenerPropietarios() {
+        try {
+            const result = await request(API_URL, { method: "GET" });
             propietarios = result.data || [];
             aplicarFiltros();
-
         } catch (error) {
             console.error("Error al cargar propietarios:", error.message);
-            alert("No se pudieron cargar los propietarios");
+            mostrarNotificacion("No se pudieron cargar los propietarios", "error");
         }
     }
 
+    async function guardarPropietario(datosPropietario) {
+        const esEdicion = modoModal === "editar";
+        const url = esEdicion ? `${API_URL}/${propietarioEditandoId}` : API_URL;
+        const method = esEdicion ? "PUT" : "POST";
+
+        const result = await request(url, {
+            method,
+            body: JSON.stringify(datosPropietario)
+        });
+
+        mostrarNotificacion(
+            result.message ||
+                (esEdicion
+                    ? "Propietario actualizado exitosamente"
+                    : "Propietario creado exitosamente"),
+            "exito"
+        );
+
+        cerrarModalPropietario();
+        await obtenerPropietarios();
+    }
+
+    async function toggleEstadoPropietario(id) {
+        const propietario = propietarios.find(p => String(p.id) === String(id));
+        if (!propietario) return;
+
+        const accion = propietario.Estado?.toLowerCase() === "activo" ? "desactivar" : "activar";
+        const confirmado = await mostrarConfirmacion(
+            `¿Seguro que deseas ${accion} a ${propietario.Nombre}?`
+        );
+
+        if (!confirmado) return;
+
+        try {
+            const result = await request(`${API_URL}/${id}/toggle`, {
+                method: "PATCH"
+            });
+
+            mostrarNotificacion(result.message || "Estado actualizado", "exito");
+            await obtenerPropietarios();
+        } catch (error) {
+            console.error("Error al cambiar estado:", error.message);
+            mostrarNotificacion(error.message || "Error inesperado", "error");
+        }
+    }
+
+    // =========================
+    // Render
+    // =========================
+    function crearFilaPropietario(prop) {
+        const tr = document.createElement("tr");
+
+        const estadoClase = (prop.Estado || "").toLowerCase();
+        const textoBotonToggle = estadoClase === "activo" ? "Desactivar" : "Activar";
+
+        tr.innerHTML = `
+            <td>${prop.id}</td>
+            <td>${prop.Nombre || ""}</td>
+            <td>${prop.Telefono || ""}</td>
+            <td>${prop.Correo || ""}</td>
+            <td>${prop.Direccion || ""}</td>
+            <td>
+                <span class="badge ${estadoClase}">
+                    ${prop.Estado || ""}
+                </span>
+            </td>
+            <td>
+                <button type="button" class="btn-ver" data-id="${prop.id}">Ver</button>
+                <button type="button" class="btn-editar" data-id="${prop.id}">Editar</button>
+                <button type="button" class="btn-toggle" data-id="${prop.id}">
+                    ${textoBotonToggle}
+                </button>
+            </td>
+        `;
+
+        return tr;
+    }
+
     function renderizarPropietarios(lista) {
+        if (!tableBody) return;
+
         tableBody.innerHTML = "";
 
         if (!lista.length) {
@@ -108,40 +278,13 @@
             return;
         }
 
+        const fragment = document.createDocumentFragment();
+
         lista.forEach(prop => {
-            tableBody.innerHTML += `
-                <tr>
-                    <td>${prop.id}</td>
-                    <td>${prop.Nombre}</td>
-                    <td>${prop.Telefono ?? ""}</td>
-                    <td>${prop.Correo ?? ""}</td>
-                    <td>${prop.Direccion ?? ""}</td>
-                    <td>
-                        <span class="badge ${prop.Estado.toLowerCase()}">
-                            ${prop.Estado}
-                        </span>
-                    <td>
-                        <button class="btn-ver" data-id="${prop.id}">Ver</button>
-                        <button type="button" class="btn-editar" data-id="${prop.id}">Editar</button>
-                        <button type="button" class="btn-toggle" data-id="${prop.id}">
-                            ${prop.Estado.toLowerCase() === "activo" ? "Desactivar" : "Activar"}
-                        </button>
-                    </td>
-                </tr>
-            `;
+            fragment.appendChild(crearFilaPropietario(prop));
         });
 
-        document.querySelectorAll(".btn-editar").forEach(btn => {
-            btn.addEventListener("click", () => editarPropietario(btn.dataset.id));
-        });
-
-        document.querySelectorAll(".btn-toggle").forEach(btn => {
-            btn.addEventListener("click", () => toggleEstadoPropietario(btn.dataset.id));
-        });
-
-        document.querySelectorAll(".btn-ver").forEach(btn => {
-            btn.addEventListener("click", () => verPropietario(btn.dataset.id));
-        });
+        tableBody.appendChild(fragment);
     }
 
     function aplicarFiltros() {
@@ -153,9 +296,7 @@
             const correo = (prop.Correo || "").toLowerCase();
             const estado = (prop.Estado || "").toLowerCase();
 
-            const coincideTexto =
-                nombre.includes(texto) ||
-                correo.includes(texto);
+            const coincideTexto = nombre.includes(texto) || correo.includes(texto);
 
             let coincideEstado = true;
 
@@ -171,130 +312,70 @@
         renderizarPropietarios(filtrados);
     }
 
-    function cerrarModalPropietario() {
-    modalOverlay?.classList.add("hidden");
-    formNuevoPropietario?.reset();
+    // =========================
+    // Eventos
+    // =========================
+    function manejarClickTabla(e) {
+        const id = e.target.dataset.id;
+        if (!id) return;
 
-    modoModal = "crear";
-    propietarioEditandoId = null;
-    modalTitle.textContent = "Nuevo Propietario";
+        if (e.target.classList.contains("btn-ver")) {
+            const propietario = propietarios.find(p => String(p.id) === String(id));
+            if (propietario) abrirModalVer(propietario);
+            return;
+        }
 
-    //volver a activar inputs
-    document.querySelectorAll("#formNuevoPropietario input").forEach(input => {
-        input.disabled = false;
-    });
-}
+        if (e.target.classList.contains("btn-editar")) {
+            const propietario = propietarios.find(p => String(p.id) === String(id));
+            if (propietario) abrirModalEditar(propietario);
+            return;
+        }
 
-    btnNuevoPropietario?.addEventListener("click", function (e) {
+        if (e.target.classList.contains("btn-toggle")) {
+            toggleEstadoPropietario(id);
+        }
+    }
+
+    async function manejarSubmitFormulario(e) {
         e.preventDefault();
-        abrirModalCrear();
-    });
 
-    btnCerrarModal?.addEventListener("click", cerrarModalPropietario);
-    btnCancelar?.addEventListener("click", cerrarModalPropietario);
-
-    modalOverlay?.addEventListener("click", function (e) {
-        if (e.target === modalOverlay) {
+        if (modoModal === "ver") {
             cerrarModalPropietario();
-        }
-    });
-
-    formNuevoPropietario?.addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    const datosPropietario = {
-        nombre: document.getElementById("nombre").value.trim(),
-        telefono: document.getElementById("telefono").value.trim(),
-        correo: document.getElementById("correo").value.trim(),
-        direccion: document.getElementById("direccion").value.trim()
-    };
-
-    const esEdicion = modoModal === "editar";
-    const url = esEdicion ? `${API_URL}/${propietarioEditandoId}` : API_URL;
-    const metodo = esEdicion ? "PUT" : "POST";
-
-    console.log("Modo modal:", modoModal);
-    console.log("Enviando datos:", datosPropietario);
-
-    try {
-        const response = await fetch(url, {
-            method: metodo,
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify(datosPropietario)
-        });
-
-        const result = await response.json();
-        console.log(`${metodo} propietario:`, result);
-
-        if (!response.ok) {
-            throw new Error(
-                result.message ||
-                (esEdicion ? "Error al actualizar propietario" : "Error al crear propietario")
-            );
+            return;
         }
 
-        alert(
-            result.message ||
-            (esEdicion ? "Propietario actualizado exitosamente" : "Propietario creado exitosamente")
-        );
-
-        cerrarModalPropietario();
-        await obtenerPropietarios();
-
-    } catch (error) {
-        console.error("Error en formulario:", error.message);
-        alert(error.message);
-    }
-});
-
-    function editarPropietario(id) {
-        const propietario = propietarios.find(p => p.id == id);
-        if (!propietario) return;
-
-        abrirModalEditar(propietario);
-    }
-
-    async function toggleEstadoPropietario(id) {
-        const propietario = propietarios.find(p => p.id == id);
-        if (!propietario) return;
-
-        const accion = propietario.Estado.toLowerCase() === "activo" ? "desactivar" : "activar";
-        const confirmar = confirm(`¿Seguro que deseas ${accion} a ${propietario.Nombre}?`);
-
-        if (!confirmar) return;
+        const datosPropietario = obtenerDatosFormulario();
 
         try {
-            const response = await fetch(`${API_URL}/${id}/toggle`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            const result = await response.json();
-            console.log("PATCH propietario:", result);
-
-            if (!response.ok) {
-                throw new Error(result.message || "Error al cambiar estado");
-            }
-
-            alert(result.message || "Estado actualizado");
-            await obtenerPropietarios();
-
+            await guardarPropietario(datosPropietario);
         } catch (error) {
-            console.error("Error al cambiar estado:", error.message);
-            alert(error.message);
+            console.error("Error en formulario:", error.message);
+            mostrarNotificacion(error.message, "error");
         }
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        obtenerPropietarios();
-    });
+    function init() {
+        btnNuevoPropietario?.addEventListener("click", (e) => {
+            e.preventDefault();
+            abrirModalCrear();
+        });
 
-    buscarInput?.addEventListener("input", aplicarFiltros);
-    filtroEstado?.addEventListener("change", aplicarFiltros);
+        btnCerrarModal?.addEventListener("click", cerrarModalPropietario);
+        btnCancelar?.addEventListener("click", cerrarModalPropietario);
+
+        modalOverlay?.addEventListener("click", (e) => {
+            if (e.target === modalOverlay) {
+                cerrarModalPropietario();
+            }
+        });
+
+        formNuevoPropietario?.addEventListener("submit", manejarSubmitFormulario);
+        buscarInput?.addEventListener("input", aplicarFiltros);
+        filtroEstado?.addEventListener("change", aplicarFiltros);
+        tableBody?.addEventListener("click", manejarClickTabla);
+
+        obtenerPropietarios();
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
 })();

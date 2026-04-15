@@ -65,7 +65,7 @@
     background-color: #b1b1b1;
     transition: 0.5s;
 }
-
+/*Estados de propietarios*/
 .badge.activo {
     background: #d4edda;
     color: #155724;
@@ -78,4 +78,50 @@
     color: #721c24;
     padding: 5px 10px;
     border-radius: 8px;
+}
+
+/*Estilos de las notificaciones*/
+.contenedor-notificaciones {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notificacion {
+  min-width: 250px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  animation: aparecer 0.3s ease;
+}
+
+/* tipos */
+.notificacion.exito {
+  background: #28a745;
+}
+
+.notificacion.error {
+  background: #dc3545;
+}
+
+.notificacion.info {
+  background: #007bff;
+}
+
+/* animación */
+@keyframes aparecer {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
