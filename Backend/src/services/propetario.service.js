@@ -1,9 +1,9 @@
 // ============================================================
 //  CAPA: Service
-//  Archivo: propietario.service.js
+//  Archivo: propietarios.service.js
 // ============================================================
 
-const propietarioRepository = require('../repository/propetario.repository');
+const propietariosRepository = require('../repository/propetario.repository');
 
 const createPropietario = async (nombre, telefono, correo, direccion) => {
   if (!nombre) {
@@ -11,17 +11,17 @@ const createPropietario = async (nombre, telefono, correo, direccion) => {
   }
 
   if (correo) {
-    const existing = await propietarioRepository.findPropietarioByCorreo(correo);
+    const existing = await propietariosRepository.findPropietarioByCorreo(correo);
     if (existing) {
       throw { status: 409, message: `El correo "${correo}" ya está registrado` };
     }
   }
 
-  return await propietarioRepository.createPropietario(nombre, telefono, correo, direccion);
+  return await propietariosRepository.createPropietario(nombre, telefono, correo, direccion);
 };
 
 const getAllPropietarios = async () => {
-  const propietarios = await propietarioRepository.findAllPropietarios();
+  const propietarios = await propietariosRepository.findAllPropietarios();
 
   if (!propietarios.length) {
     throw { status: 404, message: 'No hay propietarios registrados' };
@@ -35,19 +35,25 @@ const updatePropietario = async (id, nombre, telefono, correo, direccion) => {
     throw { status: 400, message: 'El nombre es obligatorio' };
   }
 
-  const propietario = await propietarioRepository.findPropietarioById(id);
+  const propietario = await propietariosRepository.findPropietarioById(id);
+
   if (!propietario) {
     throw { status: 404, message: `No existe un propietario con id ${id}` };
   }
 
+  // 🔴 BLOQUEO
+  if (propietario.Estado === 'inactivo') {
+    throw { status: 403, message: 'El propietario está inactivo y no puede modificarse' };
+  }
+
   if (correo) {
-    const duplicate = await propietarioRepository.findPropietarioByCorreo(correo);
+    const duplicate = await propietariosRepository.findPropietarioByCorreo(correo);
     if (duplicate && duplicate.id !== parseInt(id)) {
       throw { status: 409, message: `El correo "${correo}" ya está en uso` };
     }
   }
 
-  await propietarioRepository.updatePropietario(id, nombre, telefono, correo, direccion);
+  await propietariosRepository.updatePropietario(id, nombre, telefono, correo, direccion);
 
   return {
     id,
@@ -58,14 +64,26 @@ const updatePropietario = async (id, nombre, telefono, correo, direccion) => {
   };
 };
 
-const deletePropietario = async (id) => {
-  const propietario = await propietarioRepository.findPropietarioById(id);
+const toggleEstado = async (id) => {
+  const propietario = await propietariosRepository.findPropietarioById(id);
 
   if (!propietario) {
     throw { status: 404, message: `No existe un propietario con id ${id}` };
   }
 
-  await propietarioRepository.deletePropietario(id);
+  await propietariosRepository.toggleEstado(id);
+
+  return await propietariosRepository.findPropietarioById(id);
+};
+
+const deletePropietario = async (id) => {
+  const propietario = await propietariosRepository.findPropietarioById(id);
+
+  if (!propietario) {
+    throw { status: 404, message: `No existe un propietario con id ${id}` };
+  }
+
+  await propietariosRepository.deletePropietario(id);
 
   return {
     id,
@@ -78,4 +96,5 @@ module.exports = {
   getAllPropietarios,
   updatePropietario,
   deletePropietario,
+  toggleEstado
 };

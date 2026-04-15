@@ -1,15 +1,15 @@
 // ============================================================
 //  CAPA: Controller
-//  Archivo: propietario.controller.js
+//  Archivo: propietarios.controller.js
 // ============================================================
 
-const propietarioService = require('../services/propetario.service');
+const propietariosService = require('../services/propetario.service');
 
 const createPropietario = async (req, res) => {
   try {
     const { nombre, telefono, correo, direccion } = req.body;
 
-    const propietario = await propietarioService.createPropietario(
+    const propietario = await propietariosService.createPropietario(
       nombre,
       telefono,
       correo,
@@ -21,6 +21,7 @@ const createPropietario = async (req, res) => {
       message: 'Propietario creado exitosamente',
       data: propietario
     });
+
   } catch (err) {
     return res.status(err.status || 500).json({
       success: false,
@@ -31,13 +32,14 @@ const createPropietario = async (req, res) => {
 
 const getAllPropietarios = async (req, res) => {
   try {
-    const propietarios = await propietarioService.getAllPropietarios();
+    const propietarios = await propietariosService.getAllPropietarios();
 
     return res.status(200).json({
       success: true,
       message: 'Propietarios obtenidos exitosamente',
       data: propietarios
     });
+
   } catch (err) {
     return res.status(err.status || 500).json({
       success: false,
@@ -51,7 +53,7 @@ const updatePropietario = async (req, res) => {
     const { id } = req.params;
     const { nombre, telefono, correo, direccion } = req.body;
 
-    const updated = await propietarioService.updatePropietario(
+    const updated = await propietariosService.updatePropietario(
       id,
       nombre,
       telefono,
@@ -64,6 +66,27 @@ const updatePropietario = async (req, res) => {
       message: 'Propietario actualizado exitosamente',
       data: updated
     });
+
+  } catch (err) {
+    return res.status(err.status || 500).json({
+      success: false,
+      message: err.message || 'Error interno del servidor'
+    });
+  }
+};
+
+const toggleEstado = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const updated = await propietariosService.toggleEstado(id);
+
+    return res.status(200).json({
+      success: true,
+      message: `Propietario ${updated.Estado === 'activo' ? 'activado' : 'desactivado'} exitosamente`,
+      data: updated
+    });
+
   } catch (err) {
     return res.status(err.status || 500).json({
       success: false,
@@ -76,12 +99,13 @@ const deletePropietario = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const result = await propietarioService.deletePropietario(id);
+    const result = await propietariosService.deletePropietario(id);
 
     return res.status(200).json({
       success: true,
       message: result.mensaje
     });
+
   } catch (err) {
     return res.status(err.status || 500).json({
       success: false,
@@ -95,4 +119,5 @@ module.exports = {
   getAllPropietarios,
   updatePropietario,
   deletePropietario,
+  toggleEstado
 };
