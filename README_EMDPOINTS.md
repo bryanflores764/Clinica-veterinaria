@@ -617,6 +617,186 @@ CREATE TABLE permisos (
 
 ---
 
+# 🧪 RUTAS PARA PRUEBAS (POSTMAN)
+
+Base URL:
+
+```
+http://localhost:3000/api
+```
+
+---
+
+## 🟢 ESPECIES
+
+### Crear especie
+
+POST /api/especies
+
+```json
+{
+  "nombre": "Perro"
+}
+```
+
+### Obtener especies
+
+GET /api/especies
+
+### Actualizar especie
+
+PUT /api/especies/1
+
+```json
+{
+  "nombre": "Canino"
+}
+```
+
+### Eliminar especie
+
+DELETE /api/especies/1
+
+---
+
+## 🔵 RAZAS
+
+### Crear raza
+
+POST /api/razas
+
+```json
+{
+  "especieId": 1,
+  "nombre": "Labrador"
+}
+```
+
+### Obtener razas
+
+GET /api/razas
+
+### Actualizar raza
+
+PUT /api/razas/1
+
+```json
+{
+  "especieId": 1,
+  "nombre": "Labrador Retriever"
+}
+```
+
+### Eliminar raza
+
+DELETE /api/razas/1
+
+---
+
+## 🟣 PROPIETARIOS
+
+### Crear propietario
+
+POST /api/propietarios
+
+```json
+{
+  "nombre": "Juan Pérez",
+  "telefono": "7777-1234",
+  "correo": "juan@example.com",
+  "direccion": "San Salvador"
+}
+```
+
+### Obtener propietarios
+
+GET /api/propietarios
+
+### Actualizar propietario
+
+PUT /api/propietarios/1
+
+```json
+{
+  "nombre": "Juan Pérez Actualizado",
+  "telefono": "7000-0000",
+  "correo": "juan_new@example.com",
+  "direccion": "Santa Ana"
+}
+```
+
+### Activar / Desactivar
+
+PATCH /api/propietarios/1/toggle
+
+### Eliminar
+
+DELETE /api/propietarios/1
+
+---
+
+## 🟠 MASCOTAS
+
+### Crear mascota
+
+POST /api/mascotas
+
+```json
+{
+  "propietarioId": 1,
+  "razaId": 1,
+  "nombre": "Firulais",
+  "fecha_nacimiento": "2022-05-10",
+  "peso": 12.5,
+  "color": "Café"
+}
+```
+
+### Obtener mascotas
+
+GET /api/mascotas
+
+### Actualizar mascota
+
+PUT /api/mascotas/1
+
+```json
+{
+  "propietarioId": 1,
+  "razaId": 1,
+  "nombre": "Firulais Actualizado",
+  "fecha_nacimiento": "2022-05-10",
+  "peso": 14.0,
+  "color": "Negro"
+}
+```
+
+### Eliminar mascota
+
+DELETE /api/mascotas/1
+
+---
+
+# 🔥 FLUJO RECOMENDADO
+
+1. Crear especie
+2. Crear raza
+3. Crear propietario
+4. Crear mascota
+
+---
+
+# ⚠️ NOTAS
+
+* No puedes crear mascotas sin raza o propietario
+* No puedes crear razas sin especie
+* Usa IDs existentes
+
+---
+
+🚀 API lista para pruebas completas
+
+
 ## ❌ Códigos de error comunes
 
 | Status | Descripción |

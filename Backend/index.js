@@ -21,10 +21,26 @@ app.use('/api/roles', rolesRoutes);
 // ── HU-02: Módulo Permisos ────────────────────────────────────
 const permisosRoutes = require('./src/routes/permisos.routes');
 app.use('/api/permisos', permisosRoutes);
+// ── HU-03: Módulo Usuarios ────────────────────────────────────
+const usuariosRoutes = require('./src/routes/usuarios.routes');
+app.use('/api/usuarios', usuariosRoutes);
+// ── HU-04: Módulo Auth ────────────────────────────────────────
+const authRoutes = require('./src/routes/auth.routes');
+app.use('/api/auth', authRoutes);
 
-// ── HU-05: Módulo Propietarios ────────────────────────────────
-const propietariosRoutes = require('./src/routes/propietarios.routes');
+// ── HU-05: Módulo Propietarios ───────────────────────────────
+const propietariosRoutes = require('./src/routes/propietario.routes');
 app.use('/api/propietarios', propietariosRoutes);
+// ── HU-06: Módulo Mascotas────
+const especiesRoutes = require('./src/routes/especies.routes');
+app.use('/api/especies', especiesRoutes);
+
+const razasRoutes = require('./src/routes/razas.routes');
+app.use('/api/razas', razasRoutes);
+
+const mascotasRoutes = require('./src/routes/mascota.routes');
+app.use('/api/mascotas', mascotasRoutes);
+
 
 // ── Health check ──────────────────────────────────────────────
 app.get('/', (req, res) => {
@@ -35,12 +51,3 @@ app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
 
-// ── HU-03: Módulo Usuarios ────────────────────────────────────
-const usuariosRoutes = require('./src/routes/usuarios.routes');
-app.use('/api/usuarios', usuariosRoutes);
-// ── HU-04: Módulo Auth ────────────────────────────────────────
-const authRoutes = require('./src/routes/auth.routes');
-app.use('/api/auth', authRoutes);
-
-const propetarioRoutes = require('./src/routes/propetario.routes');
-app.use('/api/propetarios', propetarioRoutes);
