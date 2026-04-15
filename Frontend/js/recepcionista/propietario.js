@@ -291,7 +291,6 @@
         const textoBotonToggle = estadoClase === "activo" ? "Desactivar" : "Activar";
 
         tr.innerHTML = `
-            <td>${prop.id}</td>
             <td>${prop.Nombre || ""}</td>
             <td>${prop.Telefono || ""}</td>
             <td>${prop.Correo || ""}</td>
@@ -321,7 +320,7 @@
         if (!lista.length) {
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="7">No se encontraron propietarios.</td>
+                    <td colspan="6">No se encontraron propietarios.</td>
                 </tr>
             `;
             return;
