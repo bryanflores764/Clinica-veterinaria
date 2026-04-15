@@ -622,3 +622,124 @@
     border-radius: 8px;
     cursor: pointer;
 }
+
+
+
+/*MODAL DE NUEVA CITA*/
+/* Fondo oscuro */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 250px;/*Ancho del sidebar*/
+  width: calc(100% - 250px); /*Resto de pantalla*/
+  height: 100%;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* Oculto */
+.hidden {
+  display: none;
+}
+
+/* Caja del formulario */
+.modal-content {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  width: 350px;
+  transform: translateY(100px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  font-family: 'Baloo Da 2', sans-serif;
+}
+
+/* Inputs */
+.modal-content input,
+.modal-content select {
+  width: 100%;
+  margin: 8px 0 15px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* Botones */
+.acciones {
+  display: flex;
+  justify-content: space-between;
+}
+
+.acciones button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.acciones button[type="submit"] {
+  background: #28a745;
+  color: white;
+}
+
+.acciones button[type="button"] {
+  background: #dc3545;
+  color: white;
+}
+
+
+/*Notificacion Exitoso*/
+/*
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #28a745;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  z-index: 1000;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.toast.error {
+  background: #dc3545;
+}
+
+.hidden {
+  display: none;
+}
+/*
+
+/*TABLA DE CITAS Y BOTONES DE EDITAR */
+
+.tabla-citas{
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.tabla-citas th, .tabla-citas td{
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.tabla-citas th{
+background: #28a745;
+color: white;
+}
+
+.btn-editar{
+  background: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
