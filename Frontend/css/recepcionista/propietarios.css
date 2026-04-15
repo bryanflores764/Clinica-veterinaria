@@ -50,21 +50,91 @@
 
 .owners-table td {
   font-size: 16px;
+  vertical-align: middle;
 }
 
+/* BOTONES DE LA TABLA */
 .owners-table button {
-    background-color: #28a745;
-    padding: 6px 10px;
-    margin-right: 6px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+  padding: 6px 10px;
+  margin-right: 6px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+}
+
+.owners-table td span.badge {
+  display: inline-block;
+  text-align: center;
+  min-width: 70px;
+}
+
+.btn-ver {
+  background-color: #007bff;
+}
+
+.btn-editar {
+  background-color: #28a745;
+}
+
+.btn-toggle {
+  width: 120px;
+  font-weight: 600;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.btn-activar {
+  background-color: #28a745;
+}
+
+.btn-desactivar {
+  background-color: #dc3545;
 }
 
 .owners-table button:hover {
-    background-color: #b1b1b1;
-    transition: 0.5s;
+  filter: brightness(0.9);
 }
+
+.owners-table button img {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+/*ESTILO DEL BUSCADOR*/
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0 12px;
+  flex: 1;
+  min-width: 250px;
+}
+
+.search-box img {
+  width: 18px;
+  height: 18px;
+  opacity: 0.6;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 10px 0;
+  font-size: 16px;
+  background: transparent;
+}
+
 /*Estados de propietarios*/
 .badge.activo {
     background: #d4edda;

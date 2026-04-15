@@ -298,6 +298,7 @@
 
         const estadoClase = (prop.Estado || "").toLowerCase();
         const textoBotonToggle = estadoClase === "activo" ? "Desactivar" : "Activar";
+        const claseToggle = estadoClase === "activo" ? "btn-desactivar" : "btn-activar";
 
         tr.innerHTML = `
             <td>${prop.Nombre || ""}</td>
@@ -312,9 +313,15 @@
                 </span>
             </td>
             <td>
-                <button type="button" class="btn-ver" data-id="${prop.id}">Ver</button>
-                <button type="button" class="btn-editar" data-id="${prop.id}">Editar</button>
-                <button type="button" class="btn-toggle" data-id="${prop.id}">
+                <button type="button" class="btn-ver" data-id="${prop.id}" title="Ver">
+                    <img src="../../assets/icons/eye.svg" alt="Ver">
+                </button>
+
+                <button type="button" class="btn-editar" data-id="${prop.id}" title="Editar">
+                    <img src="../../assets/icons/pencil.svg" alt="Editar">
+                </button>
+
+                <button type="button" class="btn-toggle ${claseToggle}" data-id="${prop.id}"> 
                     ${textoBotonToggle}
                 </button>
             </td>
@@ -374,26 +381,29 @@
     // =========================
     // Eventos
     // =========================
-    function manejarClickTabla(e) {
-        const id = e.target.dataset.id;
-        if (!id) return;
+function manejarClickTabla(e) {
+    const boton = e.target.closest("button");
+    if (!boton) return;
 
-        if (e.target.classList.contains("btn-ver")) {
-            const propietario = propietarios.find(p => String(p.id) === String(id));
-            if (propietario) abrirModalVer(propietario);
-            return;
-        }
+    const id = boton.dataset.id;
+    if (!id) return;
 
-        if (e.target.classList.contains("btn-editar")) {
-            const propietario = propietarios.find(p => String(p.id) === String(id));
-            if (propietario) abrirModalEditar(propietario);
-            return;
-        }
-
-        if (e.target.classList.contains("btn-toggle")) {
-            toggleEstadoPropietario(id);
-        }
+    if (boton.classList.contains("btn-ver")) {
+        const propietario = propietarios.find(p => String(p.id) === String(id));
+        if (propietario) abrirModalVer(propietario);
+        return;
     }
+
+    if (boton.classList.contains("btn-editar")) {
+        const propietario = propietarios.find(p => String(p.id) === String(id));
+        if (propietario) abrirModalEditar(propietario);
+        return;
+    }
+
+    if (boton.classList.contains("btn-toggle")) {
+        toggleEstadoPropietario(id);
+    }
+}
 
     async function manejarSubmitFormulario(e) {
         e.preventDefault();
