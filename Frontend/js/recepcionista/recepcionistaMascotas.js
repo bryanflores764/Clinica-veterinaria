@@ -1,3 +1,4 @@
+// URL base de la API
 const URL_API = "http://localhost:3000";
 
 // Botones y elementos del modal
@@ -33,200 +34,251 @@ let cacheRazas = [];
 let cachePropietarios = [];
 
 /* =========================================================
-   UTILIDADES
+    utilidades
 ========================================================= */
-
 function obtenerToken() {
-  return localStorage.getItem("token");
+    return localStorage.getItem("token");
 }
 
+function verificarSesion() {
+    const tokenActual = obtenerToken();
+
+    if (!tokenActual || tokenActual === "null" || tokenActual === "undefined") {
+        localStorage.removeItem("token");
+        window.location.replace("../../index.html");
+    }
+}
+
+verificarSesion();
+
 function obtenerEncabezados(esJson = true) {
-  const encabezados = {};
+    const encabezados = {};
 
-  if (esJson) {
-    encabezados["Content-Type"] = "application/json";
-  }
+    if (esJson) {
+        encabezados["Content-Type"] = "application/json";
+    }
 
-  const token = obtenerToken();
-  if (token) {
-    encabezados["Authorization"] = `Bearer ${token}`;
-  }
+    const token = obtenerToken();
+    if (token) {
+        encabezados["Authorization"] = `Bearer ${token}`;
+    }
 
-  return encabezados;
+    return encabezados;
 }
 
 function obtenerArregloRespuesta(datos) {
-  if (Array.isArray(datos)) return datos;
-  if (Array.isArray(datos?.data)) return datos.data;
-  if (Array.isArray(datos?.result)) return datos.result;
-  return [];
+    if (Array.isArray(datos)) return datos;
+    if (Array.isArray(datos?.data)) return datos.data;
+    if (Array.isArray(datos?.result)) return datos.result;
+    return [];
 }
 
 function obtenerId(item) {
-  return item?.id ?? item?.Id ?? item?.ID ?? null;
+    return (
+        item?.id ??
+        item?.Id ??
+        item?.ID ??
+        item?.Id_Especie ??
+        item?.id_especie ??
+        item?.Id_Raza ??
+        item?.id_raza ??
+        item?.Id_Propietario ??
+        item?.id_propietario ??
+        null
+    );
 }
 
 function obtenerNombre(item) {
-  return (
-    item?.nombre ??
-    item?.Nombre ??
-    item?.Nombre_Propietario ??
-    item?.nombre_propietario ??
-    item?.Nombre_Completo ??
-    item?.nombre_completo ??
-    item?.Nombre_Cliente ??
-    item?.nombre_cliente ??
-    ""
-  );
+    return (
+        item?.nombre ??
+        item?.Nombre ??
+        item?.Nombre_Raza ??
+        item?.nombre_raza ??
+        item?.Nombre_Especie ??
+        item?.nombre_especie ??
+        item?.Nombre_Propietario ??
+        item?.nombre_propietario ??
+        item?.Nombre_Completo ??
+        item?.nombre_completo ??
+        item?.Nombre_Cliente ??
+        item?.nombre_cliente ??
+        ""
+    );
 }
 
 function obtenerEspecieIdDeRaza(raza) {
-  return raza?.especieId ?? raza?.EspecieId ?? raza?.especie_id ?? null;
+    return (
+        raza?.especieId ??
+        raza?.EspecieId ??
+        raza?.especie_id ??
+        raza?.Id_Especie ??
+        raza?.id_especie ??
+        null
+    );
 }
-
 function limpiarTexto(texto) {
-  return texto.trim().replace(/\s+/g, " ");
+    return texto.trim().replace(/\s+/g, " ");
 }
 
 function mostrarMensaje(mensaje) {
-  alert(mensaje);
+    alert(mensaje);
 }
 
 function cambiarEstadoBotonGuardar(estado) {
-  const btnGuardar = formularioNuevaMascota.querySelector('button[type="submit"]');
-  if (!btnGuardar) return;
+    const btnGuardar = formularioNuevaMascota.querySelector('button[type="submit"]');
+    if (!btnGuardar) return;
 
-  btnGuardar.disabled = estado;
-  btnGuardar.textContent = estado ? "Guardando..." : "Guardar mascota";
+    btnGuardar.disabled = estado;
+    btnGuardar.textContent = estado ? "Guardando..." : "Guardar mascota";
 }
 
 /* =========================================================
-   MODAL
+    modal
 ========================================================= */
 
 function abrirModalMascota() {
-  modalMascota.classList.add("show");
-  fondoModalMascota.classList.add("show");
-  document.body.style.overflow = "hidden";
+    modalMascota.classList.add("show");
+    fondoModalMascota.classList.add("show");
+    document.body.style.overflow = "hidden";
 
-  cargarDatosInicialesModal();
+    cargarDatosInicialesModal();
 }
 
 function cerrarModalMascota() {
-  modalMascota.classList.remove("show");
-  fondoModalMascota.classList.remove("show");
-  document.body.style.overflow = "";
+    modalMascota.classList.remove("show");
+    fondoModalMascota.classList.remove("show");
+    document.body.style.overflow = "";
 
-  resetearFormularioMascota();
+    resetearFormularioMascota();
 }
 
 function resetearFormularioMascota() {
-  formularioNuevaMascota.reset();
+    formularioNuevaMascota.reset();
 
-  contenedorNuevaEspecie.classList.add("hidden");
-  contenedorNuevaRaza.classList.add("hidden");
+    contenedorNuevaEspecie.classList.add("hidden");
+    contenedorNuevaRaza.classList.add("hidden");
 
-  inputNuevaEspecie.value = "";
-  inputNuevaRaza.value = "";
+    inputNuevaEspecie.value = "";
+    inputNuevaRaza.value = "";
 
-  inputNuevaEspecie.required = false;
-  inputNuevaRaza.required = false;
+    inputNuevaEspecie.required = false;
+    inputNuevaRaza.required = false;
 
     selectEspecie.required = true;
     selectRaza.required = true;
 
-  renderizarRazasFiltradas([]);
+    renderizarRazasFiltradas([]);
 }
 
 if (btnNuevoPaciente) {
-  btnNuevoPaciente.addEventListener("click", abrirModalMascota);
+    btnNuevoPaciente.addEventListener("click", abrirModalMascota);
 }
 
 if (btnCerrarModalMascota) {
-  btnCerrarModalMascota.addEventListener("click", cerrarModalMascota);
+    btnCerrarModalMascota.addEventListener("click", cerrarModalMascota);
 }
 
 if (btnCancelarMascota) {
-  btnCancelarMascota.addEventListener("click", cerrarModalMascota);
+    btnCancelarMascota.addEventListener("click", cerrarModalMascota);
 }
 
 if (fondoModalMascota) {
-  fondoModalMascota.addEventListener("click", cerrarModalMascota);
+    fondoModalMascota.addEventListener("click", cerrarModalMascota);
 }
 
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && modalMascota.classList.contains("show")) {
-    cerrarModalMascota();
-  }
+    if (e.key === "Escape" && modalMascota.classList.contains("show")) {
+        cerrarModalMascota();
+    }
 });
 
 /* =========================================================
-   RENDERIZADO DE SELECTS
+    renderizar los selects
 ========================================================= */
 
 function renderizarPropietarios(propietarios) {
-  selectPropietario.innerHTML = `<option value="">Seleccione un propietario</option>`;
+    selectPropietario.innerHTML = `<option value="">Seleccione un propietario</option>`;
 
-  propietarios.forEach((propietario) => {
-    const option = document.createElement("option");
-    option.value = obtenerId(propietario);
-    option.textContent = obtenerNombre(propietario) || `Propietario ${obtenerId(propietario)}`;
-    selectPropietario.appendChild(option);
-  });
+    propietarios.forEach((propietario) => {
+        const option = document.createElement("option");
+        option.value = obtenerId(propietario);
+        option.textContent = obtenerNombre(propietario) || `Propietario ${obtenerId(propietario)}`;
+        selectPropietario.appendChild(option);
+    });
 }
 
 function renderizarEspecies(especies) {
-  selectEspecie.innerHTML = `<option value="">Seleccione una especie</option>`;
+    selectEspecie.innerHTML = `<option value="">Seleccione una especie</option>`;
 
-  especies.forEach((especie) => {
-    const option = document.createElement("option");
-    option.value = obtenerId(especie);
-    option.textContent = obtenerNombre(especie);
-    selectEspecie.appendChild(option);
-  });
+    console.log("Especies recibidas:", especies);
+
+    especies.forEach((especie) => {
+        const id = obtenerId(especie);
+        const nombre = obtenerNombre(especie);
+
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = nombre || `Especie ${id}`;
+
+        console.log("Render especie =>", { especie, id, nombre });
+
+        selectEspecie.appendChild(option);
+    });
 }
 
 function renderizarRazasFiltradas(razas) {
-  selectRaza.innerHTML = `<option value="">Seleccione una raza</option>`;
+    selectRaza.innerHTML = `<option value="">Seleccione una raza</option>`;
 
-  razas.forEach((raza) => {
-    const option = document.createElement("option");
-    option.value = obtenerId(raza);
-    option.textContent = obtenerNombre(raza);
-    selectRaza.appendChild(option);
-  });
+    razas.forEach((raza) => {
+        const option = document.createElement("option");
+        option.value = obtenerId(raza);
+        option.textContent = obtenerNombre(raza);
+        selectRaza.appendChild(option);
+    });
 }
 
 function filtrarRazasPorEspecie(idEspecie) {
-  if (!idEspecie) {
-    renderizarRazasFiltradas([]);
-    return;
-  }
+    console.log("ID especie seleccionada:", idEspecie);
 
-  const razasFiltradas = cacheRazas.filter((raza) => {
-    return Number(obtenerEspecieIdDeRaza(raza)) === Number(idEspecie);
-  });
+    if (!idEspecie) {
+        renderizarRazasFiltradas([]);
+        return;
+    }
 
-  renderizarRazasFiltradas(razasFiltradas);
+    const razasFiltradas = cacheRazas.filter((raza) => {
+        const idEspecieRaza = obtenerEspecieIdDeRaza(raza);
+
+        console.log("Comparando raza:", {
+        raza,
+        idEspecieRaza,
+        idEspecieSeleccionada: idEspecie
+        });
+
+        return Number(idEspecieRaza) === Number(idEspecie);
+    });
+
+    console.log("Razas filtradas finales:", razasFiltradas);
+
+    renderizarRazasFiltradas(razasFiltradas);
 }
 
 /* =========================================================
-   CARGA DE DATOS
+    carga de datos
 ========================================================= */
 
 async function cargarPropietarios() {
-  const respuesta = await fetch(`${URL_API}/api/propetarios`, {
-    method: "GET",
-    headers: obtenerEncabezados(false),
-  });
+    const respuesta = await fetch(`${URL_API}/api/propietarios`, {
+        method: "GET",
+        headers: obtenerEncabezados(false),
+    });
 
-  if (!respuesta.ok) {
-    throw new Error("No se pudieron cargar los propietarios.");
-  }
+    if (!respuesta.ok) {
+        throw new Error("No se pudieron cargar los propietarios.");
+    }
 
-  const datos = await respuesta.json();
-  cachePropietarios = obtenerArregloRespuesta(datos);
-  renderizarPropietarios(cachePropietarios);
+    const datos = await respuesta.json();
+    cachePropietarios = obtenerArregloRespuesta(datos);
+    renderizarPropietarios(cachePropietarios);
 }
 
 async function cargarEspecies() {
@@ -235,136 +287,150 @@ async function cargarEspecies() {
         headers: obtenerEncabezados(false),
     });
 
-  if (!respuesta.ok) {
-    throw new Error("No se pudieron cargar las especies.");
-  }
+    if (!respuesta.ok) {
+        throw new Error("No se pudieron cargar las especies.");
+    }
 
-  const datos = await respuesta.json();
-  cacheEspecies = obtenerArregloRespuesta(datos);
-  renderizarEspecies(cacheEspecies);
+    const datos = await respuesta.json();
+    cacheEspecies = obtenerArregloRespuesta(datos);
+    renderizarEspecies(cacheEspecies);
 }
 
 async function cargarRazas() {
-  const respuesta = await fetch(`${URL_API}/api/razas`, {
-    method: "GET",
-    headers: obtenerEncabezados(false),
-  });
+    const respuesta = await fetch(`${URL_API}/api/razas`, {
+        method: "GET",
+        headers: obtenerEncabezados(false),
+    });
 
-  if (!respuesta.ok) {
-    throw new Error("No se pudieron cargar las razas.");
-  }
+    if (!respuesta.ok) {
+        throw new Error("No se pudieron cargar las razas.");
+    }
 
-  const datos = await respuesta.json();
-  cacheRazas = obtenerArregloRespuesta(datos);
+    const datos = await respuesta.json();
+    cacheRazas = obtenerArregloRespuesta(datos);
 
-  const especieSeleccionada = selectEspecie.value;
-  if (especieSeleccionada) {
-    filtrarRazasPorEspecie(especieSeleccionada);
-  } else {
-    renderizarRazasFiltradas([]);
-  }
+    // Reconstruir especies a partir de las razas
+    const especiesMap = new Map();
+
+    cacheRazas.forEach((raza) => {
+        const idEspecie = raza?.Id_Especie ?? raza?.id_especie ?? raza?.EspecieId ?? raza?.especieId;
+        const nombreEspecie = raza?.Nombre_Especie ?? raza?.nombre_especie;
+
+        if (idEspecie && nombreEspecie && !especiesMap.has(Number(idEspecie))) {
+        especiesMap.set(Number(idEspecie), {
+            Id: Number(idEspecie),
+            Nombre_Especie: nombreEspecie
+        });
+        }
+    });
+
+
+    const especieSeleccionada = selectEspecie.value;
+    if (especieSeleccionada) {
+        filtrarRazasPorEspecie(especieSeleccionada);
+    } else {
+        renderizarRazasFiltradas([]);
+    }
 }
 
 async function cargarDatosInicialesModal() {
-  try {
-    await Promise.all([
-      cargarPropietarios(),
-      cargarEspecies(),
-      cargarRazas()
-    ]);
-  } catch (error) {
-    console.error(error);
-    mostrarMensaje(error.message || "Ocurrió un error al cargar los datos del formulario.");
-  }
+    try {
+        await cargarPropietarios();
+        await cargarRazas();
+        await cargarEspecies();
+    } catch (error) {
+        console.error(error);
+        mostrarMensaje(error.message || "Ocurrió un error al cargar los datos del formulario.");
+    }
 }
 
 /* =========================================================
-   NUEVA ESPECIE / NUEVA RAZA
+    nueva especie y raza
 ========================================================= */
 
 btnNuevaEspecie.addEventListener("click", () => {
-  contenedorNuevaEspecie.classList.toggle("hidden");
+    contenedorNuevaEspecie.classList.toggle("hidden");
 
-  const visible = !contenedorNuevaEspecie.classList.contains("hidden");
+    const visible = !contenedorNuevaEspecie.classList.contains("hidden");
 
-  inputNuevaEspecie.required = visible;
-  selectEspecie.required = !visible;
+    inputNuevaEspecie.required = visible;
+    selectEspecie.required = !visible;
 
-  if (visible) {
-    selectEspecie.value = "";
+    if (visible) {
+        selectEspecie.value = "";
+        selectRaza.value = "";
+        inputNuevaRaza.value = "";
+        contenedorNuevaRaza.classList.add("hidden");
+        inputNuevaRaza.required = false;
+        selectRaza.required = true;
+        inputNuevaEspecie.focus();
+        renderizarRazasFiltradas([]);
+    } else {
+        inputNuevaEspecie.value = "";
+        inputNuevaEspecie.required = false;
+        selectEspecie.required = true;
+    }
+});
+
+btnNuevaRaza.addEventListener("click", () => {
+    contenedorNuevaRaza.classList.toggle("hidden");
+
+    const visible = !contenedorNuevaRaza.classList.contains("hidden");
+
+    inputNuevaRaza.required = visible;
+    selectRaza.required = !visible;
+
+    if (visible) {
+        selectRaza.value = "";
+        inputNuevaRaza.focus();
+    } else {
+        inputNuevaRaza.value = "";
+        inputNuevaRaza.required = false;
+        selectRaza.required = true;
+    }
+});
+
+/* =========================================================
+    cambio de especie
+========================================================= */
+
+selectEspecie.addEventListener("change", () => {
+    const idEspecie = selectEspecie.value;
+
+    if (idEspecie) {
+        contenedorNuevaEspecie.classList.add("hidden");
+        inputNuevaEspecie.value = "";
+        inputNuevaEspecie.required = false;
+        selectEspecie.required = true;
+    }
+
     selectRaza.value = "";
     inputNuevaRaza.value = "";
     contenedorNuevaRaza.classList.add("hidden");
     inputNuevaRaza.required = false;
     selectRaza.required = true;
-    inputNuevaEspecie.focus();
-    renderizarRazasFiltradas([]);
-  } else {
-    inputNuevaEspecie.value = "";
-    inputNuevaEspecie.required = false;
-    selectEspecie.required = true;
-  }
-});
 
-btnNuevaRaza.addEventListener("click", () => {
-  contenedorNuevaRaza.classList.toggle("hidden");
-
-  const visible = !contenedorNuevaRaza.classList.contains("hidden");
-
-  inputNuevaRaza.required = visible;
-  selectRaza.required = !visible;
-
-  if (visible) {
-    selectRaza.value = "";
-    inputNuevaRaza.focus();
-  } else {
-    inputNuevaRaza.value = "";
-    inputNuevaRaza.required = false;
-    selectRaza.required = true;
-  }
+    filtrarRazasPorEspecie(idEspecie);
 });
 
 /* =========================================================
-   CAMBIO DE ESPECIE
-========================================================= */
-
-selectEspecie.addEventListener("change", () => {
-  const idEspecie = selectEspecie.value;
-
-  if (idEspecie) {
-    contenedorNuevaEspecie.classList.add("hidden");
-    inputNuevaEspecie.value = "";
-    inputNuevaEspecie.required = false;
-    selectEspecie.required = true;
-  }
-
-  selectRaza.value = "";
-  inputNuevaRaza.value = "";
-  contenedorNuevaRaza.classList.add("hidden");
-  inputNuevaRaza.required = false;
-  selectRaza.required = true;
-
-  filtrarRazasPorEspecie(idEspecie);
-});
-
-/* =========================================================
-   CREAR ESPECIE / RAZA
+    crear especie y raza
 ========================================================= */
 
 async function crearEspecieSiNoExiste() {
-  const nuevaEspecie = limpiarTexto(inputNuevaEspecie.value);
+    const nuevaEspecie = limpiarTexto(inputNuevaEspecie.value);
 
-  if (!nuevaEspecie) {
-    throw new Error("Debe escribir el nombre de la nueva especie.");
-  }
+    if (!nuevaEspecie) {
+        throw new Error("Debe escribir el nombre de la nueva especie.");
+    }
 
-  const especieExistente = cacheEspecies.find((especie) => {
-    return obtenerNombre(especie).toLowerCase() === nuevaEspecie.toLowerCase();
-  });
+    const especieExistente = cacheEspecies.find((especie) => {
+        return obtenerNombre(especie).toLowerCase() === nuevaEspecie.toLowerCase();
+    });
 
-  if (especieExistente) {
-    return obtenerId(especieExistente);
-  }
+    if (especieExistente) {
+        return obtenerId(especieExistente);
+    }
 
     const respuesta = await fetch(`${URL_API}/api/especies`, {
         method: "POST",
@@ -374,165 +440,165 @@ async function crearEspecieSiNoExiste() {
         }),
     });
 
-  if (!respuesta.ok) {
-    const errorData = await intentarLeerError(respuesta);
-    throw new Error(errorData || "No se pudo crear la especie.");
-  }
+    if (!respuesta.ok) {
+        const errorData = await intentarLeerError(respuesta);
+        throw new Error(errorData || "No se pudo crear la especie.");
+    }
 
-  const datos = await respuesta.json();
+    const datos = await respuesta.json();
 
-  await cargarEspecies();
+    await cargarEspecies();
 
-  const especieCreada = datos?.data ?? datos?.result ?? datos;
+    const especieCreada = datos?.data ?? datos?.result ?? datos;
 
-  return obtenerId(especieCreada) || buscarIdEspeciePorNombre(nuevaEspecie);
+    return obtenerId(especieCreada) || buscarIdEspeciePorNombre(nuevaEspecie);
 }
 
 function buscarIdEspeciePorNombre(nombre) {
-  const especie = cacheEspecies.find((item) => {
-    return obtenerNombre(item).toLowerCase() === nombre.toLowerCase();
-  });
+    const especie = cacheEspecies.find((item) => {
+        return obtenerNombre(item).toLowerCase() === nombre.toLowerCase();
+    });
 
-  return especie ? obtenerId(especie) : null;
+    return especie ? obtenerId(especie) : null;
 }
 
 async function crearRazaSiNoExiste(idEspecie) {
-  const nuevaRaza = limpiarTexto(inputNuevaRaza.value);
+    const nuevaRaza = limpiarTexto(inputNuevaRaza.value);
 
-  if (!nuevaRaza) {
-    throw new Error("Debe escribir el nombre de la nueva raza.");
-  }
-
-  const razaExistente = cacheRazas.find((raza) => {
-    return (
-      obtenerNombre(raza).toLowerCase() === nuevaRaza.toLowerCase() &&
-      Number(obtenerEspecieIdDeRaza(raza)) === Number(idEspecie)
-    );
-  });
-
-  if (razaExistente) {
-    return obtenerId(razaExistente);
-  }
-
-  const respuesta = await fetch(`${URL_API}/api/razas`, {
-    method: "POST",
-    headers: obtenerEncabezados(true),
-    body: JSON.stringify({
-      especieId: Number(idEspecie),
-      nombre: nuevaRaza
-    }),
-  });
-
-  if (!respuesta.ok) {
-    const errorData = await intentarLeerError(respuesta);
-    throw new Error(errorData || "No se pudo crear la raza.");
-  }
-
-  const datos = await respuesta.json();
-
-  await cargarRazas();
-
-  const razaCreada = datos?.data ?? datos?.result ?? datos;
-
-  return obtenerId(razaCreada) || buscarIdRazaPorNombreYEspecie(nuevaRaza, idEspecie);
-}
-
-function buscarIdRazaPorNombreYEspecie(nombre, idEspecie) {
-  const raza = cacheRazas.find((item) => {
-    return (
-      obtenerNombre(item).toLowerCase() === nombre.toLowerCase() &&
-      Number(obtenerEspecieIdDeRaza(item)) === Number(idEspecie)
-    );
-  });
-
-  return raza ? obtenerId(raza) : null;
-}
-
-async function intentarLeerError(respuesta) {
-  try {
-    const datos = await respuesta.json();
-    return datos?.message || datos?.error || null;
-  } catch {
-    return null;
-  }
-}
-
-/* =========================================================
-   GUARDAR MASCOTA
-========================================================= */
-
-formularioNuevaMascota.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  try {
-    cambiarEstadoBotonGuardar(true);
-
-    const nombre = limpiarTexto(inputNombreMascota.value);
-    const fechaNacimiento = inputFechaNacimiento.value;
-    const peso = Number(inputPesoMascota.value);
-    const color = limpiarTexto(inputColorMascota.value);
-    const propietarioId = Number(selectPropietario.value);
-
-    if (!nombre || !fechaNacimiento || !color || !propietarioId || Number.isNaN(peso)) {
-      throw new Error("Complete correctamente todos los campos obligatorios.");
+    if (!nuevaRaza) {
+        throw new Error("Debe escribir el nombre de la nueva raza.");
     }
 
-    let especieId = selectEspecie.value ? Number(selectEspecie.value) : null;
-    let razaId = selectRaza.value ? Number(selectRaza.value) : null;
+    const razaExistente = cacheRazas.find((raza) => {
+        return (
+        obtenerNombre(raza).toLowerCase() === nuevaRaza.toLowerCase() &&
+        Number(obtenerEspecieIdDeRaza(raza)) === Number(idEspecie)
+        );
+    });
 
-    const escribioNuevaEspecie =
-      !contenedorNuevaEspecie.classList.contains("hidden") &&
-      limpiarTexto(inputNuevaEspecie.value);
-
-    const escribioNuevaRaza =
-      !contenedorNuevaRaza.classList.contains("hidden") &&
-      limpiarTexto(inputNuevaRaza.value);
-
-    if (escribioNuevaEspecie) {
-      especieId = await crearEspecieSiNoExiste();
+    if (razaExistente) {
+        return obtenerId(razaExistente);
     }
 
-    if (!especieId) {
-      throw new Error("Debe seleccionar una especie o crear una nueva.");
-    }
-
-    if (escribioNuevaRaza) {
-      razaId = await crearRazaSiNoExiste(especieId);
-    }
-
-    if (!razaId) {
-      throw new Error("Debe seleccionar una raza o crear una nueva.");
-    }
-
-    const datosMascota = {
-      propietarioId,
-      razaId,
-      nombre,
-      fecha_nacimiento: fechaNacimiento,
-      peso,
-      color
-    };
-
-    const respuesta = await fetch(`${URL_API}/api/mascotas`, {
-      method: "POST",
-      headers: obtenerEncabezados(true),
-      body: JSON.stringify(datosMascota),
+    const respuesta = await fetch(`${URL_API}/api/razas`, {
+        method: "POST",
+        headers: obtenerEncabezados(true),
+        body: JSON.stringify({
+        especieId: Number(idEspecie),
+        nombre: nuevaRaza
+        }),
     });
 
     if (!respuesta.ok) {
-      const errorData = await intentarLeerError(respuesta);
-      throw new Error(errorData || "No se pudo guardar la mascota.");
+        const errorData = await intentarLeerError(respuesta);
+        throw new Error(errorData || "No se pudo crear la raza.");
     }
 
-    await respuesta.json();
+    const datos = await respuesta.json();
 
-    mostrarMensaje("Mascota guardada correctamente.");
-    cerrarModalMascota();
+    await cargarRazas();
 
-  } catch (error) {
-    console.error(error);
-    mostrarMensaje(error.message || "Ocurrió un error al guardar la mascota.");
-  } finally {
-    cambiarEstadoBotonGuardar(false);
-  }
+    const razaCreada = datos?.data ?? datos?.result ?? datos;
+
+    return obtenerId(razaCreada) || buscarIdRazaPorNombreYEspecie(nuevaRaza, idEspecie);
+}
+
+function buscarIdRazaPorNombreYEspecie(nombre, idEspecie) {
+    const raza = cacheRazas.find((item) => {
+        return (
+        obtenerNombre(item).toLowerCase() === nombre.toLowerCase() &&
+        Number(obtenerEspecieIdDeRaza(item)) === Number(idEspecie)
+        );
+    });
+
+    return raza ? obtenerId(raza) : null;
+}
+
+async function intentarLeerError(respuesta) {
+    try {
+        const datos = await respuesta.json();
+        return datos?.message || datos?.error || null;
+    } catch {
+        return null;
+    }
+}
+
+/* =========================================================
+    guardar mascota
+========================================================= */
+
+formularioNuevaMascota.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    try {
+        cambiarEstadoBotonGuardar(true);
+
+        const nombre = limpiarTexto(inputNombreMascota.value);
+        const fechaNacimiento = inputFechaNacimiento.value;
+        const peso = Number(inputPesoMascota.value);
+        const color = limpiarTexto(inputColorMascota.value);
+        const propietarioId = Number(selectPropietario.value);
+
+        if (!nombre || !fechaNacimiento || !color || !propietarioId || Number.isNaN(peso)) {
+        throw new Error("Complete correctamente todos los campos obligatorios.");
+        }
+
+        let especieId = selectEspecie.value ? Number(selectEspecie.value) : null;
+        let razaId = selectRaza.value ? Number(selectRaza.value) : null;
+
+        const escribioNuevaEspecie =
+        !contenedorNuevaEspecie.classList.contains("hidden") &&
+        limpiarTexto(inputNuevaEspecie.value);
+
+        const escribioNuevaRaza =
+        !contenedorNuevaRaza.classList.contains("hidden") &&
+        limpiarTexto(inputNuevaRaza.value);
+
+        if (escribioNuevaEspecie) {
+        especieId = await crearEspecieSiNoExiste();
+        }
+
+        if (!especieId) {
+        throw new Error("Debe seleccionar una especie o crear una nueva.");
+        }
+
+        if (escribioNuevaRaza) {
+        razaId = await crearRazaSiNoExiste(especieId);
+        }
+
+        if (!razaId) {
+        throw new Error("Debe seleccionar una raza o crear una nueva.");
+        }
+
+        const datosMascota = {
+        propietarioId,
+        razaId,
+        nombre,
+        fecha_nacimiento: fechaNacimiento,
+        peso,
+        color
+        };
+
+        const respuesta = await fetch(`${URL_API}/api/mascotas`, {
+        method: "POST",
+        headers: obtenerEncabezados(true),
+        body: JSON.stringify(datosMascota),
+        });
+
+        if (!respuesta.ok) {
+        const errorData = await intentarLeerError(respuesta);
+        throw new Error(errorData || "No se pudo guardar la mascota.");
+        }
+
+        await respuesta.json();
+
+        mostrarMensaje("Mascota guardada correctamente.");
+        cerrarModalMascota();
+
+    } catch (error) {
+        console.error(error);
+        mostrarMensaje(error.message || "Ocurrió un error al guardar la mascota.");
+    } finally {
+        cambiarEstadoBotonGuardar(false);
+    }
 });
