@@ -6,8 +6,9 @@
 
     /*Constantes para el modal dinamico */
     let modoModal = "crear";
-    let propietariosEditandoId = null;
+    let propietarioEditandoId = null;
     const modalTitle = document.getElementById("modalTitle");
+    /*Constantes para el modal dinamico */
 
     const tableBody = document.getElementById("ownersTableBody");
     const buscarInput = document.getElementById("buscarPropietario");
@@ -19,6 +20,56 @@
     const btnCancelar = document.getElementById("cancelar");
     const formNuevoPropietario = document.getElementById("formNuevoPropietario");
 
+    /*MODAL DINAMICO*/
+    function abrirModalCrear(){
+        modoModal = "crear";
+        propietarioEditandoId = null;
+
+        modalTitle.textContent = "Nuevo Propietario"
+        formNuevoPropietario.reset();
+
+        modalOverlay?.classList.remove("hidden");
+    }
+
+    function abrirModalEditar(propietario) {
+        modoModal = "editar";
+        propietarioEditandoId = propietario.id;
+
+        modalTitle.textContent = "Editar Propietario";
+
+        document.getElementById("nombre").value = propietario.Nombre || "";
+        document.getElementById("telefono").value = propietario.Telefono || "";
+        document.getElementById("correo").value = propietario.Correo || "";
+        document.getElementById("direccion").value = propietario.Direccion || "";
+
+        modalOverlay?.classList.remove("hidden");
+    }
+    /*------------------------------------------------- */
+
+
+    /**VER DATOS DEL PROPIETARIO  */
+    
+    function verPropietario(id) {
+    const propietario = propietarios.find(p => p.id == id);
+    if (!propietario) return;
+
+    modoModal = "ver";
+
+    modalTitle.textContent = "Detalle del Propietario";
+
+    document.getElementById("nombre").value = propietario.Nombre || "";
+    document.getElementById("telefono").value = propietario.Telefono || "";
+    document.getElementById("correo").value = propietario.Correo || "";
+    document.getElementById("direccion").value = propietario.Direccion || "";
+
+    // Desactivar inputs
+    document.querySelectorAll("#formNuevoPropietario input").forEach(input => {
+        input.disabled = true;
+    });
+
+    modalOverlay.classList.remove("hidden");
+}
+/**---------------------------------------------------------------------------------------------------------- */
     async function obtenerPropietarios() {
         try {
             const response = await fetch(API_URL, {
@@ -65,8 +116,12 @@
                     <td>${prop.Telefono ?? ""}</td>
                     <td>${prop.Correo ?? ""}</td>
                     <td>${prop.Direccion ?? ""}</td>
-                    <td>${prop.Estado}</td>
                     <td>
+                        <span class="badge ${prop.Estado.toLowerCase()}">
+                            ${prop.Estado}
+                        </span>
+                    <td>
+                        <button class="btn-ver" data-id="${prop.id}">Ver</button>
                         <button type="button" class="btn-editar" data-id="${prop.id}">Editar</button>
                         <button type="button" class="btn-toggle" data-id="${prop.id}">
                             ${prop.Estado.toLowerCase() === "activo" ? "Desactivar" : "Activar"}
@@ -82,6 +137,10 @@
 
         document.querySelectorAll(".btn-toggle").forEach(btn => {
             btn.addEventListener("click", () => toggleEstadoPropietario(btn.dataset.id));
+        });
+
+        document.querySelectorAll(".btn-ver").forEach(btn => {
+            btn.addEventListener("click", () => verPropietario(btn.dataset.id));
         });
     }
 
@@ -112,18 +171,23 @@
         renderizarPropietarios(filtrados);
     }
 
-    function abrirModalPropietario() {
-        modalOverlay?.classList.remove("hidden");
-    }
-
     function cerrarModalPropietario() {
-        modalOverlay?.classList.add("hidden");
-        formNuevoPropietario?.reset();
-    }
+    modalOverlay?.classList.add("hidden");
+    formNuevoPropietario?.reset();
+
+    modoModal = "crear";
+    propietarioEditandoId = null;
+    modalTitle.textContent = "Nuevo Propietario";
+
+    //volver a activar inputs
+    document.querySelectorAll("#formNuevoPropietario input").forEach(input => {
+        input.disabled = false;
+    });
+}
 
     btnNuevoPropietario?.addEventListener("click", function (e) {
         e.preventDefault();
-        abrirModalPropietario();
+        abrirModalCrear();
     });
 
     btnCerrarModal?.addEventListener("click", cerrarModalPropietario);
@@ -136,91 +200,61 @@
     });
 
     formNuevoPropietario?.addEventListener("submit", async function (e) {
-        e.preventDefault();
+    e.preventDefault();
 
-        const nuevoPropietario = {
-            nombre: document.getElementById("nombre").value.trim(),
-            telefono: document.getElementById("telefono").value.trim(),
-            correo: document.getElementById("correo").value.trim(),
-            direccion: document.getElementById("direccion").value.trim()
-        };
+    const datosPropietario = {
+        nombre: document.getElementById("nombre").value.trim(),
+        telefono: document.getElementById("telefono").value.trim(),
+        correo: document.getElementById("correo").value.trim(),
+        direccion: document.getElementById("direccion").value.trim()
+    };
 
-        console.log("Enviando propietario:", nuevoPropietario);
+    const esEdicion = modoModal === "editar";
+    const url = esEdicion ? `${API_URL}/${propietarioEditandoId}` : API_URL;
+    const metodo = esEdicion ? "PUT" : "POST";
 
-        try {
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(nuevoPropietario)
-            });
+    console.log("Modo modal:", modoModal);
+    console.log("Enviando datos:", datosPropietario);
 
-            const result = await response.json();
-            console.log("POST propietario:", result);
+    try {
+        const response = await fetch(url, {
+            method: metodo,
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(datosPropietario)
+        });
 
-            if (!response.ok) {
-                throw new Error(result.message || "Error al crear propietario");
-            }
+        const result = await response.json();
+        console.log(`${metodo} propietario:`, result);
 
-            alert(result.message || "Propietario creado exitosamente");
-            cerrarModalPropietario();
-            await obtenerPropietarios();
-
-        } catch (error) {
-            console.error("Error al crear propietario:", error.message);
-            alert(error.message);
+        if (!response.ok) {
+            throw new Error(
+                result.message ||
+                (esEdicion ? "Error al actualizar propietario" : "Error al crear propietario")
+            );
         }
-    });
 
-    async function editarPropietario(id) {
+        alert(
+            result.message ||
+            (esEdicion ? "Propietario actualizado exitosamente" : "Propietario creado exitosamente")
+        );
+
+        cerrarModalPropietario();
+        await obtenerPropietarios();
+
+    } catch (error) {
+        console.error("Error en formulario:", error.message);
+        alert(error.message);
+    }
+});
+
+    function editarPropietario(id) {
         const propietario = propietarios.find(p => p.id == id);
         if (!propietario) return;
 
-        const nombre = prompt("Nuevo nombre:", propietario.Nombre || "");
-        if (nombre === null) return;
-
-        const telefono = prompt("Nuevo teléfono:", propietario.Telefono || "");
-        if (telefono === null) return;
-
-        const correo = prompt("Nuevo correo:", propietario.Correo || "");
-        if (correo === null) return;
-
-        const direccion = prompt("Nueva dirección:", propietario.Direccion || "");
-        if (direccion === null) return;
-
-        const datosActualizados = {
-            nombre: nombre.trim(),
-            telefono: telefono.trim(),
-            correo: correo.trim(),
-            direccion: direccion.trim()
-        };
-
-        try {
-            const response = await fetch(`${API_URL}/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(datosActualizados)
-            });
-
-            const result = await response.json();
-            console.log("PUT propietario:", result);
-
-            if (!response.ok) {
-                throw new Error(result.message || "Error al actualizar propietario");
-            }
-
-            alert(result.message || "Propietario actualizado");
-            await obtenerPropietarios();
-
-        } catch (error) {
-            console.error("Error al editar propietario:", error.message);
-            alert(error.message);
-        }
+        abrirModalEditar(propietario);
     }
 
     async function toggleEstadoPropietario(id) {
