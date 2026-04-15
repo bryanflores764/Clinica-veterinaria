@@ -121,6 +121,55 @@
         };
     }
 
+        // =========================
+    // Validaciones
+    // =========================
+    function validarNombre(nombre) {
+        if (!nombre) {
+            return "El nombre es obligatorio";
+        }
+
+        if (nombre.length < 2) {
+            return "El nombre debe tener al menos 2 caracteres";
+        }
+
+        // Debe contener al menos una letra
+        if (!/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/.test(nombre)) {
+            return "El nombre debe contener letras";
+        }
+
+        return null;
+    }
+
+    function validarTelefono(telefono) {
+        if (!telefono) {
+            return "El teléfono es obligatorio";
+        }
+
+        // Solo números
+        if (!/^\d+$/.test(telefono)) {
+            return "El teléfono solo debe contener números";
+        }
+
+        // Ajusta este 8 si su proyecto maneja otra longitud
+        if (telefono.length !== 8) {
+            return "El teléfono debe tener exactamente 8 dígitos";
+        }
+
+        return null;
+    }
+
+    function validarFormularioPropietario(datos) {
+        const errorNombre = validarNombre(datos.nombre);
+        if (errorNombre) return errorNombre;
+
+        const errorTelefono = validarTelefono(datos.telefono);
+        if (errorTelefono) return errorTelefono;
+
+        return null;
+    }
+    
+
     // =========================
     // Confirmación
     // =========================
@@ -345,6 +394,12 @@
         }
 
         const datosPropietario = obtenerDatosFormulario();
+        const errorValidacion = validarFormularioPropietario(datosPropietario);
+
+        if (errorValidacion) {
+            mostrarNotificacion(errorValidacion, "error");
+            return;
+        }
 
         try {
             await guardarPropietario(datosPropietario);
