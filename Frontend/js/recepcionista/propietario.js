@@ -121,7 +121,16 @@
         };
     }
 
-        // =========================
+    //===ABREVIACION DE DIRECCION====//
+
+    function truncarTexto(texto, limite = 20) {
+    if (!texto) return "";
+    return texto.length > limite 
+        ? texto.slice(0, limite) + "..." 
+        : texto;
+}
+
+    // =========================
     // Validaciones
     // =========================
     function validarNombre(nombre) {
@@ -294,7 +303,9 @@
             <td>${prop.Nombre || ""}</td>
             <td>${prop.Telefono || ""}</td>
             <td>${prop.Correo || ""}</td>
-            <td>${prop.Direccion || ""}</td>
+            <td title="${prop.Direccion || ""}">
+                ${truncarTexto(prop.Direccion || "", 20)}
+            </td>
             <td>
                 <span class="badge ${estadoClase}">
                     ${prop.Estado || ""}
