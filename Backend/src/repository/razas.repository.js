@@ -5,53 +5,69 @@
 const connection = require('../database/connection');
 const RazasQueries = require('../models/razas.models');
 
+
+// 🔹 Crear raza
 const createRaza = async (especieId, nombre) => {
-  const [result] = await connection.execute(RazasQueries.CREATE, [especieId, nombre]);
+  const [result] = await connection.execute(
+    `INSERT INTO razas (Id_Especie, Nombre_Raza)
+     VALUES (?, ?)`,
+    [especieId, nombre]
+  );
 
   return {
-    Id: result.insertId,
+    id: result.insertId,
     Id_Especie: especieId,
     Nombre_Raza: nombre
   };
 };
 
-const findAllRazas = async () => {
-  const [rows] = await connection.execute(RazasQueries.FIND_ALL);
+// 🔹 Obtener todas
+const findAll = async () => {
+  const [rows] = await connection.execute(`
+    SELECT r.Id, r.Nombre_Raza, e.Nombre_Especie
+    FROM razas r
+    INNER JOIN especies e ON e.Id = r.Id_Especie
+  `);
+
   return rows;
 };
 
-const findRazaById = async (id) => {
-  const [rows] = await connection.execute(RazasQueries.FIND_BY_ID, [id]);
-  return rows[0] || null;
-};
-
-const findRazaByNombre = async (nombre) => {
+// 🔥 ESTE ES EL QUE TE FALTA
+const findById = async (id) => {
   const [rows] = await connection.execute(
-    `SELECT * FROM razas WHERE Nombre_Raza = ? LIMIT 1`,
-    [nombre]
+    `SELECT * FROM razas WHERE Id = ? LIMIT 1`,
+    [id]
   );
+
   return rows[0] || null;
 };
 
+// 🔹 Actualizar
 const updateRaza = async (id, especieId, nombre) => {
-  const [result] = await connection.execute(RazasQueries.UPDATE, [
-    especieId,
-    nombre,
-    id
-  ]);
+  const [result] = await connection.execute(
+    `UPDATE razas
+     SET Id_Especie = ?, Nombre_Raza = ?
+     WHERE Id = ?`,
+    [especieId, nombre, id]
+  );
+
   return result.affectedRows;
 };
 
+// 🔹 Eliminar
 const deleteRaza = async (id) => {
-  const [result] = await connection.execute(RazasQueries.DELETE, [id]);
+  const [result] = await connection.execute(
+    `DELETE FROM razas WHERE Id = ?`,
+    [id]
+  );
+
   return result.affectedRows;
 };
 
 module.exports = {
   createRaza,
-  findAllRazas,
-  findRazaById,
-  findRazaByNombre,
+  findAll,
+  findById, // 🔥 IMPORTANTE
   updateRaza,
   deleteRaza
 };
