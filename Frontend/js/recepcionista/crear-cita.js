@@ -1,29 +1,35 @@
-import { validarOwner } from "./validators.js";
+const API_URL = "http://localhost:3000/api/citas";
 
-const form = document.querySelector("#formOwner");
-
-form.addEventListener("submit", (e) => {
+document.getElementById("formCita")?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const data = {
-    nombre: document.querySelector("#nombre").value,
-    email: document.querySelector("#email").value,
-    telefono: document.querySelector("#telefono").value
+  const cita = {
+    Id_Mascota: Number(document.getElementById("mascota").value),
+    Id_Veterinario: Number(document.getElementById("veterinario").value),
+    IdTipoConsulta: Number(document.getElementById("tipo").value),
+    IdEstadoCita: 1, // pendiente
+    FechaHora: document.getElementById("fecha").value
   };
 
-  const errores = validarOwner(data);
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(cita)
+    });
 
-  // Mostrar errores
-  if (Object.keys(errores).length > 0) {
-    console.log(errores);
+    const data = await res.json();
 
-    if (errores.nombre) alert(errores.nombre);
-    if (errores.email) alert(errores.email);
-    if (errores.telefono) alert(errores.telefono);
+    if (!res.ok) throw new Error(data.message);
 
-    return;
+    alert("Cita creada correctamente ✅");
+
+    // limpiar form
+    document.getElementById("formCita").reset();
+
+  } catch (error) {
+    alert(error.message);
   }
-
-  // todo está bien
-  alert("Formulario válido 🚀");
 });
