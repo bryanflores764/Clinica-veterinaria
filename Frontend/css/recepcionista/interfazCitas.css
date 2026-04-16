@@ -1,0 +1,228 @@
+
+/* ========================= */
+/* MODAL GENERAL */
+/* ========================= */
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 250px;
+  width: calc(100% - 250px);
+  height: 100%;
+
+  background: transparent;
+  backdrop-filter: none;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* Mostrar modal */
+.modal:not(.hidden) {
+  display: flex;
+}
+
+/* Oculto */
+.hidden {
+  display: none !important;
+}
+
+/* ========================= */
+/* CAJA DEL MODAL */
+/* ========================= */
+
+.modal-content {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  width: 350px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  font-family: 'Baloo Da 2', sans-serif;
+}
+
+/* ========================= */
+/* INPUTS */
+/* ========================= */
+
+.modal-content input,
+.modal-content select {
+  width: 100%;
+  margin: 8px 0 15px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* ========================= */
+/* BOTONES */
+/* ========================= */
+
+.acciones {
+  display: flex;
+  justify-content: space-between;
+}
+
+.acciones button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Guardar */
+.acciones button[type="submit"] {
+  background: #28a745;
+  color: white;
+}
+
+/* Cancelar */
+.acciones button[type="button"] {
+  background: #dc3545;
+  color: white;
+}
+
+/* ========================= */
+/* CONTENEDOR TABLA */
+/* ========================= */
+
+#contenedorTabla {
+  margin-top: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* ========================= */
+/* TABLA */
+/* ========================= */
+
+.tabla-citas {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-citas th {
+  background: #f1f3f5;
+  color: #333;
+  font-weight: 600;
+  padding: 12px;
+}
+
+.tabla-citas td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+  color: #444;
+}
+
+.tabla-citas tr:hover {
+  background: #f9f9f9;
+}
+
+/* ========================= */
+/* BOTONES TABLA */
+/* ========================= */
+
+.btn-editar {
+  background-color: #0071BC;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-editar:hover {
+  background-color: #005f9e;
+}
+
+.btn-cancelar {
+  background: #dc3545;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.btn-cancelar:hover {
+  background: #b02a37;
+}
+
+/* ========================= */
+/* FILTRO */
+/* ========================= */
+
+.filtro-container {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#filtroEstado {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* ========================= */
+/* ESTADOS */
+/* ========================= */
+
+.estado-activa {
+  background: #d4edda;
+  color: #28a745;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.estado-cancelada {
+  background: #f8d7da;
+  color: #dc3545;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.estado-pendiente {
+  background: #fff3cd;
+  color: #f1c40f;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.estado-curso {
+  background: #cce5ff;
+  color: #0071BC;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.estado-cancelada {
+  background: #f8d7da !important;
+  color: #dc3545 !important;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+
+/* ========================= */
+/* FONDO GENERAL */
+/* ========================= */
+
+.main {
+  background: #f4f6f9;
+}
