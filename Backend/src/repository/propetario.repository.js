@@ -6,6 +6,7 @@
 const connection = require('../database/connection');
 const PropietariosQueries = require('../models/propetario.model');
 
+// 🔹 Crear
 const createPropietario = async (nombre, telefono, correo, direccion) => {
   const [result] = await connection.execute(PropietariosQueries.CREATE, [
     nombre,
@@ -24,17 +25,20 @@ const createPropietario = async (nombre, telefono, correo, direccion) => {
   };
 };
 
-const findAllPropietarios = async () => {
+// 🔹 Obtener todos
+const findAll = async () => {
   const [rows] = await connection.execute(PropietariosQueries.FIND_ALL);
   return rows;
 };
 
-const findPropietarioById = async (id) => {
+// 🔹 Buscar por ID
+const findById = async (id) => {
   const [rows] = await connection.execute(PropietariosQueries.FIND_BY_ID, [id]);
   return rows[0] || null;
 };
 
-const findPropietarioByCorreo = async (correo) => {
+// 🔹 Buscar por correo
+const findByCorreo = async (correo) => {
   const [rows] = await connection.execute(
     `SELECT * FROM propietarios WHERE Correo = ? LIMIT 1`,
     [correo]
@@ -42,6 +46,7 @@ const findPropietarioByCorreo = async (correo) => {
   return rows[0] || null;
 };
 
+// 🔹 Actualizar
 const updatePropietario = async (id, nombre, telefono, correo, direccion) => {
   const [result] = await connection.execute(PropietariosQueries.UPDATE, [
     nombre,
@@ -53,12 +58,13 @@ const updatePropietario = async (id, nombre, telefono, correo, direccion) => {
   return result.affectedRows;
 };
 
+// 🔹 Eliminar
 const deletePropietario = async (id) => {
   const [result] = await connection.execute(PropietariosQueries.DELETE_BY_ID, [id]);
   return result.affectedRows;
 };
 
-// 🔥 Toggle Estado
+// 🔹 Toggle Estado
 const toggleEstado = async (id) => {
   const [result] = await connection.execute(`
     UPDATE propietarios
@@ -66,7 +72,7 @@ const toggleEstado = async (id) => {
       WHEN Estado = 'activo' THEN 'inactivo'
       ELSE 'activo'
     END
-    WHERE id = ?
+    WHERE Id = ?
   `, [id]);
 
   return result.affectedRows;
@@ -74,9 +80,9 @@ const toggleEstado = async (id) => {
 
 module.exports = {
   createPropietario,
-  findAllPropietarios,
-  findPropietarioById,
-  findPropietarioByCorreo,
+  findAll,
+  findById,
+  findByCorreo,
   updatePropietario,
   deletePropietario,
   toggleEstado
