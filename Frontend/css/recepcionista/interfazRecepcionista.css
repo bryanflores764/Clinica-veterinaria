@@ -623,40 +623,52 @@
     cursor: pointer;
 }
 
+/* ========================= */
+/* MODAL GENERAL */
+/* ========================= */
 
-
-/*MODAL DE NUEVA CITA*/
-/* Fondo oscuro */
 .modal {
   position: fixed;
   top: 0;
-  left: 250px;/*Ancho del sidebar*/
-  width: calc(100% - 250px); /*Resto de pantalla*/
+  left: 250px;
+  width: calc(100% - 250px);
   height: 100%;
+
   background: transparent;
-  display: flex;
+  backdrop-filter: none;
+  display: none;
   justify-content: center;
   align-items: center;
   z-index: 999;
 }
 
-/* Oculto */
-.hidden {
-  display: none;
+/* Mostrar modal */
+.modal:not(.hidden) {
+  display: flex;
 }
 
-/* Caja del formulario */
+/* Oculto */
+.hidden {
+  display: none !important;
+}
+
+/* ========================= */
+/* CAJA DEL MODAL */
+/* ========================= */
+
 .modal-content {
   background: #fff;
   padding: 25px;
   border-radius: 12px;
   width: 350px;
-  transform: translateY(100px);
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
   font-family: 'Baloo Da 2', sans-serif;
 }
 
-/* Inputs */
+/* ========================= */
+/* INPUTS */
+/* ========================= */
+
 .modal-content input,
 .modal-content select {
   width: 100%;
@@ -666,7 +678,10 @@
   border: 1px solid #ccc;
 }
 
-/* Botones */
+/* ========================= */
+/* BOTONES */
+/* ========================= */
+
 .acciones {
   display: flex;
   justify-content: space-between;
@@ -679,67 +694,159 @@
   cursor: pointer;
 }
 
+/* Guardar */
 .acciones button[type="submit"] {
   background: #28a745;
   color: white;
 }
 
+/* Cancelar */
 .acciones button[type="button"] {
   background: #dc3545;
   color: white;
 }
 
+/* ========================= */
+/* CONTENEDOR TABLA */
+/* ========================= */
 
-/*Notificacion Exitoso*/
-/*
-.toast {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #28a745;
-  color: white;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-weight: bold;
-  z-index: 1000;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
+#contenedorTabla {
+  margin-top: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-.toast.error {
-  background: #dc3545;
-}
+/* ========================= */
+/* TABLA */
+/* ========================= */
 
-.hidden {
-  display: none;
-}
-/*
-
-/*TABLA DE CITAS Y BOTONES DE EDITAR */
-
-.tabla-citas{
+.tabla-citas {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
 }
 
-.tabla-citas th, .tabla-citas td{
-  border: 1px solid #ddd;
-  padding: 10px;
+.tabla-citas th {
+  background: #f1f3f5;
+  color: #333;
+  font-weight: 600;
+  padding: 12px;
+}
+
+.tabla-citas td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
   text-align: center;
+  color: #444;
 }
 
-.tabla-citas th{
-background: #28a745;
-color: white;
+.tabla-citas tr:hover {
+  background: #f9f9f9;
 }
 
-.btn-editar{
-  background: #007bff;
+/* ========================= */
+/* BOTONES TABLA */
+/* ========================= */
+
+.btn-editar {
+  background-color: #0071BC;
   color: white;
-  padding: 5px 10px;
+  padding: 6px 12px;
+  border-radius: 6px;
   border: none;
   cursor: pointer;
-  border-radius: 5px;
 }
 
+.btn-editar:hover {
+  background-color: #005f9e;
+}
+
+.btn-cancelar {
+  background: #dc3545;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.btn-cancelar:hover {
+  background: #b02a37;
+}
+
+/* ========================= */
+/* FILTRO */
+/* ========================= */
+
+.filtro-container {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#filtroEstado {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* ========================= */
+/* ESTADOS */
+/* ========================= */
+
+.estado-activa {
+  background: #d4edda;
+  color: #28a745;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.estado-cancelada {
+  background: #f8d7da;
+  color: #dc3545;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.estado-pendiente {
+  background: #fff3cd;
+  color: #f1c40f;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.estado-curso {
+  background: #cce5ff;
+  color: #0071BC;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.estado-cancelada {
+  background: #f8d7da !important;
+  color: #dc3545 !important;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+
+/* ========================= */
+/* FONDO GENERAL */
+/* ========================= */
+
+.main {
+  background: #f4f6f9;
+}

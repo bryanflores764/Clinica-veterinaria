@@ -78,6 +78,18 @@
 
 
                 <h2 id="tituloCitas" class="hidden">Lista de Citas</h2>
+                <!--FILTRO-->
+                <div style="margin-bottom: 15px;">
+                    <label>Filtrar Por Estado: </label>
+
+                    <select id="filtroEstado">
+                        <option value="todos">Todos</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Curso">En Curso</option>
+                        <option value="Cancelada">Cancelada</option>
+                        <option value="Completa">Completada</option>
+                    </select>
+                </div>
                 <table class="tabla-citas hidden" id="contenedorTabla">
                     <thead>
                         <tr>
@@ -85,6 +97,7 @@
                             <th>Mascota</th>
                             <th>Fecha</th>
                             <th>Hora</th>
+                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -142,6 +155,24 @@
                         <button type="button" id="cerrarEditarModal">Cancelar</button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!--MODAL DE CANCELAR CITA-->
+        <div id="modalCancelar" class="modal hidden">
+            <div class="modal-content">
+
+                <h2>Cancelar Cita</h2>
+
+                <p>¿Estás seguro que deseas cancelar esta cita?</p>
+
+                <label>Motivo de Cancelacion</label>
+                <input type="text" id="motivoCancelacion" placeholder="Ejemplo: Cliente no asistira">
+
+                <div class="acciones">
+                    <button type="button" id="confirmarCancelar">Confirmar</button>
+                    <button type="button" id="cerrarCancelar">Cerrar</button>
+                </div>
             </div>
         </div>
 
