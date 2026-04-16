@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../../css/recepcionista/recepcionistaMascotas.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
+    <title>Pacientes</title>
+</head>
+
+<body>
+    <div class="sidebar-backdrop"></div>
+    <div class="layout">
+
+        <aside class="sidebar">
+            <div class="logo">
+                <img id="logo" src="../../assets/img/Logo de clínica Veterinaria azul.png" alt="logo">
+            </div>
+            <ul>
+                <li>
+                    <a href="#">
+                        <img src="../../assets/icons/icon-citas.png" alt="citas">
+                        Citas
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src="../../assets/icons/icon-pacientes.png" alt="pacientes">
+                        pacientes
+                    </a>
+                </li>
+                <li>
+                    <a href="propetario.html">
+                        <img src="../../assets/icons/icon-user.png" alt="Cliente">
+                        Cliente
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src="../../assets/icons/icon-pagos.png" alt="pagos">
+                        pagos
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src="../../assets/icons/icon-historial.png" alt="historial">
+                        historial Citas
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <header class="header">
+            <h1>Pacientes</h1>
+
+            <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">
+                ☰
+            </button>
+            <div class="header-actions">
+                <a class="btn-new" href="#" id="btn-nuevoPaciente">
+                    <img src="../../assets/icons/icon-newPaciente.png" alt="">
+                    Nuevo Paciente
+                </a>
+                <a class="btn-logout" id="cerrar-sesion" href="#">
+                    <img src="../../assets/icons/icon-sesion.png" alt="cerrar-sesion">
+                    Cerrar Sesion
+                </a>
+            </div>
+        </header>
+
+        <!---------------------Main html----------------------------------------------------->
+        <main class="main">
+
+            <section class="main-container">
+
+                <div class="table-container">
+
+                    <div class="table-header">
+                        <input id="search" class="search" type="text" placeholder="Buscar por nombre o propietario">
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th >ID</th>
+                                    <th>Nombre</th>
+                                    <th>Especie</th>
+                                    <th>Raza</th>
+                                    <th>Peso (lbs)</th>
+                                    <th>Fecha de nacimiento</th>
+                                    <th>Propietario</th>
+                                    <th class="actions-col">Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="users-tbody">
+                                <!-- JS inyecta filas -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p id="empty-msg" class="empty-msg" style="display:none;">No hay pacientes para mostrar</p>
+
+                </div>
+
+            </section>
+
+        </main>
+
+        <!-- Modal para agregar nuevo paciente -->
+        <!-- Backdrop -->
+        <div id="modalMascotaBackdrop" class="modal-backdrop"></div>
+
+        <!-- modal -->
+        <div id="modalMascota" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Nueva mascota</h2>
+                    <button type="button" id="btnCerrarModalMascota" class="btn-cerrar" aria-label="Cerrar modal">
+                        &times;
+                    </button>
+                </div>
+
+                <form id="formNuevaMascota" class="form-mascota">
+                    <div class="form-grid">
+                        <!-- Nombre -->
+                        <div class="form-group">
+                            <label for="nombreMascota">Nombre</label>
+                            <input type="text" id="nombreMascota" name="nombreMascota" placeholder="Ingrese el nombre"
+                                required />
+                        </div>
+
+                        <!-- Fecha de nacimiento -->
+                        <div class="form-group">
+                            <label for="fechaNacimiento">Fecha de nacimiento</label>
+                            <input type="date" id="fechaNacimiento" name="fechaNacimiento" required />
+                        </div>
+
+                        <!-- Peso -->
+                        <div class="form-group">
+                            <label for="pesoMascota">Peso (lbs)</label>
+                            <input type="number" id="pesoMascota" name="pesoMascota" placeholder="Ej. 12.5" min="0"
+                                step="0.01" required />
+                        </div>
+
+                        <!-- Color -->
+                        <div class="form-group">
+                            <label for="colorMascota">Color</label>
+                            <input type="text" id="colorMascota" name="colorMascota"
+                                placeholder="Ej. Café, blanco, negro" required />
+                        </div>
+
+                        <!-- Propietario -->
+                        <div class="form-group">
+                            <label for="propietarioMascota">Propietario</label>
+                            <select id="propietarioMascota" name="propietarioMascota" required>
+                                <option value="">Seleccione un propietario</option>
+                            </select>
+                        </div>
+
+                        <!-- Especie -->
+                        <div class="form-group">
+                            <label for="especieMascota">Especie</label>
+                            <div class="select-add-group">
+                                <select id="especieMascota" name="especieMascota" required>
+                                    <option value="">Seleccione una especie</option>
+                                </select>
+
+                                <button type="button" id="btnNuevaEspecie" class="btn-secundario">
+                                    + Nueva
+                                </button>
+                            </div>
+
+                            <div id="contenedorNuevaEspecie" class="extra-field hidden">
+                                <input type="text" id="inputNuevaEspecie" placeholder="Escriba la nueva especie" />
+                            </div>
+                        </div>
+
+                        <!-- Raza -->
+                        <div class="form-group">
+                            <label for="razaMascota">Raza</label>
+                            <div class="select-add-group">
+                                <select id="razaMascota" name="razaMascota" required>
+                                    <option value="">Seleccione una raza</option>
+                                </select>
+
+                                <button type="button" id="btnNuevaRaza" class="btn-secundario">
+                                    + Nueva
+                                </button>
+                            </div>
+
+                            <div id="contenedorNuevaRaza" class="extra-field hidden">
+                                <input type="text" id="inputNuevaRaza" placeholder="Escriba la nueva raza" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" id="btnCancelarMascota" class="btn-cancelar">Cancelar</button>
+                        <button type="submit" class="btn-guardar">Guardar mascota</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal para confirmar eliminación -->
+        <div id="modal-eliminar" class="modal-eliminar hidden">
+            <div class="modal-eliminar-contenido">
+                <h2>Confirmar eliminación</h2>
+                <p id="modal-eliminar-texto">
+                    ¿Seguro que deseas eliminar esta mascota?
+                </p>
+
+                <div class="modal-eliminar-acciones">
+                    <button type="button" id="cancelar-eliminacion" class="btn-modal btn-cancelar">
+                        Cancelar
+                    </button>
+                    <button type="button" id="confirmar-eliminacion" class="btn-modal btn-confirmar">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="../../js/recepcionista/recepcionistaMascotas.js"></script>
+    <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
+    <script src="../../js/recepcionista/logout.js"></script>
+</body>
+
+</html>
