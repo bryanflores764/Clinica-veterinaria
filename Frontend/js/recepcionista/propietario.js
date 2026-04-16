@@ -297,17 +297,21 @@
         const tr = document.createElement("tr");
 
         const estadoClase = (prop.Estado || "").toLowerCase();
-        const textoBotonToggle = estadoClase === "activo" ? "Desactivar" : "Activar";
+        const esMovil = window.innerWidth <= 600;
+
+const textoBotonToggle = esMovil
+  ? (estadoClase === "activo" ? "Desac." : "Act.")
+  : (estadoClase === "activo" ? "Desactivar" : "Activar");;
         const claseToggle = estadoClase === "activo" ? "btn-desactivar" : "btn-activar";
 
         tr.innerHTML = `
             <td>${prop.Nombre || ""}</td>
             <td>${prop.Telefono || ""}</td>
-            <td>${prop.Correo || ""}</td>
-            <td title="${prop.Direccion || ""}">
+            <td class="col-correo">${prop.Correo || ""}</td>
+            <td class="col-direccion" title="${prop.Direccion || ""}">
                 ${truncarTexto(prop.Direccion || "", 20)}
             </td>
-            <td>
+            <td class="col-estado">
                 <span class="badge ${estadoClase}">
                     ${prop.Estado || ""}
                 </span>

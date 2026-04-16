@@ -1,3 +1,73 @@
+/* =======================
+  modal
+======================= */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0,0,0,0.5);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 999;
+}
+
+.hidden {
+    display: none;
+}
+
+.modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 400px;
+    max-width: 90%;
+    padding: 20px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-btn {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.form-group {
+    margin: 10px 0;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.modal-footer {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-guardar {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
 /*Estilos de modals y tablas de datos*/
 .owners-container {
   padding: 25px 30px;
@@ -206,6 +276,10 @@
     padding: 20px;
   }
 
+  .col-correo{
+    display: none;
+  }
+
   .owners-toolbar {
     flex-direction: column;
     align-items: stretch;
@@ -244,6 +318,12 @@
     padding: 15px 12px;
   }
 
+  .col-correo,
+  .col-direccion,
+  .col-estado {
+    display: none;
+  }
+
   .owners-toolbar {
     gap: 12px;
     margin-bottom: 15px;
@@ -269,13 +349,13 @@
   }
 
   .owners-table {
-    min-width: 850px;
+    min-width: 100%;
   }
 
   .owners-table th,
   .owners-table td {
-    padding: 9px;
-    font-size: 14px;
+    padding: 8px 6px;
+    font-size: 13px;
   }
 
   .owners-table td span.badge {
@@ -284,13 +364,14 @@
   }
 
   .owners-table button {
-    padding: 6px 8px;
-    margin-right: 4px;
+    padding: 5px 7px;
+    margin-right: 3px;
   }
 
   .btn-toggle {
-    width: 100px;
-    font-size: 13px;
+    width: 60px;
+    font-size: 10px;
+    padding: 6px 6px;
   }
 
   .owners-table button img {
