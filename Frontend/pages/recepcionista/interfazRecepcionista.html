@@ -20,7 +20,7 @@
             </div>
             <ul>
                 <li>
-                    <a href="#">
+                    <a href="#" id="btnVerCitas">
                         <img src="../../assets/icons/icon-citas.png" alt="citas">
                         Citas
                     </a>
@@ -59,7 +59,7 @@
                 ☰
             </button>
             <div class="header-actions">
-                <a class="btn-new" href="#">
+                <a class="btn-new" id="btnNuevaCita">
                     <img src="../../assets/icons/icon-newcita.png" alt="">
                     Nueva Cita
                 </a>
@@ -73,11 +73,125 @@
         <main class="main">
             <header class="header-main">
                 <h1>Citas Programadas</h1>
+                
                 <span>Recepcion | Control de agenda diaria</span>
+
+
+                <h2 id="tituloCitas" class="hidden">Lista de Citas</h2>
+                <!--FILTRO-->
+                <div style="margin-bottom: 15px;">
+                    <label>Filtrar Por Estado: </label>
+
+                    <select id="filtroEstado">
+                        <option value="todos">Todos</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Curso">En Curso</option>
+                        <option value="Cancelada">Cancelada</option>
+                        <option value="Completa">Completada</option>
+                    </select>
+                </div>
+                <table class="tabla-citas hidden" id="contenedorTabla">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Mascota</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaCitas"></tbody>
+                </table>
             </header>
         </main>
+
+
+        <div id="modalCita" class="modal hidden">
+            <div class="modal-content">
+                <h2>Nueva Cita</h2>
+
+                <form id="formCita">
+                    
+                    <label>Mascota</label>
+                    <select id="mascota" value>
+                        <option value="">Seleccione Mascota</option>
+                    </select>
+
+                    <label>Fecha</label>
+                    <input type="date" id="fecha" required>
+
+                    <label>Hora</label>
+                    <input type="time" id="hora" required>
+
+                    <div class="acciones">
+                        <button type="submit">Guardar</button>
+                        <button type="button" id="cerrarModal">Cancelar</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <!--MODAL DE CITAS-->
+        <div id="modalEditarCita" class="modal hidden">
+            <div class="modal-content">
+                <h2>Editar Cita</h2>
+
+                <form id="formEditarCita">
+                    <input type="hidden" id="editIdCita">
+
+                    <label>Mascota</label>
+                    <select id="editMascota"></select>
+
+                    <label>Fecha</label>
+                    <input type="date" id="editFecha">
+
+                    <label>Hora</label>
+                    <input type="time" id="editHora">
+
+                    <div class="acciones">
+                        <button type="submit">Actualizar</button>
+                        <button type="button" id="cerrarEditarModal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!--MODAL DE CANCELAR CITA-->
+        <div id="modalCancelar" class="modal hidden">
+            <div class="modal-content">
+
+                <h2>Cancelar Cita</h2>
+
+                <p>¿Estás seguro que deseas cancelar esta cita?</p>
+
+                <label>Motivo de Cancelacion</label>
+                <input type="text" id="motivoCancelacion" placeholder="Ejemplo: Cliente no asistira">
+
+                <div class="acciones">
+                    <button type="button" id="confirmarCancelar">Confirmar</button>
+                    <button type="button" id="cerrarCancelar">Cerrar</button>
+                </div>
+            </div>
+        </div>
+
+        
     </div>
+    
     <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
+    <script src="../../js/recepcionista/nueva-cita.js"></script>
     <script src="../../js/recepcionista/logout.js"></script>
+    <script src="../../js/recepcionista/citas.js"></script>
+
+    <!--MODAL AL MOMENTO DE EDITAR Y ACTUALIZAR MUESTRA ESTA INFO-->
+    <div id="modalExito" class="modal hidden">
+        <div class="modal-content exito">
+            <h3> Exito</h3>
+            <p>Se han Actualizado los datos Correctamente</p>
+            <button id="cerrarExito">Aceptar</button>
+        </div>
+    </div>
+
 </body>
 </html>
