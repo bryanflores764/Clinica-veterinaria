@@ -618,6 +618,11 @@ document.addEventListener("DOMContentLoaded", () => {
     verificarSesion();
     cargarMascotas();
     configurarBusqueda();
+    verificarSesion();
+    cargarMascotas();
+    configurarBusqueda();
+    configurarEventosEliminar();
+    configurarModalEliminar();
 });
 
 async function cargarMascotas() {
@@ -669,16 +674,20 @@ function renderizarMascotas(lista) {
         const fila = document.createElement("tr");
 
         fila.innerHTML = `
-            <td>${mascota.Id ?? ""}</td>
-            <td>${escapeHtml(mascota.Nombre ?? "")}</td>
-            <td>${escapeHtml(mascota.Nombre_Especie ?? "")}</td>
-            <td>${escapeHtml(mascota.Nombre_Raza ?? "")}</td>
-            <td>${formatearPeso(mascota.Peso)}</td>
-            <td>${formatearFecha(mascota.Fecha_Nacimiento)}</td>
-            <td>${escapeHtml(mascota.Propietario ?? "")}</td>
-            <td>
+            <td style="text-align: center;">${mascota.Id ?? ""}</td>
+            <td style="text-align: center;">${escapeHtml(mascota.Nombre ?? "")}</td>
+            <td style="text-align: center;">${escapeHtml(mascota.Nombre_Especie ?? "")}</td>
+            <td style="text-align: center;">${escapeHtml(mascota.Nombre_Raza ?? "")}</td>
+            <td style="text-align: center;">${formatearPeso(mascota.Peso)}</td>
+            <td style="text-align: center;">${formatearFecha(mascota.Fecha_Nacimiento)}</td>
+            <td style="text-align: center;">${escapeHtml(mascota.Propietario ?? "")}</td>
+            <td style="text-align: center;">
                 <button type="button" class="btn-accion btn-editar">Editar</button>
-                <button type="button" class="btn-accion btn-eliminar">Eliminar</button>
+                
+                <button type="button" class="btn-accion btn-eliminar" 
+                data-id="${mascota.Id}" data-nombre="${escapeHtml(mascota.Nombre ?? "")}">
+                Eliminar
+                </button>
             </td>
         `;
 
@@ -735,4 +744,88 @@ function escapeHtml(texto) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+/* =========================================================
+    modal de confirmación para eliminar
+========================================================== */
+const modalEliminar = document.getElementById("modal-eliminar");
+const modalEliminarTexto = document.getElementById("modal-eliminar-texto");
+const btnCancelarEliminacion = document.getElementById("cancelar-eliminacion");
+const btnConfirmarEliminacion = document.getElementById("confirmar-eliminacion");
+
+let mascotaSeleccionadaParaEliminar = null;
+
+function configurarEventosEliminar() {
+    tbody.addEventListener("click", (e) => {
+        const botonEliminar = e.target.closest(".btn-eliminar");
+
+        if (!botonEliminar) return;
+
+        const id = botonEliminar.dataset.id;
+        const nombre = botonEliminar.dataset.nombre;
+
+        mascotaSeleccionadaParaEliminar = id;
+
+        modalEliminarTexto.textContent = `¿Seguro que deseas eliminar a ${nombre}?`;
+        abrirModalEliminar();
+    });
+}
+
+function configurarModalEliminar() {
+    btnCancelarEliminacion.addEventListener("click", cerrarModalEliminar);
+
+    btnConfirmarEliminacion.addEventListener("click", async () => {
+        if (!mascotaSeleccionadaParaEliminar) return;
+
+        await eliminarMascota(mascotaSeleccionadaParaEliminar);
+    });
+
+    modalEliminar.addEventListener("click", (e) => {
+        if (e.target === modalEliminar) {
+            cerrarModalEliminar();
+        }
+    });
+}
+
+function abrirModalEliminar() {
+    modalEliminar.classList.remove("hidden");
+}
+
+function cerrarModalEliminar() {
+    modalEliminar.classList.add("hidden");
+    mascotaSeleccionadaParaEliminar = null;
+}
+
+async function eliminarMascota(id) {
+    try {
+        btnConfirmarEliminacion.disabled = true;
+        btnConfirmarEliminacion.textContent = "Eliminando...";
+
+        const respuesta = await fetch(`${URL_API}/api/mascotas/${id}`, {
+            method: "DELETE",
+            headers: obtenerEncabezados(false)
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(resultado.message || "No se pudo eliminar la mascota.");
+        }
+
+        cerrarModalEliminar();
+        await cargarMascotas();
+    } catch (error) {
+        console.error("Error al eliminar mascota:", error);
+        alert(error.message || "Ocurrió un error al eliminar la mascota.");
+    } finally {
+        btnConfirmarEliminacion.disabled = false;
+        btnConfirmarEliminacion.textContent = "Eliminar";
+    }
 }

@@ -419,6 +419,7 @@
     font-weight: 700;
     color: #111;
     white-space: nowrap;
+    text-align: center;
 }
 
 .users-table td {
@@ -690,6 +691,85 @@ body {
 
 .form-grid {
     align-items: start;
+}
+
+/* =======================
+    modal de confirmación de eliminación
+======================= */
+
+.modal-eliminar {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-eliminar.hidden {
+    display: none;
+}
+
+.modal-eliminar-contenido {
+    width: 100%;
+    max-width: 420px;
+    background-color: #ffffff;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    text-align: center;
+}
+
+.modal-eliminar-contenido h2 {
+    margin: 0 0 12px;
+    font-size: 24px;
+    font-weight: 800;
+    color: #111;
+}
+
+.modal-eliminar-contenido p {
+    margin: 0 0 22px;
+    font-size: 16px;
+    color: #444;
+    line-height: 1.5;
+}
+
+.modal-eliminar-acciones {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-modal {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 18px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-cancelar {
+    background-color: #e5e7eb;
+    color: #222;
+}
+
+.btn-cancelar:hover {
+    background-color: #d6d9de;
+}
+
+.btn-confirmar {
+    background-color: #ff0000;
+    color: #fff;
+}
+
+.btn-confirmar:hover {
+    background-color: #c62828;
 }
 
 /* =======================

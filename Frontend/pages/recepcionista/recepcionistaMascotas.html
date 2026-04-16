@@ -87,7 +87,7 @@
                         <table class="users-table">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th >ID</th>
                                     <th>Nombre</th>
                                     <th>Especie</th>
                                     <th>Raza</th>
@@ -208,9 +208,29 @@
             </div>
         </div>
 
+        <!-- Modal para confirmar eliminación -->
+        <div id="modal-eliminar" class="modal-eliminar hidden">
+            <div class="modal-eliminar-contenido">
+                <h2>Confirmar eliminación</h2>
+                <p id="modal-eliminar-texto">
+                    ¿Seguro que deseas eliminar esta mascota?
+                </p>
+
+                <div class="modal-eliminar-acciones">
+                    <button type="button" id="cancelar-eliminacion" class="btn-modal btn-cancelar">
+                        Cancelar
+                    </button>
+                    <button type="button" id="confirmar-eliminacion" class="btn-modal btn-confirmar">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
     <script src="../../js/recepcionista/recepcionistaMascotas.js"></script>
     <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
     <script src="../../js/recepcionista/logout.js"></script>
 </body>
+
 </html>
