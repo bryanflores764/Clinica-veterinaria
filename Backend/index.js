@@ -35,6 +35,10 @@ app.use('/api/propietarios', propietariosRoutes);
 const especiesRoutes = require('./src/routes/especies.routes');
 app.use('/api/especies', especiesRoutes);
 
+// ── HU-07: Módulo Citas ───────────────────────────────────────
+const citasRoutes = require('./src/routes/citas.routes');
+app.use('/api/citas', citasRoutes);
+
 const razasRoutes = require('./src/routes/razas.routes');
 app.use('/api/razas', razasRoutes);
 
