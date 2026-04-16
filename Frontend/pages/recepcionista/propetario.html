@@ -6,23 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico" type="image/x-icon">
     <link rel="stylesheet" href="../../css/recepcionista/interfazRecepcionista.css">
+    <link rel="stylesheet" href="../../css/recepcionista/propietarios.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
-    <title>RECEPCIONISTA</title>
+    <title>PROPIETARIOS</title>
 </head>
 
 <body>
     <div class="sidebar-backdrop"></div>
-    <div class="layout">
 
+    <div class="layout">
         <aside class="sidebar">
             <div class="logo">
                 <img id="logo" src="../../assets/img/Logo de clínica Veterinaria azul.png" alt="logo">
             </div>
+
             <ul>
                 <li>
-                    <a href="#">
+                    <a href="interfazRecepcionista.html">
                         <img src="../../assets/icons/icon-citas.png" alt="citas">
                         Citas
                     </a>
@@ -30,7 +32,7 @@
                 <li>
                     <a href="#">
                         <img src="../../assets/icons/icon-pacientes.png" alt="pacientes">
-                        pacientes
+                        Pacientes
                     </a>
                 </li>
                 <li>
@@ -42,29 +44,31 @@
                 <li>
                     <a href="#">
                         <img src="../../assets/icons/icon-pagos.png" alt="pagos">
-                        pagos
+                        Pagos
                     </a>
                 </li>
                 <li>
                     <a href="#">
                         <img src="../../assets/icons/icon-historial.png" alt="historial">
-                        historial Citas
+                        Historial Citas
                     </a>
                 </li>
             </ul>
         </aside>
 
         <header class="header">
-            <h1>Propietario</h1>
+            <h1>PROPIETARIOS</h1>
 
             <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">
                 ☰
             </button>
+
             <div class="header-actions">
                 <a class="btn-new" href="#" id="nuevo-propietario">
-                    <img src="../../assets/icons/icon-newcita.png" alt="">
+                    <img src="../../assets/icons/adduser.svg" alt="">
                     Nuevo Propietario
                 </a>
+
                 <a class="btn-logout" id="cerrar-sesion" href="#">
                     <img src="../../assets/icons/icon-sesion.png" alt="cerrar-sesion">
                     Cerrar Sesion
@@ -73,20 +77,47 @@
         </header>
 
         <main class="main">
+            <section class="owners-container">
+                <div class="owners-toolbar">   
+                    <div class="search-box">
+                        <img src="../../assets/icons/search.svg" alt="Buscar">
+                        <input type="text" id="buscarPropietario" placeholder="Buscar por nombre o correo">
+                    </div>
+                    <select id="filtroEstado">
+                        <option value="activos">Activos</option>
+                        <option value="todos">Todos</option>
+                        <option value="inactivos">Inactivos</option>
+                    </select>
+                </div>
 
+                <div class="owners-table-wrapper">
+                    <table class="owners-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Teléfono</th>
+                                <th class="col-correo">Correo</th>
+                                <th class="col-direccion">Dirección</th>
+                                <th class="col-estado">Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ownersTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
         </main>
     </div>
 
+    <!----------------- MODAL PARA REGISTRAR / EDITAR / VER ----------------->
     <div id="modalOverlay" class="modal-overlay hidden">
         <div class="modal">
-
             <div class="modal-header">
-                <h2>Nuevo Propietario</h2>
+                <h2 id="modalTitle">Nuevo Propietario</h2>
                 <span class="close-btn" id="cerrarModal">&times;</span>
             </div>
 
             <form id="formNuevoPropietario" class="modal-body">
-
                 <div class="form-group">
                     <label>Nombre</label>
                     <input type="text" id="nombre" required>
@@ -111,13 +142,28 @@
                     <button type="button" id="cancelar">Cancelar</button>
                     <button type="submit" class="btn-guardar">Guardar</button>
                 </div>
-
             </form>
-
         </div>
     </div>
-    <script src="../../js/recepcionista/validacion.js"></script>
+
+    <!---------------------------- MODAL DE CONFIRMACIÓN ---------------------------->
+    <div id="modalConfirmacion" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="mensajeConfirmacion">¿Estás seguro?</h3>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btnCancelarConfirm">Cancelar</button>
+                <button type="button" id="btnAceptarConfirm" class="btn-guardar">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="contenedorNotificaciones" class="contenedor-notificaciones"></div>
+
     <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
+    <script src="../../js/recepcionista/propietario.js"></script>
     <script src="../../js/recepcionista/logout.js"></script>
 </body>
 </html>
