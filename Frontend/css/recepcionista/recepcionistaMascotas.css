@@ -1,5 +1,5 @@
 /* =======================
-   BASE
+    BASE
 ======================= */
 * {
     box-sizing: border-box;
@@ -9,7 +9,7 @@
 }
 
 /* =======================
-   LAYOUT DESKTOP
+    LAYOUT DESKTOP
 ======================= */
 .layout {
     display: grid;
@@ -22,7 +22,7 @@
 }
 
 /* =======================
-   HEADER
+    HEADER
 ======================= */
 .header {
     grid-area: header;
@@ -101,7 +101,7 @@
 }
 
 /* =======================
-   SIDEBAR DESKTOP
+    SIDEBAR DESKTOP
 ======================= */
 .sidebar {
     grid-area: sidebar;
@@ -190,7 +190,7 @@
 }
 
 /* =======================
-   MAIN + CARDS (DESKTOP)
+    MAIN + CARDS (DESKTOP)
 ======================= */
 .main {
     grid-area: main;
@@ -327,9 +327,165 @@
     color: white;
 }
 
+/* =========================
+    MAIN RECEPCIONISTA
+========================= */
+
+.main {
+    flex: 1;
+    background-color: #eef1f1;
+    min-height: 100vh;
+    padding: 28px;
+    box-sizing: border-box;
+}
+
+.main-container {
+    width: 100%;
+}
+
+/* =========================
+    CONTENEDOR PRINCIPAL
+========================= */
+
+.table-container {
+    width: 100%;
+    background-color: #f4f6f6;
+    border-radius: 12px;
+    padding: 22px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* =========================
+    HEADER DE TABLA
+========================= */
+
+.table-header {
+    margin-bottom: 20px;
+}
+
+.search {
+    width: 100%;
+    max-width: 760px;
+    height: 48px;
+    border: 1px solid #d7d7d7;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 16px;
+    outline: none;
+    background-color: #ffffff;
+    color: #333;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search::placeholder {
+    color: #b3b3b3;
+}
+
+.search:focus {
+    border-color: #42ab49;
+    box-shadow: 0 0 0 3px rgba(66, 171, 73, 0.12);
+}
+
+/* =========================
+    TABLA
+========================= */
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 12px;
+    box-sizing: border-box;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 950px;
+    font-size: 16px;
+    color: #222;
+}
+
+.users-table thead tr {
+    background-color: #e9eeee;
+}
+
+.users-table th {
+    text-align: left;
+    padding: 16px 14px;
+    font-weight: 700;
+    color: #111;
+    white-space: nowrap;
+}
+
+.users-table td {
+    padding: 16px 14px;
+    border-bottom: 1px solid #dddddd;
+    vertical-align: middle;
+    color: #2b2b2b;
+}
+
+.users-table tbody tr:hover {
+    background-color: #f8fbf8;
+}
+
+/* =========================
+    COLUMNA ACCIONES
+========================= */
+
+.actions-col {
+    text-align: center;
+}
+
+.users-table td:last-child {
+    white-space: nowrap;
+}
+
+.btn-accion {
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 6px;
+    transition: 0.2s ease;
+}
+
+.btn-eliminar {
+    background-color: #ff0000;
+    color: white;
+}
+
+.btn-eliminar:hover {
+    background-color: #c62828;
+}
+
+.btn-editar {
+    background-color: #42ab49;
+    color: white;
+}
+
+.btn-editar:hover {
+    background-color: #0071BC;
+}
+
+/* =========================
+    MENSAJE VACÍO
+========================= */
+
+.empty-msg {
+    text-align: center;
+    margin-top: 18px;
+    color: #777;
+    font-size: 15px;
+}
 
 /* =======================
-   MODAL
+    MODAL
 ======================= */
 
 body {
@@ -537,7 +693,7 @@ body {
 }
 
 /* =======================
-   RESPONSIVE HEADER (<=900)
+    RESPONSIVE HEADER (<=900)
 ======================= */
 @media (max-width: 900px) {
     .header {
@@ -563,8 +719,8 @@ body {
 }
 
 /* =======================
-   TABLET (601–900)
-   Sidebar debajo del header en horizontal
+    TABLET (601–900)
+    Sidebar debajo del header en horizontal
 ======================= */
 @media (max-width: 900px) and (min-width: 601px) {
 
@@ -624,8 +780,8 @@ body {
 }
 
 /* =======================
-   MÓVIL (<=600)
-   Off-canvas + hamburguesa
+    MÓVIL (<=600)
+    Off-canvas + hamburguesa
 ======================= */
 @media (max-width: 600px) {
 
@@ -761,8 +917,8 @@ body {
 }
 
 /* =======================
-   TABLET CHICA (<=800)
-   Cards en 1 columna también
+    TABLET CHICA (<=800)
+    Cards en 1 columna también
 ======================= */
 @media (max-width: 800px) {
     .header-main {
@@ -788,5 +944,24 @@ body {
 
     .modal-content {
         padding: 18px;
+    }
+
+    .main {
+        padding: 16px;
+    }
+
+    .table-container {
+        padding: 16px;
+    }
+
+    .search {
+        height: 44px;
+        font-size: 15px;
+    }
+
+    .users-table th,
+    .users-table td {
+        padding: 14px 10px;
+        font-size: 14px;
     }
 }

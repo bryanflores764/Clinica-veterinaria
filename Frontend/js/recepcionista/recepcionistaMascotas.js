@@ -602,3 +602,137 @@ formularioNuevaMascota.addEventListener("submit", async (e) => {
         cambiarEstadoBotonGuardar(false);
     }
 });
+
+/* =========================================================
+    funcionalidad de la tabla y búsqueda
+========================================================= */
+
+const tbody = document.getElementById("users-tbody");
+const emptyMsg = document.getElementById("empty-msg");
+const searchInput = document.getElementById("search");
+
+let mascotas = [];
+let mascotasFiltradas = [];
+
+document.addEventListener("DOMContentLoaded", () => {
+    verificarSesion();
+    cargarMascotas();
+    configurarBusqueda();
+});
+
+async function cargarMascotas() {
+    try {
+        const respuesta = await fetch(`${URL_API}/api/mascotas`, {
+            method: "GET",
+            headers: obtenerEncabezados(false)
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(resultado.message || "No se pudieron cargar las mascotas.");
+        }
+
+        mascotas = Array.isArray(resultado.data) ? resultado.data : [];
+
+        mascotas.sort((a, b) => Number(a.Id) - Number(b.Id));
+
+        mascotasFiltradas = [...mascotas];
+
+        renderizarMascotas(mascotasFiltradas);
+    } catch (error) {
+        console.error("Error al cargar mascotas:", error);
+        tbody.innerHTML = "";
+        emptyMsg.textContent = "No se pudieron cargar los pacientes.";
+        emptyMsg.style.display = "block";
+    }
+}
+
+function renderizarMascotas(lista) {
+    tbody.innerHTML = "";
+
+    if (!lista || lista.length === 0) {
+        emptyMsg.textContent = "No hay pacientes para mostrar.";
+        emptyMsg.style.display = "block";
+        return;
+    }
+
+    emptyMsg.style.display = "none";
+
+    lista.forEach((mascota) => {
+        const fila = document.createElement("tr");
+
+        fila.innerHTML = `
+            <td>${mascota.Id ?? ""}</td>
+            <td>${escapeHtml(mascota.Nombre ?? "")}</td>
+            <td>${escapeHtml(mascota.Nombre_Especie ?? "")}</td>
+            <td>${escapeHtml(mascota.Nombre_Raza ?? "")}</td>
+            <td>${formatearPeso(mascota.Peso)}</td>
+            <td>${formatearFecha(mascota.Fecha_Nacimiento)}</td>
+            <td>${escapeHtml(mascota.Propietario ?? "")}</td>
+            <td>
+                <button type="button" class="btn-accion btn-editar">Editar</button>
+                <button type="button" class="btn-accion btn-eliminar">Eliminar</button>
+            </td>
+        `;
+
+        tbody.appendChild(fila);
+    });
+}
+
+function configurarBusqueda() {
+    searchInput.addEventListener("input", (e) => {
+        const texto = e.target.value.trim().toLowerCase();
+
+        mascotasFiltradas = mascotas.filter((mascota) => {
+            const nombre = (mascota.Nombre || "").toLowerCase().trim();
+            const propietario = (mascota.Propietario || "").toLowerCase().trim();
+
+            return (
+                nombre.includes(texto) ||
+                propietario.includes(texto)
+            );
+        });
+
+        renderizarMascotas(mascotasFiltradas);
+    });
+}
+
+function formatearFecha(fecha) {
+    if (!fecha) return "";
+
+    const fechaObj = new Date(fecha);
+
+    if (isNaN(fechaObj.getTime())) return "";
+
+    const dia = String(fechaObj.getDate()).padStart(2, "0");
+    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
+    const anio = fechaObj.getFullYear();
+
+    return `${dia}-${mes}-${anio}`;
+}
+
+function formatearPeso(peso) {
+    if (peso === null || peso === undefined || peso === "") return "";
+
+    const pesoNumero = Number(peso);
+
+    if (isNaN(pesoNumero)) return "";
+
+    return pesoNumero % 1 === 0 ? pesoNumero.toString() : pesoNumero.toFixed(2);
+}
+
+function escapeHtml(texto) {
+    return String(texto)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}

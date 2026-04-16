@@ -62,7 +62,7 @@
             </button>
             <div class="header-actions">
                 <a class="btn-new" href="#" id="btn-nuevoPaciente">
-                    <img src="../../assets/icons/icon-newcita.png" alt="">
+                    <img src="../../assets/icons/icon-newPaciente.png" alt="">
                     Nuevo Paciente
                 </a>
                 <a class="btn-logout" id="cerrar-sesion" href="#">
@@ -72,9 +72,43 @@
             </div>
         </header>
 
+        <!---------------------Main html----------------------------------------------------->
         <main class="main">
 
-            <input type="text" placeholder="Buscar paciente..." class="input-buscar">
+            <section class="main-container">
+
+                <div class="table-container">
+
+                    <div class="table-header">
+                        <input id="search" class="search" type="text" placeholder="Buscar por nombre o propietario">
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Especie</th>
+                                    <th>Raza</th>
+                                    <th>Peso (lbs)</th>
+                                    <th>Fecha de nacimiento</th>
+                                    <th>Propietario</th>
+                                    <th class="actions-col">Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="users-tbody">
+                                <!-- JS inyecta filas -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p id="empty-msg" class="empty-msg" style="display:none;">No hay pacientes para mostrar</p>
+
+                </div>
+
+            </section>
 
         </main>
 
