@@ -1,13 +1,9 @@
-// ============================================================
-//  CAPA: Model
-// ============================================================
-
 const MascotasQueries = {
+
   CREATE: `
-    INSERT INTO mascotas
-      (Id_Propietario, Id_Raza, Nombre, Fecha_Nacimiento, Peso, Color)
-    VALUES
-      (?, ?, ?, ?, ?, ?)
+    INSERT INTO Mascotas
+    (Id_Propietario, Id_Raza, Nombre, Fecha_Nacimiento, Peso, Color)
+    VALUES (?, ?, ?, ?, ?, ?)
   `,
 
   FIND_ALL: `
@@ -17,43 +13,22 @@ const MascotasQueries = {
       m.Fecha_Nacimiento,
       m.Peso,
       m.Color,
-
       p.Nombre AS Propietario,
       r.Nombre_Raza,
       e.Nombre_Especie
-
-    FROM mascotas m
-    INNER JOIN propietarios p ON p.Id = m.Id_Propietario
-    INNER JOIN razas r ON r.Id = m.Id_Raza
-    INNER JOIN especies e ON e.Id = r.Id_Especie
-
-    ORDER BY m.Nombre ASC
+    FROM Mascotas m
+    INNER JOIN Propietarios p ON p.Id = m.Id_Propietario
+    INNER JOIN Razas r ON r.Id = m.Id_Raza
+    INNER JOIN Especies e ON e.Id = r.Id_Especie
   `,
 
   FIND_BY_ID: `
-    SELECT 
-      m.Id,
-      m.Nombre,
-      m.Fecha_Nacimiento,
-      m.Peso,
-      m.Color,
-
-      p.Nombre AS Propietario,
-      r.Nombre_Raza,
-      e.Nombre_Especie
-
-    FROM mascotas m
-    INNER JOIN propietarios p ON p.Id = m.Id_Propietario
-    INNER JOIN razas r ON r.Id = m.Id_Raza
-    INNER JOIN especies e ON e.Id = r.Id_Especie
-
-    WHERE m.Id = ?
-    LIMIT 1
+    SELECT * FROM Mascotas WHERE Id = ?
   `,
 
   UPDATE: `
-    UPDATE mascotas
-    SET
+    UPDATE Mascotas
+    SET 
       Id_Propietario = ?,
       Id_Raza = ?,
       Nombre = ?,
@@ -64,8 +39,7 @@ const MascotasQueries = {
   `,
 
   DELETE: `
-    DELETE FROM mascotas
-    WHERE Id = ?
+    DELETE FROM Mascotas WHERE Id = ?
   `
 };
 

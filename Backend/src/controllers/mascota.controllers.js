@@ -13,20 +13,34 @@ const createMascota = async (req, res) => {
       color
     );
 
-    res.status(201).json({ success: true, data: mascota });
+    res.status(201).json({
+      success: true,
+      message: 'Mascota creada exitosamente',
+      data: mascota
+    });
 
   } catch (err) {
-    res.status(err.status || 500).json({ success: false, message: err.message });
+    res.status(err.status || 500).json({
+      success: false,
+      message: err.message
+    });
   }
 };
 
 const getAllMascotas = async (req, res) => {
   try {
     const mascotas = await mascotasService.getAllMascotas();
-    res.json({ success: true, data: mascotas });
+
+    res.status(200).json({
+      success: true,
+      data: mascotas
+    });
 
   } catch (err) {
-    res.status(err.status || 500).json({ success: false, message: err.message });
+    res.status(err.status || 500).json({
+      success: false,
+      message: err.message
+    });
   }
 };
 
@@ -45,10 +59,17 @@ const updateMascota = async (req, res) => {
       color
     );
 
-    res.json({ success: true, data: updated });
+    res.status(200).json({
+      success: true,
+      message: 'Mascota actualizada',
+      data: updated
+    });
 
   } catch (err) {
-    res.status(err.status || 500).json({ success: false, message: err.message });
+    res.status(err.status || 500).json({
+      success: false,
+      message: err.message
+    });
   }
 };
 
@@ -58,10 +79,16 @@ const deleteMascota = async (req, res) => {
 
     const result = await mascotasService.deleteMascota(id);
 
-    res.json({ success: true, message: result.mensaje });
+    res.status(200).json({
+      success: true,
+      message: result.mensaje
+    });
 
   } catch (err) {
-    res.status(err.status || 500).json({ success: false, message: err.message });
+    res.status(err.status || 500).json({
+      success: false,
+      message: err.message
+    });
   }
 };
 
