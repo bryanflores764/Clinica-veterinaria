@@ -57,6 +57,14 @@ const UsuariosQueries = {
   LIMIT 1
 `,
 
+FIND_VETERINARIOS: `
+  SELECT u.id, u.Nombre_Usuario, u.Correo, u.activo, u.RolId, r.Nombre_Rol
+  FROM usuarios u
+  INNER JOIN roles r ON r.id = u.RolId
+  WHERE u.RolId = 2
+  ORDER BY u.id ASC
+`,
+
 };
 
 module.exports = UsuariosQueries;

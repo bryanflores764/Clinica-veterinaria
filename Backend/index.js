@@ -45,6 +45,15 @@ app.use('/api/razas', razasRoutes);
 const mascotasRoutes = require('./src/routes/mascota.routes');
 app.use('/api/mascotas', mascotasRoutes);
 
+const TipoConsultaRoutes = require('./src/routes/tipoConsulta.routes');
+
+app.use('/api/tipoconsulta', TipoConsultaRoutes);
+
+
+const estadocitaRoutes = require('./src/routes/estadocita.routes');
+
+app.use('/api/estadocita', estadocitaRoutes);
+
 
 // ── Health check ──────────────────────────────────────────────
 app.get('/', (req, res) => {

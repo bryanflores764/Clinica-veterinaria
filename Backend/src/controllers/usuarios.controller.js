@@ -55,4 +55,21 @@ const deleteUsuario = async (req, res) => {
   }
 };
 
-module.exports = { createUsuario, getAllUsuarios, updateUsuario, toggleActivo, deleteUsuario };
+
+const getVeterinarios = async (req, res) => {
+  try {
+    const veterinarios = await usuariosService.getVeterinarios();
+    return res.status(200).json({
+      success: true,
+      message: 'Veterinarios obtenidos exitosamente',
+      data: veterinarios
+    });
+  } catch (err) {
+    return res.status(err.status || 500).json({
+      success: false,
+      message: err.message || 'Error interno del servidor'
+    });
+  }
+};
+
+module.exports = { createUsuario, getAllUsuarios, updateUsuario, toggleActivo, deleteUsuario,getVeterinarios };
