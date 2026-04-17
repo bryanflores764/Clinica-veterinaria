@@ -594,6 +594,7 @@ formularioNuevaMascota.addEventListener("submit", async (e) => {
 
         mostrarMensaje("Mascota guardada correctamente.");
         cerrarModalMascota();
+        await cargarMascotas();
 
     } catch (error) {
         console.error(error);
@@ -682,7 +683,12 @@ function renderizarMascotas(lista) {
             <td style="text-align: center;">${formatearFecha(mascota.Fecha_Nacimiento)}</td>
             <td style="text-align: center;">${escapeHtml(mascota.Propietario ?? "")}</td>
             <td style="text-align: center;">
-                <button type="button" class="btn-accion btn-editar">Editar</button>
+                
+                <button type="button" 
+                class="btn-accion btn-editar" 
+                data-id="${mascota.Id}">
+                Editar
+                </button>
                 
                 <button type="button" class="btn-accion btn-eliminar" 
                 data-id="${mascota.Id}" data-nombre="${escapeHtml(mascota.Nombre ?? "")}">
@@ -829,3 +835,486 @@ async function eliminarMascota(id) {
         btnConfirmarEliminacion.textContent = "Eliminar";
     }
 }
+
+/* =========================================================
+    EDITAR MASCOTA - MODAL
+========================================================= */
+
+// Elementos del modal editar
+const modalEditarMascota = document.getElementById("modalEditarMascota");
+const fondoModalEditarMascota = document.getElementById("modalEditarMascotaBackdrop");
+const btnCerrarModalEditarMascota = document.getElementById("btnCerrarModalEditarMascota");
+const btnCancelarEditarMascota = document.getElementById("btnCancelarEditarMascota");
+const formularioEditarMascota = document.getElementById("formEditarMascota");
+
+// Campos editar
+const inputEditarNombreMascota = document.getElementById("editarNombreMascota");
+const inputEditarFechaNacimiento = document.getElementById("editarFechaNacimiento");
+const inputEditarPesoMascota = document.getElementById("editarPesoMascota");
+const inputEditarColorMascota = document.getElementById("editarColorMascota");
+
+const selectEditarPropietario = document.getElementById("editarPropietarioMascota");
+const selectEditarEspecie = document.getElementById("editarEspecieMascota");
+const selectEditarRaza = document.getElementById("editarRazaMascota");
+
+let mascotaEditandoId = null;
+
+/* =========================================================
+    utilidades editar
+========================================================= */
+
+function abrirModalEditarMascota() {
+    if (!modalEditarMascota || !fondoModalEditarMascota) return;
+
+    modalEditarMascota.classList.add("show");
+    fondoModalEditarMascota.classList.add("show");
+    document.body.style.overflow = "hidden";
+}
+
+function cerrarModalEditarMascota() {
+    if (!modalEditarMascota || !fondoModalEditarMascota) return;
+
+    modalEditarMascota.classList.remove("show");
+    fondoModalEditarMascota.classList.remove("show");
+    document.body.style.overflow = "";
+
+    resetearFormularioEditarMascota();
+}
+
+function resetearFormularioEditarMascota() {
+    if (formularioEditarMascota) {
+        formularioEditarMascota.reset();
+    }
+
+    mascotaEditandoId = null;
+
+    if (selectEditarRaza) {
+        selectEditarRaza.innerHTML = `<option value="">Seleccione una raza</option>`;
+    }
+}
+
+function cambiarEstadoBotonEditar(estado) {
+    if (!formularioEditarMascota) return;
+
+    const btnGuardar = formularioEditarMascota.querySelector('button[type="submit"]');
+    if (!btnGuardar) return;
+
+    btnGuardar.disabled = estado;
+    btnGuardar.textContent = estado ? "Guardando..." : "Guardar cambios";
+}
+
+function obtenerValorSeguro(valor) {
+    return valor ?? "";
+}
+
+function formatearFechaInput(fecha) {
+    if (!fecha) return "";
+
+    const fechaObj = new Date(fecha);
+
+    if (isNaN(fechaObj.getTime())) {
+        if (typeof fecha === "string" && fecha.includes("T")) {
+            return fecha.split("T")[0];
+        }
+        return "";
+    }
+
+    const anio = fechaObj.getFullYear();
+    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
+    const dia = String(fechaObj.getDate()).padStart(2, "0");
+
+    return `${anio}-${mes}-${dia}`;
+}
+
+/* =========================================================
+    render select editar
+========================================================= */
+
+function renderizarPropietariosEditar(propietarios) {
+    if (!selectEditarPropietario) return;
+
+    selectEditarPropietario.innerHTML = `<option value="">Seleccione un propietario</option>`;
+
+    propietarios.forEach((propietario) => {
+        const option = document.createElement("option");
+        option.value = obtenerId(propietario);
+        option.textContent = obtenerNombre(propietario) || `Propietario ${obtenerId(propietario)}`;
+        selectEditarPropietario.appendChild(option);
+    });
+}
+
+function renderizarEspeciesEditar(especies) {
+    if (!selectEditarEspecie) return;
+
+    selectEditarEspecie.innerHTML = `<option value="">Seleccione una especie</option>`;
+
+    especies.forEach((especie) => {
+        const option = document.createElement("option");
+        option.value = obtenerId(especie);
+        option.textContent = obtenerNombre(especie) || `Especie ${obtenerId(especie)}`;
+        selectEditarEspecie.appendChild(option);
+    });
+}
+
+function renderizarRazasEditar(razas) {
+    if (!selectEditarRaza) return;
+
+    selectEditarRaza.innerHTML = `<option value="">Seleccione una raza</option>`;
+
+    razas.forEach((raza) => {
+        const option = document.createElement("option");
+        option.value = obtenerId(raza);
+        option.textContent = obtenerNombre(raza) || `Raza ${obtenerId(raza)}`;
+        selectEditarRaza.appendChild(option);
+    });
+}
+
+function filtrarRazasEditarPorEspecie(idEspecie) {
+    if (!idEspecie) {
+        renderizarRazasEditar([]);
+        return;
+    }
+
+    const razasFiltradas = cacheRazas.filter((raza) => {
+        return Number(obtenerEspecieIdDeRaza(raza)) === Number(idEspecie);
+    });
+
+    renderizarRazasEditar(razasFiltradas);
+}
+
+/* =========================================================
+    cargar catálogos editar
+========================================================= */
+
+async function cargarCatalogosEditar() {
+    try {
+        if (!cachePropietarios.length) {
+            const respuestaPropietarios = await fetch(`${URL_API}/api/propietarios`, {
+                method: "GET",
+                headers: obtenerEncabezados(false),
+            });
+
+            if (!respuestaPropietarios.ok) {
+                throw new Error("No se pudieron cargar los propietarios.");
+            }
+
+            const datosPropietarios = await respuestaPropietarios.json();
+            cachePropietarios = obtenerArregloRespuesta(datosPropietarios);
+        }
+
+        if (!cacheEspecies.length) {
+            const respuestaEspecies = await fetch(`${URL_API}/api/especies`, {
+                method: "GET",
+                headers: obtenerEncabezados(false),
+            });
+
+            if (!respuestaEspecies.ok) {
+                throw new Error("No se pudieron cargar las especies.");
+            }
+
+            const datosEspecies = await respuestaEspecies.json();
+            cacheEspecies = obtenerArregloRespuesta(datosEspecies);
+        }
+
+        if (!cacheRazas.length) {
+            const respuestaRazas = await fetch(`${URL_API}/api/razas`, {
+                method: "GET",
+                headers: obtenerEncabezados(false),
+            });
+
+            if (!respuestaRazas.ok) {
+                throw new Error("No se pudieron cargar las razas.");
+            }
+
+            const datosRazas = await respuestaRazas.json();
+            cacheRazas = obtenerArregloRespuesta(datosRazas);
+        }
+
+        renderizarPropietariosEditar(cachePropietarios);
+        renderizarEspeciesEditar(cacheEspecies);
+        renderizarRazasEditar([]);
+    } catch (error) {
+        console.error(error);
+        mostrarMensaje(error.message || "No se pudieron cargar los datos del formulario de edición.");
+    }
+}
+
+/* =========================================================
+    obtener mascota para editar
+========================================================= */
+
+function buscarMascotaLocalPorId(id) {
+    return mascotas.find((mascota) => Number(mascota.Id) === Number(id)) || null;
+}
+
+function obtenerIdPropietarioDesdeMascota(mascota) {
+    return (
+        mascota?.PropietarioId ??
+        mascota?.propietarioId ??
+        mascota?.Id_Propietario ??
+        mascota?.id_propietario ??
+        null
+    );
+}
+
+function obtenerIdRazaDesdeMascota(mascota) {
+    return (
+        mascota?.RazaId ??
+        mascota?.razaId ??
+        mascota?.Id_Raza ??
+        mascota?.id_raza ??
+        null
+    );
+}
+
+function obtenerIdEspecieDesdeMascota(mascota) {
+    return (
+        mascota?.EspecieId ??
+        mascota?.especieId ??
+        mascota?.Id_Especie ??
+        mascota?.id_especie ??
+        null
+    );
+}
+
+function inferirPropietarioIdPorNombre(nombrePropietario) {
+    const propietario = cachePropietarios.find((item) =>
+        obtenerNombre(item).toLowerCase().trim() === String(nombrePropietario || "").toLowerCase().trim()
+    );
+
+    return propietario ? obtenerId(propietario) : null;
+}
+
+function inferirEspecieIdPorNombre(nombreEspecie) {
+    const especie = cacheEspecies.find((item) =>
+        obtenerNombre(item).toLowerCase().trim() === String(nombreEspecie || "").toLowerCase().trim()
+    );
+
+    return especie ? obtenerId(especie) : null;
+}
+
+function inferirRazaIdPorNombreYEspecie(nombreRaza, idEspecie) {
+    const raza = cacheRazas.find((item) =>
+        obtenerNombre(item).toLowerCase().trim() === String(nombreRaza || "").toLowerCase().trim() &&
+        Number(obtenerEspecieIdDeRaza(item)) === Number(idEspecie)
+    );
+
+    return raza ? obtenerId(raza) : null;
+}
+
+async function obtenerDetalleMascota(id) {
+    try {
+        const respuesta = await fetch(`${URL_API}/api/mascotas/${id}`, {
+            method: "GET",
+            headers: obtenerEncabezados(false)
+        });
+
+        if (respuesta.ok) {
+            const resultado = await respuesta.json();
+            return resultado?.data ?? resultado?.result ?? resultado;
+        }
+    } catch (error) {
+        console.warn("No se pudo obtener detalle por endpoint, se usará dato local.", error);
+    }
+
+    return buscarMascotaLocalPorId(id);
+}
+
+/* =========================================================
+    precargar datos en el modal editar
+========================================================= */
+
+async function abrirEditarMascota(idMascota) {
+    try {
+        await cargarCatalogosEditar();
+
+        const mascota = await obtenerDetalleMascota(idMascota);
+
+        if (!mascota) {
+            throw new Error("No se encontró la información de la mascota.");
+        }
+
+        mascotaEditandoId = Number(idMascota);
+
+        const nombre = mascota?.Nombre ?? mascota?.nombre ?? "";
+        const fechaNacimiento = mascota?.Fecha_Nacimiento ?? mascota?.fecha_nacimiento ?? mascota?.FechaNacimiento ?? "";
+        const peso = mascota?.Peso ?? mascota?.peso ?? "";
+        const color = mascota?.Color ?? mascota?.color ?? "";
+
+        let propietarioId = obtenerIdPropietarioDesdeMascota(mascota);
+        let especieId = obtenerIdEspecieDesdeMascota(mascota);
+        let razaId = obtenerIdRazaDesdeMascota(mascota);
+
+        if (!propietarioId) {
+            propietarioId = inferirPropietarioIdPorNombre(mascota?.Propietario ?? mascota?.Nombre_Propietario ?? "");
+        }
+
+        if (!especieId) {
+            especieId = inferirEspecieIdPorNombre(mascota?.Nombre_Especie ?? mascota?.Especie ?? "");
+        }
+
+        if (!razaId && especieId) {
+            razaId = inferirRazaIdPorNombreYEspecie(
+                mascota?.Nombre_Raza ?? mascota?.Raza ?? "",
+                especieId
+            );
+        }
+
+        inputEditarNombreMascota.value = obtenerValorSeguro(nombre);
+        inputEditarFechaNacimiento.value = formatearFechaInput(fechaNacimiento);
+        inputEditarPesoMascota.value = obtenerValorSeguro(peso);
+        inputEditarColorMascota.value = obtenerValorSeguro(color);
+
+        renderizarPropietariosEditar(cachePropietarios);
+        renderizarEspeciesEditar(cacheEspecies);
+
+        if (propietarioId) {
+            selectEditarPropietario.value = String(propietarioId);
+        }
+
+        if (especieId) {
+            selectEditarEspecie.value = String(especieId);
+            filtrarRazasEditarPorEspecie(especieId);
+
+            if (razaId) {
+                selectEditarRaza.value = String(razaId);
+            }
+        } else {
+            renderizarRazasEditar([]);
+        }
+
+        abrirModalEditarMascota();
+    } catch (error) {
+        console.error("Error al abrir edición:", error);
+        mostrarMensaje(error.message || "No se pudo abrir el formulario de edición.");
+    }
+}
+
+/* =========================================================
+    eventos modal editar
+========================================================= */
+
+if (btnCerrarModalEditarMascota) {
+    btnCerrarModalEditarMascota.addEventListener("click", cerrarModalEditarMascota);
+}
+
+if (btnCancelarEditarMascota) {
+    btnCancelarEditarMascota.addEventListener("click", cerrarModalEditarMascota);
+}
+
+if (fondoModalEditarMascota) {
+    fondoModalEditarMascota.addEventListener("click", cerrarModalEditarMascota);
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modalEditarMascota && modalEditarMascota.classList.contains("show")) {
+        cerrarModalEditarMascota();
+    }
+});
+
+if (selectEditarEspecie) {
+    selectEditarEspecie.addEventListener("change", () => {
+        const idEspecie = selectEditarEspecie.value;
+        selectEditarRaza.value = "";
+        filtrarRazasEditarPorEspecie(idEspecie);
+    });
+}
+
+/* =========================================================
+    click en botón editar de la tabla
+========================================================= */
+
+function configurarEventosEditar() {
+    if (!tbody) return;
+
+    tbody.addEventListener("click", async (e) => {
+        const botonEditar = e.target.closest(".btn-editar");
+
+        if (!botonEditar) return;
+
+        const fila = botonEditar.closest("tr");
+        if (!fila) return;
+
+        const primeraCelda = fila.querySelector("td");
+        if (!primeraCelda) return;
+
+        const idMascota = primeraCelda.textContent.trim();
+
+        if (!idMascota) {
+            mostrarMensaje("No se pudo identificar la mascota a editar.");
+            return;
+        }
+
+        await abrirEditarMascota(idMascota);
+    });
+}
+
+/* =========================================================
+    guardar cambios mascota
+========================================================= */
+
+if (formularioEditarMascota) {
+    formularioEditarMascota.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        try {
+            if (!mascotaEditandoId) {
+                throw new Error("No se encontró la mascota a editar.");
+            }
+
+            cambiarEstadoBotonEditar(true);
+
+            const nombre = limpiarTexto(inputEditarNombreMascota.value);
+            const fechaNacimiento = inputEditarFechaNacimiento.value;
+            const peso = Number(inputEditarPesoMascota.value);
+            const color = limpiarTexto(inputEditarColorMascota.value);
+            const propietarioId = Number(selectEditarPropietario.value);
+            const especieId = Number(selectEditarEspecie.value);
+            const razaId = Number(selectEditarRaza.value);
+
+            if (!nombre || !fechaNacimiento || !color || !propietarioId || !especieId || !razaId || Number.isNaN(peso)) {
+                throw new Error("Complete correctamente todos los campos obligatorios.");
+            }
+
+            const datosMascota = {
+                propietarioId,
+                razaId,
+                nombre,
+                fecha_nacimiento: fechaNacimiento,
+                peso,
+                color
+            };
+
+            const respuesta = await fetch(`${URL_API}/api/mascotas/${mascotaEditandoId}`, {
+                method: "PUT",
+                headers: obtenerEncabezados(true),
+                body: JSON.stringify(datosMascota),
+            });
+
+            if (respuesta.status === 401 || respuesta.status === 403) {
+                localStorage.removeItem("token");
+                window.location.replace("../../index.html");
+                return;
+            }
+
+            if (!respuesta.ok) {
+                const errorData = await intentarLeerError(respuesta);
+                throw new Error(errorData || "No se pudo actualizar la mascota.");
+            }
+
+            await respuesta.json();
+
+            mostrarMensaje("Mascota actualizada correctamente.");
+            cerrarModalEditarMascota();
+            await cargarMascotas();
+        } catch (error) {
+            console.error("Error al editar mascota:", error);
+            mostrarMensaje(error.message || "Ocurrió un error al actualizar la mascota.");
+        } finally {
+            cambiarEstadoBotonEditar(false);
+        }
+    });
+}
+
+
+configurarEventosEditar();

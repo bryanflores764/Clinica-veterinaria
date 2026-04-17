@@ -87,7 +87,7 @@
                         <table class="users-table">
                             <thead>
                                 <tr>
-                                    <th >ID</th>
+                                    <th>ID</th>
                                     <th>Nombre</th>
                                     <th>Especie</th>
                                     <th>Raza</th>
@@ -225,6 +225,69 @@
                     </button>
                 </div>
             </div>
+        </div>
+
+        <!-------------------Modal de edición------------------->
+
+        <!-- Backdrop modal editar -->
+        <div id="modalEditarMascotaBackdrop" class="modal-backdrop"></div>
+
+        <!-- Modal editar mascota -->
+        <div id="modalEditarMascota" class="modal-mascota">
+            <div class="modal-header">
+                <h2>Editar mascota</h2>
+                <button type="button" id="btnCerrarModalEditarMascota" class="btn-cerrar-modal">&times;</button>
+            </div>
+
+            <form id="formEditarMascota" class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="editarNombreMascota">Nombre</label>
+                        <input type="text" id="editarNombreMascota" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editarFechaNacimiento">Fecha de nacimiento</label>
+                        <input type="date" id="editarFechaNacimiento" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editarPesoMascota">Peso (lbs)</label>
+                        <input type="number" id="editarPesoMascota" step="0.01" min="0" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editarColorMascota">Color</label>
+                        <input type="text" id="editarColorMascota" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editarPropietarioMascota">Propietario</label>
+                        <select id="editarPropietarioMascota" required>
+                            <option value="">Seleccione un propietario</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editarEspecieMascota">Especie</label>
+                        <select id="editarEspecieMascota" required>
+                            <option value="">Seleccione una especie</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editarRazaMascota">Raza</label>
+                        <select id="editarRazaMascota" required>
+                            <option value="">Seleccione una raza</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" id="btnCancelarEditarMascota" class="btn-secundario">Cancelar</button>
+                    <button type="submit" id="btnGuardarCambiosMascota" class="btn-principal">Guardar cambios</button>
+                </div>
+            </form>
         </div>
 
     </div>
