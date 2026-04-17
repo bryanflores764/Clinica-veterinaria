@@ -73,22 +73,20 @@ const CitasRepository = {
   },
 
   async update(id, { Id_Mascota, Id_Veterinario, IdTipoConsulta, IdEstadoCita, FechaHora }) {
-    await this.findById(id);
+  await this.findById(id);
 
-    const errores = validarCita({ Id_Mascota, Id_Veterinario, IdTipoConsulta, IdEstadoCita, FechaHora });
-    if (errores.length > 0) throw { status: 400, errores };
+  // Ya no lanzamos error si falta algún campo, el service los completó
+  await connection.query(CitasQueries.UPDATE, [
+    Number(Id_Mascota),
+    Number(Id_Veterinario),
+    Number(IdTipoConsulta),
+    Number(IdEstadoCita),
+    FechaHora,
+    Number(id),
+  ]);
 
-    await connection.query(CitasQueries.UPDATE, [
-      Number(Id_Mascota),
-      Number(Id_Veterinario),
-      Number(IdTipoConsulta),
-      Number(IdEstadoCita),
-      FechaHora,
-      Number(id),
-    ]);
-
-    return { message: 'Cita actualizada exitosamente.' };
-  },
+  return { message: 'Cita actualizada exitosamente.' };
+},
 
   async updateEstado(id, { IdEstadoCita }) {
     await this.findById(id);

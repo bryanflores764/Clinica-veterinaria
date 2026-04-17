@@ -74,4 +74,13 @@ const deleteUsuario = async (id) => {
   return { id, mensaje: `Usuario "${usuario.Nombre_Usuario}" eliminado exitosamente` };
 };
 
-module.exports = { createUsuario, getAllUsuarios, updateUsuario, toggleActivo, deleteUsuario };
+const getVeterinarios = async () => {
+  const vets = await usuariosRepository.findVeterinarios();
+
+  if (!vets.length) {
+    throw { status: 404, message: 'No hay veterinarios registrados' };
+  }
+
+  return vets;
+};
+module.exports = { createUsuario, getAllUsuarios, updateUsuario, toggleActivo, deleteUsuario,getVeterinarios };
