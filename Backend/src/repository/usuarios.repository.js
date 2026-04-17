@@ -46,6 +46,11 @@ const findUsuarioByNombre = async (nombre) => {
   return rows[0] || null;
 };
 
+const findVeterinarios = async () => {
+  const [rows] = await connection.execute(UsuariosQueries.FIND_VETERINARIOS);
+  return rows;
+};
+
 // Y agrégalo al module.exports
 module.exports = {
   createUsuario,
@@ -56,5 +61,6 @@ module.exports = {
   updateUsuario,
   toggleActivo,
   deleteUsuario,
+  findVeterinarios
 };
 

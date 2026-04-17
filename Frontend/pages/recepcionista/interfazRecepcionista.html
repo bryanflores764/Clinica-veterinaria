@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,7 +29,7 @@
                 <li>
                     <a href="recepcionistaMascotas.html">
                         <img src="../../assets/icons/icon-pacientes.png" alt="pacientes">
-                        pacientes
+                        Pacientes
                     </a>
                 </li>
                 <li>
@@ -41,13 +41,13 @@
                 <li>
                     <a href="#">
                         <img src="../../assets/icons/icon-pagos.png" alt="pagos">
-                        pagos
+                        Pagos
                     </a>
                 </li>
                 <li>
                     <a href="#">
                         <img src="../../assets/icons/icon-historial.png" alt="historial">
-                        historial Citas
+                        Historial Citas
                     </a>
                 </li>
             </ul>                    
@@ -55,18 +55,15 @@
 
         <header class="header">
             <h1>Citas</h1>
-
-            <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">
-                ☰
-            </button>
+            <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">☰</button>
             <div class="header-actions">
-                <a class="btn-new" id="btnNuevaCita">
+                <a class="btn-new" id="btnNuevaCita" href="#">
                     <img src="../../assets/icons/icon-newcita.png" alt="">
                     Nueva Cita
                 </a>
                 <a class="btn-logout" id="cerrar-sesion" href="#">
                     <img src="../../assets/icons/icon-sesion.png" alt="cerrar-sesion">
-                    Cerrar Sesion
+                    Cerrar Sesión
                 </a>
             </div>
         </header>
@@ -74,23 +71,20 @@
         <main class="main">
             <header class="header-main">
                 <h1>Citas Programadas</h1>
-                
-                <span>Recepcion | Control de agenda diaria</span>
+                <span>Recepción | Control de agenda diaria</span>
 
-
-                <h2 id="tituloCitas" class="hidden">Lista de Citas</h2>
-                <!--FILTRO-->
-                <div style="margin-bottom: 15px;">
-                    <label>Filtrar Por Estado: </label>
-
+                <!-- FILTRO -->
+                <div style="margin: 15px 0;">
+                    <label>Filtrar por Estado: </label>
                     <select id="filtroEstado">
                         <option value="todos">Todos</option>
                         <option value="Pendiente">Pendiente</option>
                         <option value="En Curso">En Curso</option>
                         <option value="Cancelada">Cancelada</option>
-                        <option value="Completa">Completada</option>
+                        <option value="Completada">Completada</option>
                     </select>
                 </div>
+
                 <table class="tabla-citas hidden" id="contenedorTabla">
                     <thead>
                         <tr>
@@ -100,6 +94,8 @@
                             <th>Hora</th>
                             <th>Estado</th>
                             <th>Acciones</th>
+                            
+
                         </tr>
                     </thead>
                     <tbody id="tablaCitas"></tbody>
@@ -107,92 +103,162 @@
             </header>
         </main>
 
+        <!-- ══════════════════════════════════════════
+             MODAL NUEVA CITA
+        ══════════════════════════════════════════ -->
+        <<div id="modalCita" class="modal hidden">
+  <div class="modal-content modal-compact">
 
-        <div id="modalCita" class="modal hidden">
-            <div class="modal-content">
-                <h2>Nueva Cita</h2>
+    <div class="modal-header-blue">
+      <div class="modal-header-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div>
+        <p class="modal-title-white">Nueva cita</p>
+        <p class="modal-subtitle-white">Completa los datos para agendar</p>
+      </div>
+      <button class="btn-close-white" id="cerrarModal" type="button">✕</button>
+    </div>
 
-                <form id="formCita">
-                    
-                    <label>Mascota</label>
-                    <select id="mascota" value>
-                        <option value="">Seleccione Mascota</option>
-                    </select>
+    <form id="formCita">
+      <div class="form-group">
+        <label>Mascota <span class="req">*</span></label>
+        <select id="mascota" required>
+          <option value="">Seleccionar mascota...</option>
+        </select>
+      </div>
 
-                    <label>Fecha</label>
-                    <input type="date" id="fecha" required>
-
-                    <label>Hora</label>
-                    <input type="time" id="hora" required>
-
-                    <div class="acciones">
-                        <button type="submit">Guardar</button>
-                        <button type="button" id="cerrarModal">Cancelar</button>
-                    </div>
-
-                </form>
-            </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha <span class="req">*</span></label>
+          <input type="date" id="fecha" required>
         </div>
+        <div class="form-group">
+          <label>Hora <span class="req">*</span></label>
+          <input type="time" id="hora" required>
+        </div>
+      </div>
 
-        <!--MODAL DE CITAS-->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Veterinario <span class="req">*</span></label>
+          <select id="veterinario" required>
+            <option value="">Seleccionar...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tipo de Consulta <span class="req">*</span></label>
+          <select id="tipoConsulta" required>
+            <option value="">Seleccionar...</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="submit" class="btn-primary">✓ Guardar cita</button>
+        <button type="button" id="cerrarModalBtn" class="btn-secondary">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+        <!-- ══════════════════════════════════════════
+             MODAL EDITAR CITA
+        ══════════════════════════════════════════ -->
         <div id="modalEditarCita" class="modal hidden">
-            <div class="modal-content">
-                <h2>Editar Cita</h2>
-
+            <div class="modal-content modal-compact">
+                <div class="modal-header">
+                    <h2>Editar Cita</h2>
+                    <button class="btn-close-x" id="cerrarEditarModal" type="button">✕</button>
+                </div>
                 <form id="formEditarCita">
                     <input type="hidden" id="editIdCita">
 
-                    <label>Mascota</label>
-                    <select id="editMascota"></select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Mascota <span class="req">*</span></label>
+                            <select id="editMascota" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado <span class="req">*</span></label>
+                            <select id="editEstado" required>
+                                <option value="1">Pendiente</option>
+                                <option value="2">En Curso</option>
+                                <option value="3">Cancelada</option>
+                                <option value="4">Completada</option>
+                            </select>
+                        </div>
+                    </div>
 
-                    <label>Fecha</label>
-                    <input type="date" id="editFecha">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fecha <span class="req">*</span></label>
+                            <input type="date" id="editFecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Hora <span class="req">*</span></label>
+                            <input type="time" id="editHora" required>
+                        </div>
+                    </div>
 
-                    <label>Hora</label>
-                    <input type="time" id="editHora">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Veterinario <span class="req">*</span></label>
+                            <select id="editVeterinario" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Consulta <span class="req">*</span></label>
+                            <select id="editTipoConsulta" required></select>
+                        </div>
+                    </div>
 
-                    <div class="acciones">
-                        <button type="submit">Actualizar</button>
-                        <button type="button" id="cerrarEditarModal">Cancelar</button>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn-success">Actualizar</button>
+                        <button type="button" id="cerrarEditarModalBtn" class="btn-secondary">Cancelar</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!--MODAL DE CANCELAR CITA-->
+        <!-- ══════════════════════════════════════════
+             MODAL CANCELAR CITA
+        ══════════════════════════════════════════ -->
         <div id="modalCancelar" class="modal hidden">
-            <div class="modal-content">
-
-                <h2>Cancelar Cita</h2>
-
-                <p>¿Estás seguro que deseas cancelar esta cita?</p>
-
-                <label>Motivo de Cancelacion</label>
-                <input type="text" id="motivoCancelacion" placeholder="Ejemplo: Cliente no asistira">
-
-                <div class="acciones">
-                    <button type="button" id="confirmarCancelar">Confirmar</button>
-                    <button type="button" id="cerrarCancelar">Cerrar</button>
+            <div class="modal-content modal-compact modal-sm">
+                <div class="modal-header">
+                    <h2>Cancelar Cita</h2>
+                    <button class="btn-close-x" id="cerrarCancelar" type="button">✕</button>
+                </div>
+                <p style="font-size:13px; color: var(--text-muted, #666); margin-bottom: 12px;">
+                    ¿Estás seguro de que deseas cancelar esta cita?
+                </p>
+                <div class="form-group">
+                    <label>Motivo (opcional)</label>
+                    <input type="text" id="motivoCancelacion" placeholder="Ej: Cliente no asistirá">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="confirmarCancelar" class="btn-danger">Confirmar</button>
+                    <button type="button" id="cerrarCancelarBtn" class="btn-secondary">Cerrar</button>
                 </div>
             </div>
         </div>
 
-        
-    </div>
-    
+        <!-- ══════════════════════════════════════════
+             MODAL ÉXITO
+        ══════════════════════════════════════════ -->
+        <div id="modalExito" class="modal hidden">
+            <div class="modal-content modal-compact modal-sm modal-exito">
+                <h3 id="exitoTitulo">✅ Éxito</h3>
+                <p id="exitoMensaje">Operación realizada correctamente.</p>
+                <button id="cerrarExito">Aceptar</button>
+            </div>
+        </div>
+
+    </div><!-- cierre div.layout -->
+
     <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
     <script src="../../js/recepcionista/nueva-cita.js"></script>
     <script src="../../js/recepcionista/logout.js"></script>
     <script src="../../js/recepcionista/citas.js"></script>
-
-    <!--MODAL AL MOMENTO DE EDITAR Y ACTUALIZAR MUESTRA ESTA INFO-->
-    <div id="modalExito" class="modal hidden">
-        <div class="modal-content exito">
-            <h3> Exito</h3>
-            <p>Se han Actualizado los datos Correctamente</p>
-            <button id="cerrarExito">Aceptar</button>
-        </div>
-    </div>
-
 </body>
 </html>

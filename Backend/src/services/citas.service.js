@@ -42,22 +42,26 @@ const getCitasByMascota = async (idMascota) => {
 };
 
 const updateCita = async (id, Id_Mascota, Id_Veterinario, IdTipoConsulta, IdEstadoCita, FechaHora) => {
-  if (!Id_Mascota || !Id_Veterinario || !IdTipoConsulta || !IdEstadoCita || !FechaHora) {
-    throw { status: 400, message: 'Todos los campos son obligatorios.' };
-  }
-
-  if (isNaN(Date.parse(FechaHora))) {
-    throw { status: 400, message: 'FechaHora no tiene un formato válido (ej: 2026-04-20T10:00:00).' };
-  }
-
   const cita = await citasRepository.findById(id);
   if (!cita) {
     throw { status: 404, message: `No existe una cita con IdCita ${id}.` };
   }
 
-  await citasRepository.update(id, { Id_Mascota, Id_Veterinario, IdTipoConsulta, IdEstadoCita, FechaHora });
+  // Usa el valor enviado o, si no viene, conserva el que ya tiene la cita
+  const datos = {
+    Id_Mascota:     Id_Mascota     ?? cita.Id_Mascota,
+    Id_Veterinario: Id_Veterinario ?? cita.Id_Veterinario,
+    IdTipoConsulta: IdTipoConsulta ?? cita.IdTipoConsulta,
+    IdEstadoCita:   IdEstadoCita   ?? cita.IdEstadoCita,
+    FechaHora:      FechaHora      ?? cita.FechaHora,
+  };
 
-  return { id, Id_Mascota, Id_Veterinario, IdTipoConsulta, IdEstadoCita, FechaHora };
+  if (datos.FechaHora && isNaN(Date.parse(datos.FechaHora))) {
+    throw { status: 400, message: 'FechaHora no tiene un formato válido.' };
+  }
+
+  await citasRepository.update(id, datos);
+  return { id, ...datos };
 };
 
 const updateEstadoCita = async (id, IdEstadoCita) => {

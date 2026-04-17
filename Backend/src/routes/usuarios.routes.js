@@ -8,7 +8,7 @@ const usuariosController = require('../controllers/usuarios.controller');
 const { verifyAdmin } = require('../middlewares/usuarios.middleware');
 
 const router = Router();
-
+router.get('/veterinarios', usuariosController.getVeterinarios);
 router.get('/',             verifyAdmin, usuariosController.getAllUsuarios);
 router.post('/',            verifyAdmin, usuariosController.createUsuario);
 router.put('/:id',          verifyAdmin, usuariosController.updateUsuario);
