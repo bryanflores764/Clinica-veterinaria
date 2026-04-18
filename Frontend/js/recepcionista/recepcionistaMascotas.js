@@ -1318,3 +1318,26 @@ if (formularioEditarMascota) {
 
 
 configurarEventosEditar();
+
+/* =========================================================
+    menu lateral toggle
+========================================================= */
+const menuToggle = document.getElementById("menu-toggle");
+const sidebar = document.getElementById("sidebar");
+const sidebarBackdrop = document.querySelector(".sidebar-backdrop");
+
+if (menuToggle && sidebar && sidebarBackdrop) {
+    menuToggle.addEventListener("click", () => {
+        sidebar.classList.toggle("active");
+        sidebarBackdrop.classList.toggle("active");
+
+        const abierto = sidebar.classList.contains("active");
+        menuToggle.setAttribute("aria-expanded", abierto ? "true" : "false");
+    });
+
+    sidebarBackdrop.addEventListener("click", () => {
+        sidebar.classList.remove("active");
+        sidebarBackdrop.classList.remove("active");
+        menuToggle.setAttribute("aria-expanded", "false");
+    });
+}
