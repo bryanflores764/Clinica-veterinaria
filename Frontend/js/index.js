@@ -36,9 +36,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
                 if (rolId === 1) {
                     window.location.href = "pages/administrador/interfazAdmin.html";
-                } else if (rolId === 2) {
-                    window.location.href = "pages/recepcionista/interfazRecepcionista.html";
                 } else if (rolId === 3) {
+                    window.location.href = "pages/recepcionista/interfazRecepcionista.html";
+                } else if (rolId === 2) {
                     window.location.href = "pages/veterinario/interfazveterinario.html";
                 } else {
                     alert("Rol no reconocido");

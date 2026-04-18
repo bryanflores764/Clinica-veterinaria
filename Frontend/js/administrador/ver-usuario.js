@@ -147,8 +147,8 @@ searchInput.addEventListener("input", aplicarFiltro);
 //catalogo de roles local
 const ROLES = [
   { id: 1, nombre: "Administrador" },
-  { id: 2, nombre: "Recepcionista" },
-  { id: 3, nombre: "Veterinario" },
+  { id: 3, nombre: "Recepcionista" },
+  { id: 2, nombre: "Veterinario" },
 ];
 
 //modificacion del dom para el modal
