@@ -37,20 +37,38 @@ async function cargarCitas() {
       else if (estadoTexto.includes("complet"))                            { claseEstado = "estado-completada"; textoEstado = "Completada"; }
       else { textoEstado = c.Estado || "—"; }
 
-      return `
-        <tr>
-          <td>${c.IdCita}</td>
-          <td style="font-weight:600;">${c.Mascota ?? c.NombreMascota ?? "—"}</td>
-          <td>${fecha}</td>
-          <td>${hora}</td>
-          <td><span class="badge-estado ${claseEstado}">${textoEstado}</span></td>
-          <td>
-            <div class="acciones-container">
-              <button class="btn-tabla btn-editar-tabla"  onclick="abrirEditarCita(${c.IdCita})">Editar</button>
-              <button class="btn-tabla btn-cancelar-tabla" onclick="abrirCancelarCita(${c.IdCita})">Cancelar</button>
-            </div>
-          </td>
-        </tr>`;
+    return `
+  <tr>
+    <td data-label="ID">${c.IdCita}</td>
+
+    <td data-label="Mascota" style="font-weight:600;">
+      ${c.Mascota ?? c.NombreMascota ?? "—"}
+    </td>
+
+    <td data-label="Fecha">${fecha}</td>
+
+    <td data-label="Hora">${hora}</td>
+
+    <td data-label="Estado">
+      <span class="badge-estado ${claseEstado}">
+        ${textoEstado}
+      </span>
+    </td>
+
+    <td data-label="Acciones">
+      <div class="acciones-container">
+        <button class="btn-tabla btn-editar-tabla"
+          onclick="abrirEditarCita(${c.IdCita})">
+          Editar
+        </button>
+
+        <button class="btn-tabla btn-cancelar-tabla"
+          onclick="abrirCancelarCita(${c.IdCita})">
+          Cancelar
+        </button>
+      </div>
+    </td>
+  </tr>`;
     }).join("");
   } catch (err) {
     console.error("Error:", err);
