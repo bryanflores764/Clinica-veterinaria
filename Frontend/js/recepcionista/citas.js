@@ -99,36 +99,38 @@ async function cargarSelectConValor(selectId, url, campoId, campoTexto, placehol
 // ── ABRIR MODAL EDITAR ─────────────────────────────────────────
 async function abrirEditarCita(id) {
   try {
-    const res  = await fetch(`${API_URL}/${id}`);
+    const res = await fetch(`${API_URL}/${id}`);
     if (!res.ok) throw new Error("No se pudo obtener la cita");
 
-    const cita = await res.json();
+    const json = await res.json();
+    const cita = json.data ?? json;
+
     console.log("📋 Datos de la cita:", cita);
 
     const fechaHora = new Date(cita.FechaHora);
 
     document.getElementById("editIdCita").value = cita.IdCita;
-    document.getElementById("editFecha").value  = fechaHora.toISOString().split("T")[0];
-    document.getElementById("editHora").value   = fechaHora.toTimeString().slice(0, 5);
+    document.getElementById("editFecha").value = fechaHora.toISOString().split("T")[0];
+    document.getElementById("editHora").value = fechaHora.toTimeString().slice(0, 5);
 
-    // 🔑 Detectar IDs
     const idMascota = cita.Id_Mascota ?? cita.IdMascota ?? cita.id_mascota;
-    const idVet     = cita.Id_Veterinario ?? cita.IdVeterinario ?? cita.id_veterinario;
-    const idTipo    = cita.IdTipoConsulta ?? cita.Id_TipoConsulta ?? cita.idTipoConsulta;
-    const idEstado  = cita.IdEstadoCita ?? cita.Id_EstadoCita ?? cita.idEstadoCita;
+    const idVet = cita.Id_Veterinario ?? cita.IdVeterinario ?? cita.id_veterinario;
+    const idTipo = cita.IdTipoConsulta ?? cita.Id_TipoConsulta ?? cita.idTipoConsulta;
+    const idEstado = cita.IdEstadoCita ?? cita.Id_EstadoCita ?? cita.idEstadoCita;
+
+    const nombreVet = (cita.Veterinario ?? "").trim().toLowerCase();
+    const nombreMascota = cita.Mascota ?? cita.NombreMascota ?? "Mascota";
 
     console.log("🔑 IDs → Mascota:", idMascota, "| Vet:", idVet, "| Tipo:", idTipo, "| Estado:", idEstado);
 
-    // 🔥 MASCOTA (bloqueada)
     const selectMascota = document.getElementById("editMascota");
     selectMascota.innerHTML = `
       <option value="${idMascota}">
-        ${cita.Mascota ?? cita.NombreMascota ?? "Mascota"}
+        ${nombreMascota}
       </option>
     `;
     selectMascota.disabled = true;
 
-    // 🔥 Cargar los demás selects normal
     await Promise.all([
       cargarSelectConValor(
         "editVeterinario",
@@ -155,6 +157,18 @@ async function abrirEditarCita(id) {
         idEstado
       ),
     ]);
+
+    // ✅ Si no vino el ID del veterinario, seleccionar por nombre
+    const selectVet = document.getElementById("editVeterinario");
+    if ((!idVet || selectVet.value === "") && nombreVet) {
+      const opcionVet = Array.from(selectVet.options).find(opt =>
+        opt.text.trim().toLowerCase() === nombreVet
+      );
+
+      if (opcionVet) {
+        selectVet.value = opcionVet.value;
+      }
+    }
 
     document.getElementById("modalEditarCita").classList.remove("hidden");
 
