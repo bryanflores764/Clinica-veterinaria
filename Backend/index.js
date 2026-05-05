@@ -55,6 +55,19 @@ const estadocitaRoutes = require('./src/routes/estadocita.routes');
 app.use('/api/estadocita', estadocitaRoutes);
 
 
+const ventasRoutes = require('./src/routes/ventas.routes');
+app.use('/api/ventas', ventasRoutes);
+
+const ProductosRoutes = require('./src/routes/productos.routes');
+
+app.use('/api/productos', ProductosRoutes);
+
+
+const categoriasRoutes = require('./src/routes/categorias.routes');
+app.use('/api/categorias', categoriasRoutes);
+
+
+
 // ── Health check ──────────────────────────────────────────────
 app.get('/', (req, res) => {
     res.json({ mensaje: "API Veterinaria funcionando 🐾" });
