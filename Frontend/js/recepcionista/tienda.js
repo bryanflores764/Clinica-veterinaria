@@ -1,79 +1,58 @@
-// ── Datos de ejemplo (hardcoded) ─────────────────────────────
-const productosData = [
-    {
-        id: 1,
-        nombre: "Amoxicilina 500mg",
-        descripcion: "Antibiótico de amplio espectro para perros y gatos",
-        categoria: "Medicamento",
-        precioVenta: 45.00,
-        stockInicial: 120
-    },
-    {
-        id: 2,
-        nombre: "Royal Canin Adulto 15kg",
-        descripcion: "Alimento seco premium para perros adultos de todas las razas",
-        categoria: "Alimento",
-        precioVenta: 680.00,
-        stockInicial: 30
-    },
-    {
-        id: 3,
-        nombre: "Collar antipulgas",
-        descripcion: "Collar repelente de pulgas y garrapatas, duración 8 meses",
-        categoria: "Accesorio",
-        precioVenta: 95.00,
-        stockInicial: 50
-    },
-    {
-        id: 4,
-        nombre: "Shampoo medicado",
-        descripcion: "Shampoo dermatológico para piel sensible y dermatitis",
-        categoria: "Higiene",
-        precioVenta: 120.00,
-        stockInicial: 8
-    },
-    {
-        id: 5,
-        nombre: "Frontline Plus",
-        descripcion: "Antipulgas y garrapatas en pipeta mensual para perros",
-        categoria: "Medicamento",
-        precioVenta: 210.00,
-        stockInicial: 45
-    },
-    {
-        id: 6,
-        nombre: "Whiskas Adulto 3kg",
-        descripcion: "Alimento seco completo y balanceado para gatos adultos",
-        categoria: "Alimento",
-        precioVenta: 155.00,
-        stockInicial: 60
-    },
-    {
-        id: 7,
-        nombre: "Cepillo dental canino",
-        descripcion: "Kit de higiene dental con cepillo y pasta sabor pollo",
-        categoria: "Higiene",
-        precioVenta: 75.00,
-        stockInicial: 25
-    },
-    {
-        id: 8,
-        nombre: "Comedero acero inox",
-        descripcion: "Comedero antideslizante de acero inoxidable para mascotas",
-        categoria: "Accesorio",
-        precioVenta: 55.00,
-        stockInicial: 40
-    },
-];
+const API_BASE       = "http://localhost:3000";
+const API_PRODUCTOS  = `${API_BASE}/api/productos`;
+const API_CATEGORIAS = `${API_BASE}/api/categorias`;
 
-let productos = [...productosData];
+// ── Cargar categorías en el select del modal ──────────────────
+async function cargarCategorias() {
+    const select = document.getElementById("prodCategoria");
+    if (!select) return;
+    select.innerHTML = `<option value="">Cargando...</option>`;
+    try {
+        const res  = await fetch(API_CATEGORIAS);
+        const json = await res.json();
+        const cats = Array.isArray(json) ? json : (json.data ?? []);
+        select.innerHTML = `<option value="">Seleccionar...</option>`;
+        cats.forEach(c => {
+            select.innerHTML += `<option value="${c.Id}">${c.Nombre_Categoria}</option>`;
+        });
+    } catch (err) {
+        select.innerHTML = `<option value="">Error al cargar categorías</option>`;
+        console.warn("No se pudieron cargar las categorías:", err.message);
+    }
+}
+
+// ── Cargar y renderizar productos desde la API ────────────────
+async function cargarProductos() {
+    const tbody = document.querySelector("#tablaProductos tbody");
+    if (!tbody) return;
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="6" style="text-align:center; padding:40px; color:#999; font-size:14px;">
+                Cargando productos...
+            </td>
+        </tr>`;
+    try {
+        const res      = await fetch(API_PRODUCTOS);
+        const json     = await res.json();
+        const productos = Array.isArray(json) ? json : (json.data ?? []);
+        renderTabla(productos);
+    } catch (err) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center; padding:40px; color:#e53e3e; font-size:14px;">
+                    Error al cargar los productos. Verifica que el servidor esté activo.
+                </td>
+            </tr>`;
+        console.error("Error al cargar productos:", err);
+    }
+}
 
 // ── Render tabla ──────────────────────────────────────────────
-function renderTabla() {
+function renderTabla(productos) {
     const tbody = document.querySelector("#tablaProductos tbody");
     if (!tbody) return;
 
-    if (productos.length === 0) {
+    if (!productos || productos.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="6" style="text-align:center; padding:40px; color:#999; font-size:15px;">
@@ -83,29 +62,41 @@ function renderTabla() {
         return;
     }
 
-    tbody.innerHTML = productos.map(p => `
+    tbody.innerHTML = productos.map(p => {
+        const catNombre = p.Categoria ?? "Otro";
+        // Normaliza la categoría para el CSS: minúsculas sin tildes ni espacios
+        const catClass = "badge-cat-" + catNombre
+            .toLowerCase()
+            .normalize("NFD").replace(/[̀-ͯ]/g, "")
+            .replace(/\s+/g, "-");
+
+        const stockClass = parseInt(p.Stock) <= 10 ? "stock-bajo" : "stock-normal";
+        const nombre = (p.Nombre_Producto ?? "").replace(/'/g, "\\'");
+
+        return `
         <tr>
-            <td data-label="Nombre">${p.nombre}</td>
-            <td class="td-descripcion" data-label="Descripción" title="${p.descripcion}">${p.descripcion}</td>
+            <td data-label="Nombre">${p.Nombre_Producto}</td>
+            <td class="td-descripcion" data-label="Descripción" title="${p.Descripcion ?? ''}">${p.Descripcion ?? '—'}</td>
             <td data-label="Categoría">
-                <span class="badge-categoria badge-cat-${p.categoria.toLowerCase()}">${p.categoria}</span>
+                <span class="badge-categoria ${catClass}">${catNombre}</span>
             </td>
-            <td class="td-precio" data-label="Precio">$${p.precioVenta.toFixed(2)}</td>
-            <td data-label="Stock" class="${p.stockInicial <= 10 ? 'stock-bajo' : 'stock-normal'}">${p.stockInicial}</td>
+            <td class="td-precio" data-label="Precio">$${parseFloat(p.Precio).toFixed(2)}</td>
+            <td data-label="Stock" class="${stockClass}">${p.Stock}</td>
             <td data-label="Acciones">
                 <div class="acciones-container">
-                    <button class="btn-tabla btn-editar-tabla" onclick="editarProducto(${p.id})">Editar</button>
-                    <button class="btn-tabla btn-cancelar-tabla" onclick="eliminarProducto(${p.id})">Eliminar</button>
+                    <button class="btn-tabla btn-editar-tabla" onclick="editarProducto(${p.Id})">Editar</button>
+                    <button class="btn-tabla btn-cancelar-tabla" onclick="desactivarProducto(${p.Id}, '${nombre}')">Eliminar</button>
                 </div>
             </td>
-        </tr>
-    `).join("");
+        </tr>`;
+    }).join("");
 }
 
 // ── Modal añadir producto ─────────────────────────────────────
-function abrirModalProducto() {
+async function abrirModalProducto() {
     document.getElementById("formProducto").reset();
     limpiarErrores();
+    await cargarCategorias();
     document.getElementById("modalProducto").classList.remove("hidden");
 }
 
@@ -151,22 +142,18 @@ function validarFormulario() {
         marcarError("prodNombre", "El nombre es obligatorio.");
         valido = false;
     }
-
     if (!descripcion) {
         marcarError("prodDescripcion", "La descripción es obligatoria.");
         valido = false;
     }
-
     if (!categoria) {
         marcarError("prodCategoria", "Selecciona una categoría.");
         valido = false;
     }
-
     if (isNaN(precio) || precio <= 0) {
         marcarError("prodPrecio", "El precio debe ser un valor positivo mayor a 0.");
         valido = false;
     }
-
     if (isNaN(stock) || stock < 0) {
         marcarError("prodStock", "El stock debe ser un número positivo (mínimo 0).");
         valido = false;
@@ -176,36 +163,59 @@ function validarFormulario() {
 }
 
 // ── Guardar nuevo producto ────────────────────────────────────
-document.getElementById("formProducto")?.addEventListener("submit", (e) => {
+document.getElementById("formProducto")?.addEventListener("submit", async (e) => {
     e.preventDefault();
-
     if (!validarFormulario()) return;
 
-    const nuevo = {
-        id:           productos.length > 0 ? Math.max(...productos.map(p => p.id)) + 1 : 1,
-        nombre:       document.getElementById("prodNombre").value.trim(),
-        descripcion:  document.getElementById("prodDescripcion").value.trim(),
-        categoria:    document.getElementById("prodCategoria").value,
-        precioVenta:  parseFloat(document.getElementById("prodPrecio").value),
-        stockInicial: parseInt(document.getElementById("prodStock").value, 10),
+    const body = {
+        idCategoria:     parseInt(document.getElementById("prodCategoria").value),
+        nombre_producto: document.getElementById("prodNombre").value.trim(),
+        descripcion:     document.getElementById("prodDescripcion").value.trim(),
+        precio:          parseFloat(document.getElementById("prodPrecio").value),
+        stock:           parseInt(document.getElementById("prodStock").value, 10),
     };
 
-    productos.push(nuevo);
-    cerrarModalProducto();
-    renderTabla();
-    mostrarExito(`Producto "${nuevo.nombre}" agregado correctamente.`);
+    try {
+        const res  = await fetch(API_PRODUCTOS, {
+            method:  "POST",
+            headers: { "Content-Type": "application/json" },
+            body:    JSON.stringify(body),
+        });
+        const json = await res.json();
+
+        if (res.ok && json.success) {
+            cerrarModalProducto();
+            await cargarProductos();
+            mostrarExito(`Producto "${body.nombre_producto}" creado correctamente.`);
+        } else {
+            mostrarAlerta(json.message ?? "No se pudo guardar el producto.");
+        }
+    } catch (err) {
+        mostrarAlerta("Error de conexión. Verifica que el servidor esté activo.");
+        console.error(err);
+    }
 });
 
-// ── Eliminar producto ─────────────────────────────────────────
-function eliminarProducto(id) {
-    const producto = productos.find(p => p.id === id);
-    if (!producto) return;
-    productos = productos.filter(p => p.id !== id);
-    renderTabla();
-    mostrarExito(`Producto "${producto.nombre}" eliminado.`);
+// ── Desactivar producto (soft delete) ────────────────────────
+async function desactivarProducto(id, nombre) {
+    if (!confirm(`¿Deseas desactivar el producto "${nombre}"?`)) return;
+    try {
+        const res  = await fetch(`${API_PRODUCTOS}/${id}/desactivar`, { method: "PATCH" });
+        const json = await res.json();
+
+        if (res.ok && json.success) {
+            await cargarProductos();
+            mostrarExito(`Producto "${nombre}" desactivado correctamente.`);
+        } else {
+            mostrarAlerta(json.message ?? "No se pudo desactivar el producto.");
+        }
+    } catch (err) {
+        mostrarAlerta("Error de conexión al intentar desactivar.");
+        console.error(err);
+    }
 }
 
-// ── Editar producto (placeholder) ────────────────────────────
+// ── Editar producto (próximamente) ────────────────────────────
 function editarProducto(id) {
     mostrarAlerta("La función de edición estará disponible próximamente.");
 }
@@ -237,5 +247,5 @@ document.getElementById("cerrarExito")?.addEventListener("click", () => {
     document.getElementById("modalExito").classList.add("hidden");
 });
 
-// ── Inicializar tabla ─────────────────────────────────────────
-renderTabla();
+// ── Inicializar ───────────────────────────────────────────────
+cargarProductos();
