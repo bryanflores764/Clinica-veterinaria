@@ -2,16 +2,7 @@
 //  Archivo: js/administrador/interfazAdmin.js
 // ============================================================
 
-//Saludo
-// Saludo
-const saludo = document.getElementById("saludo");
-const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
-
-if (saludo && usuario && usuario.Nombre_Usuario) {
-    saludo.textContent = `Bienvenido Administrador ${usuario.Nombre_Usuario}`;
-}
-
-//Proteccion de ruta 
+// Protección de ruta 
 function verificarSesion() {
     const tokenActual = localStorage.getItem("token");
     if (!tokenActual) {
@@ -25,34 +16,13 @@ window.addEventListener("pageshow", function () {
     verificarSesion();
 });
 
-//Crear boton hamburguesa y backdrop automáticamente
-function crearElementosMenuMovil() {
-    let toggle = document.querySelector(".menu-toggle");
-    let backdrop = document.querySelector(".sidebar-backdrop");
+// Elementos del menú móvil
+const toggle = document.getElementById("menuToggle");
+const backdrop = document.getElementById("sidebarBackdrop");
 
-    if (!toggle) {
-        toggle = document.createElement("button");
-        toggle.className = "menu-toggle";
-        toggle.setAttribute("type", "button");
-        toggle.setAttribute("aria-label", "Abrir menú");
-        toggle.setAttribute("aria-expanded", "false");
-        toggle.innerHTML = "☰";
-        document.body.appendChild(toggle);
-    }
+// Cerrar sesión
+const cerrarSesion = document.querySelector(".btn-cerrar-sesion");
 
-    if (!backdrop) {
-        backdrop = document.createElement("div");
-        backdrop.className = "sidebar-backdrop";
-        document.body.appendChild(backdrop);
-    }
-
-    return { toggle, backdrop };
-}
-
-const { toggle, backdrop } = crearElementosMenuMovil();
-
-//Cerrar sesion
-const cerrarSesion = document.querySelector('a[href="../../index.html"]');
 if (cerrarSesion) {
     cerrarSesion.addEventListener("click", async function(e) {
         e.preventDefault();
@@ -80,26 +50,31 @@ if (cerrarSesion) {
     });
 }
 
-//Acordeon del menu
+// Acordeón del menú
 const menuGroups = document.querySelectorAll(".menu-grupo");
 
 function resetMenu() {
     menuGroups.forEach((group) => {
         group.classList.remove("open");
+
         const parent = group.querySelector(".item");
         if (parent) parent.classList.remove("active");
-        group.querySelectorAll(".sub-item").forEach((s) => s.classList.remove("active"));
+
+        group.querySelectorAll(".sub-item").forEach((s) => {
+            s.classList.remove("active");
+        });
     });
 }
 
 menuGroups.forEach((group) => {
     const parentLink = group.querySelector(".item");
-    const isOpen = () => group.classList.contains("open");
 
     if (parentLink) {
         parentLink.addEventListener("click", (e) => {
             e.preventDefault();
-            const openBefore = isOpen();
+
+            const openBefore = group.classList.contains("open");
+
             resetMenu();
 
             if (!openBefore) {
@@ -110,7 +85,7 @@ menuGroups.forEach((group) => {
     }
 });
 
-// Auto-seleccion por URL 
+// Auto-selección por URL 
 const currentPage = window.location.pathname.split("/").pop();
 
 menuGroups.forEach((group) => {
@@ -124,15 +99,18 @@ menuGroups.forEach((group) => {
         if (hrefPage === currentPage) {
             resetMenu();
             group.classList.add("open");
+
             if (parentLink) parentLink.classList.add("active");
+
             sub.classList.add("active");
         }
     });
 });
 
-//Menu movil 
+// Menú móvil 
 function setMenu(open) {
     document.body.classList.toggle("menu-open", open);
+
     if (toggle) {
         toggle.setAttribute("aria-expanded", open ? "true" : "false");
         toggle.innerHTML = open ? "✕" : "☰";
@@ -147,7 +125,9 @@ if (toggle) {
 }
 
 if (backdrop) {
-    backdrop.addEventListener("click", () => setMenu(false));
+    backdrop.addEventListener("click", () => {
+        setMenu(false);
+    });
 }
 
 document.addEventListener("keydown", (e) => {
@@ -156,7 +136,7 @@ document.addEventListener("keydown", (e) => {
     }
 });
 
-// Cerrar menu al tocar subOpciones en móvil 
+// Cerrar menú al tocar subopciones en móvil 
 document.querySelectorAll(".sub-item").forEach((item) => {
     item.addEventListener("click", () => {
         if (window.innerWidth <= 768) {
