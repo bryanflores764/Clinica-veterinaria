@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../../css/recepcionista/interfazRecepcionista.css">
+    <link rel="stylesheet" href="../../css/recepcionista/interfazCitas.css">
+    <link rel="stylesheet" href="../../css/recepcionista/tienda.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
+    <title>RECEPCIONISTA — Tienda</title>
+</head>
+<body>
+<div class="sidebar-backdrop"></div>
+    <div class="layout">
+
+        <aside class="sidebar">
+            <div class="logo">
+                <img id="logo" src="../../assets/img/Logo de clínica Veterinaria azul.png" alt="logo">
+            </div>
+            <ul>
+                <li>
+                    <a href="#" id="btnVerCitas">
+                        <img src="../../assets/icons/icon-citas.png" alt="citas">
+                        Citas
+                    </a>
+                </li>
+                <li>
+                    <a href="recepcionistaMascotas.html">
+                        <img src="../../assets/icons/icon-pacientes.png" alt="pacientes">
+                        Pacientes
+                    </a>
+                </li>
+                <li>
+                    <a href="propetario.html">
+                        <img src="../../assets/icons/icon-user.png" alt="Cliente">
+                        Cliente
+                    </a>
+                </li>
+                <li>
+                    <a href="tienda.html">
+                        <img src="../../assets/icons/shop.svg" alt="pagos">
+                        Tienda
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src="../../assets/icons/icon-historial.png" alt="historial">
+                        Historial Citas
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <header class="header">
+            <h1>Tienda</h1>
+            <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">☰</button>
+            <div class="header-actions">
+                <a class="btn-new" id="btnNuevaCita" href="#">
+                    <img src="../../assets/icons/icon-newcita.png" alt="">
+                    Añadir producto
+                </a>
+                <a class="btn-logout" id="cerrar-sesion" href="#">
+                    <img src="../../assets/icons/icon-sesion.png" alt="cerrar-sesion">
+                    Cerrar Sesión
+                </a>
+            </div>
+        </header>
+
+        <main class="main">
+            <header class="header-main">
+                <h1>Productos Disponibles</h1>
+            </header>
+
+            <div id="contenedorProductos">
+                <table class="tabla-productos" id="tablaProductos">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Categoría</th>
+                            <th>Precio de Venta</th>
+                            <th>Stock Inicial</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Filas generadas por tienda.js -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- ══════════════════════════════════════════
+             MODAL AÑADIR PRODUCTO
+        ══════════════════════════════════════════ -->
+        <div id="modalProducto" class="modal hidden">
+            <div class="modal-content modal-compact">
+
+                <div class="modal-header-blue">
+                    <div class="modal-header-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round">
+                            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <path d="M16 10a4 4 0 01-8 0"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="modal-title-white">Añadir Producto</p>
+                        <p class="modal-subtitle-white">Completa los datos del nuevo producto</p>
+                    </div>
+                    <button class="btn-close-white" id="cerrarModalProducto" type="button">✕</button>
+                </div>
+
+                <form id="formProducto">
+
+                    <div class="form-group">
+                        <label>Nombre <span class="req">*</span></label>
+                        <input type="text" id="prodNombre" placeholder="Ej: Amoxicilina 500mg" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descripción <span class="req">*</span></label>
+                        <textarea id="prodDescripcion" placeholder="Breve descripción del producto..." required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Categoría <span class="req">*</span></label>
+                            <select id="prodCategoria" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="Medicamento">Medicamento</option>
+                                <option value="Alimento">Alimento</option>
+                                <option value="Accesorio">Accesorio</option>
+                                <option value="Higiene">Higiene</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Precio de Venta <span class="req">*</span></label>
+                            <input type="number" id="prodPrecio" placeholder="0.00" min="0.01" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Stock Inicial <span class="req">*</span></label>
+                        <input type="number" id="prodStock" placeholder="0" min="0" step="1" required>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="submit" class="btn-primary">✓ Guardar producto</button>
+                        <button type="button" id="cerrarModalProductoBtn" class="btn-secondary">Cancelar</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             MODAL ÉXITO / ERROR
+        ══════════════════════════════════════════ -->
+        <div id="modalExito" class="modal hidden">
+            <div class="modal-content modal-compact modal-sm modal-exito">
+                <h3 id="exitoTitulo">✅ Éxito</h3>
+                <p id="exitoMensaje">Operación realizada correctamente.</p>
+                <button id="cerrarExito">Aceptar</button>
+            </div>
+        </div>
+
+    </div><!-- cierre div.layout -->
+
+    <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
+    <script src="../../js/recepcionista/logout.js"></script>
+    <script src="../../js/recepcionista/tienda.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\luigi\\\\Documents\\\\VETCARE\\\\Clinica-veterinaria\" -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\luigi\\\\Documents\\\\VETCARE\\\\Clinica-veterinaria\\\\Backend\" -Recurse -Force | Where-Object { $_.Name -notlike \".DS_Store\" } | Select-Object FullName)"
+    ]
+  }
+}
