@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../../css/recepcionista/interfazRecepcionista.css">
+    <link rel="stylesheet" href="../../css/recepcionista/interfazCitas.css">
+    <link rel="stylesheet" href="../../css/recepcionista/ventas.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
+    <title>RECEPCIONISTA — Ventas</title>
+</head>
+
+<body>
+    <div class="sidebar-backdrop"></div>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="logo">
+                <img id="logo" src="../../assets/img/Logo de clínica Veterinaria azul.png" alt="logo">
+            </div>
+            <ul>
+                <li>
+                    <a href="interfazRecepcionista.html">
+                        <img src="../../assets/icons/icon-citas.svg" alt="citas">
+                        Citas
+                    </a>
+                </li>
+                <li>
+                    <a href="recepcionistaMascotas.html">
+                        <img src="../../assets/icons/icon-pacientes.svg" alt="pacientes">
+                        Pacientes
+                    </a>
+                </li>
+                <li>
+                    <a href="propetario.html">
+                        <img src="../../assets/icons/icon-user.svg" alt="Cliente">
+                        Clientes
+                    </a>
+                </li>
+                <li>
+                    <a href="tienda.html">
+                        <img src="../../assets/icons/shop.svg" alt="tienda">
+                        Tienda
+                    </a>
+                </li>
+                <li>
+                    <a href="ventas.html">
+                        <img src="../../assets/icons/icon-historial.svg" alt="ventas">
+                        Ventas
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <header class="header">
+            <h1>Ventas</h1>
+            <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">☰</button>
+            <div class="header-actions">
+                <a class="btn-new" href="#" id="btnNuevaVenta">
+                    <img src="../../assets/icons/icon-newcita.svg" alt="">
+                    Nueva Venta
+                </a>
+                <a class="btn-logout" id="cerrar-sesion" href="#">
+                    <img src="../../assets/icons/icon-sesion.svg" alt="cerrar-sesion">
+                    Cerrar Sesión
+                </a>
+            </div>
+        </header>
+
+        <main class="main">
+            <header class="header-main">
+                <h1 class="title">Registro de Ventas</h1>
+            </header>
+
+            <div id="contenedorVentas">
+                <p class="ventas-empty">No hay ventas registradas aún.</p>
+            </div>
+        </main>
+
+        <!-- ══════════════════════════════════════════
+             MODAL NUEVA VENTA
+        ══════════════════════════════════════════ -->
+        <div id="modalVenta" class="modal hidden">
+            <div class="modal-content modal-compact modal-venta">
+
+                <div class="modal-header-blue">
+                    <div class="modal-header-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.97-1.67L23 6H6"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="modal-title-white">Nueva Venta</p>
+                        <p class="modal-subtitle-white">Registra los productos vendidos</p>
+                    </div>
+                    <button class="btn-close-white" id="cerrarModalVenta" type="button">✕</button>
+                </div>
+
+                <!-- Fecha y usuario -->
+                <div class="venta-meta">
+                    <div class="venta-meta-item">
+                        <span class="venta-meta-label">Fecha</span>
+                        <span class="venta-meta-value" id="ventaFecha">—</span>
+                    </div>
+                    <div class="venta-meta-item">
+                        <span class="venta-meta-label">Registrado por</span>
+                        <span class="venta-meta-value" id="ventaUsuario">—</span>
+                    </div>
+                </div>
+
+                <!-- Tabla de productos -->
+                <div class="venta-productos-header">
+                    <span class="venta-section-title">Productos</span>
+                    <button type="button" class="btn-agregar-producto" id="btnAgregarProducto">
+                        + Agregar producto
+                    </button>
+                </div>
+
+                <div class="venta-tabla-wrapper">
+                    <table class="venta-tabla" id="tablaProductosVenta">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cant.</th>
+                                <th>Precio unit.</th>
+                                <th>Subtotal</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyProductosVenta">
+                            <!-- filas dinámicas -->
+                        </tbody>
+                    </table>
+                    <p class="venta-empty-productos hidden" id="ventaEmptyMsg">
+                        Agrega al menos un producto para continuar.
+                    </p>
+                </div>
+
+                <!-- Total -->
+                <div class="venta-total-row">
+                    <span class="venta-total-label">Total</span>
+                    <span class="venta-total-value" id="ventaTotal">$0.00</span>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-primary" id="btnGuardarVenta">✓ Registrar venta</button>
+                    <button type="button" class="btn-secondary" id="cerrarModalVentaBtn">Cancelar</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             MODAL ÉXITO / ERROR
+        ══════════════════════════════════════════ -->
+        <div id="modalExito" class="modal hidden">
+            <div class="modal-content modal-compact modal-sm modal-exito">
+                <h3 id="exitoTitulo">Éxito</h3>
+                <p id="exitoMensaje">Operación realizada correctamente.</p>
+                <button id="cerrarExito">Aceptar</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
+    <script src="../../js/recepcionista/logout.js"></script>
+    <script src="../../js/recepcionista/ventas.js"></script>
+</body>
+</html>
