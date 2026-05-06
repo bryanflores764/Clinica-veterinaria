@@ -316,3 +316,11 @@
     }
 }
 
+/*Diseno de Actualizar Stock*/
+.btn-stock-tabla {
+    background: #da373d;
+    color: #fff;
+    transition: all 0.2s ease;
+}
+
+
