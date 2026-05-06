@@ -1,20 +1,31 @@
-// ============================================================
-//  CAPA: Middleware
-//  Archivo: usuarios.middleware.js
-// ============================================================
+const jwt = require('jsonwebtoken');
 
-const verifyAdmin = (req, res, next) => {
-  const usuario = req.usuario;
+// ✅ Verifica el token y pone el usuario en req.usuario
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>
 
-  if (!usuario) {
-    return res.status(401).json({ success: false, message: 'No autorizado: debes iniciar sesión' });
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'No autorizado: token no proporcionado' });
   }
 
-  if (usuario.RolId !== 1) {
-    return res.status(403).json({ success: false, message: 'Acceso denegado: se requiere rol de administrador' });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secreto_temporal');
+    req.usuario = decoded; // { id, RolId, iat, exp }
+    next();
+  } catch (err) {
+    return res.status(401).json({ success: false, message: 'Token inválido o expirado' });
   }
-
-  next();
 };
 
-module.exports = { verifyAdmin };
+// ✅ Ahora usa verifyToken internamente
+const verifyAdmin = (req, res, next) => {
+  verifyToken(req, res, () => {
+    if (req.usuario.RolId !== 1) {
+      return res.status(403).json({ success: false, message: 'Acceso denegado: se requiere rol de administrador' });
+    }
+    next();
+  });
+};
+
+module.exports = { verifyToken, verifyAdmin };

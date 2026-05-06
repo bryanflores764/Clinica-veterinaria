@@ -53,29 +53,17 @@ const updateProducto = async (req, res) => {
 // #250 — POST /api/productos/:id/stock
 const ajustarStock = async (req, res) => {
   try {
-
-
     const { id } = req.params;
-    const { tipo, cantidad, idUsuario } = req.body;
-
-    const result = await productosService.ajustarStock(
-      id,
-      tipo,
-      cantidad,
-      idUsuario
-    );
-
+    const { tipo, cantidad } = req.body;
+    const idUsuario = req.usuario.id; // ✅ del token, no del body
+    const result = await productosService.ajustarStock(id, tipo, cantidad, idUsuario);
     return res.status(200).json({
       success: true,
-      message: `Stock actualizado correctamente`,
+      message: 'Stock actualizado correctamente',
       data: result,
     });
-
   } catch (err) {
-    return res.status(err.status || 500).json({
-      success: false,
-      message: err.message || 'Error interno del servidor'
-    });
+    return res.status(err.status || 500).json({ success: false, message: err.message || 'Error interno del servidor' });
   }
 };
 // #265 — PATCH /api/productos/:id/desactivar
