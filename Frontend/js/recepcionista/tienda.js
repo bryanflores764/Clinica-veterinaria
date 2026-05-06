@@ -2,6 +2,18 @@ const API_BASE       = "http://localhost:3000";
 const API_PRODUCTOS  = `${API_BASE}/api/productos`;
 const API_CATEGORIAS = `${API_BASE}/api/categorias`;
 
+let productoscache = [];
+
+function mostrarAlerta(mensaje) {
+    alert(mensaje);
+}
+
+
+
+function mostrarExito(mensaje) {
+    alert(mensaje);
+}
+
 // ── Cargar categorías en el select del modal ──────────────────
 async function cargarCategorias() {
     const select = document.getElementById("prodCategoria");
@@ -35,7 +47,10 @@ async function cargarProductos() {
         const res      = await fetch(API_PRODUCTOS);
         const json     = await res.json();
         const productos = Array.isArray(json) ? json : (json.data ?? []);
+
+        productosCache = productos;
         renderTabla(productos);
+        
     } catch (err) {
         tbody.innerHTML = `
             <tr>
@@ -85,6 +100,7 @@ function renderTabla(productos) {
             <td data-label="Acciones">
                 <div class="acciones-container">
                     <button class="btn-tabla btn-editar-tabla" onclick="editarProducto(${p.Id})">Editar</button>
+                    <button class="btn-tabla btn-stock-tabla" onclick="abrirModalStock(${p.Id})">Stock</button>
                     <button class="btn-tabla btn-cancelar-tabla" onclick="desactivarProducto(${p.Id}, '${nombre}')">Eliminar</button>
                 </div>
             </td>
@@ -216,8 +232,28 @@ async function desactivarProducto(id, nombre) {
 }
 
 // ── Editar producto (próximamente) ────────────────────────────
-function editarProducto(id) {
-    mostrarAlerta("La función de edición estará disponible próximamente.");
+async function editarProducto(id) {
+    const producto = productosCache.find(p => p.Id == id);
+
+    if (!producto) {
+        mostrarAlerta("No se encontró el producto seleccionado.");
+        return;
+    }
+
+    await cargarCategoriasEditar();
+
+    document.getElementById("editProductoId").value = producto.Id;
+    document.getElementById("editNombre").value = producto.Nombre_Producto ?? "";
+    document.getElementById("editDescripcion").value = producto.Descripcion ?? "";
+    document.getElementById("editPrecio").value = producto.Precio ?? "";
+    document.getElementById("editStock").value = producto.Stock ?? "";
+
+    const idCategoria = producto.IdCategoria || producto.idCategoria || producto.Id_Categoria;
+    if (idCategoria) {
+        document.getElementById("editCategoria").value = idCategoria;
+    }
+
+    document.getElementById("modalEditarProducto").classList.remove("hidden");
 }
 
 // ── Mensajes de éxito / error ─────────────────────────────────
@@ -231,7 +267,7 @@ function mostrarExito(mensaje = "Operación realizada correctamente.") {
     if (btn)    btn.style.background = "#28a745";
     if (modal)  modal.classList.remove("hidden");
 }
-
+/*
 function mostrarAlerta(mensaje) {
     const modal  = document.getElementById("modalExito");
     const titulo = document.getElementById("exitoTitulo");
@@ -241,7 +277,7 @@ function mostrarAlerta(mensaje) {
     if (p)      p.textContent      = mensaje;
     if (btn)    btn.style.background = "#e67e22";
     if (modal)  modal.classList.remove("hidden");
-}
+}*/
 
 document.getElementById("cerrarExito")?.addEventListener("click", () => {
     document.getElementById("modalExito").classList.add("hidden");
@@ -249,3 +285,170 @@ document.getElementById("cerrarExito")?.addEventListener("click", () => {
 
 // ── Inicializar ───────────────────────────────────────────────
 cargarProductos();
+
+
+
+
+
+
+
+
+// Funcion de Boton Editar Producto //
+async function cargarCategoriasEditar() {
+    const select = document.getElementById("editCategoria");
+    if (!select) return;
+
+    select.innerHTML = `<option value="">Cargando...</option>`;
+
+    try {
+        const res = await fetch(API_CATEGORIAS);
+        const json = await res.json();
+        const cats = Array.isArray(json) ? json : (json.data ?? []);
+
+        select.innerHTML = `<option value="">Seleccionar...</option>`;
+
+        cats.forEach(c => {
+            select.innerHTML += `<option value="${c.Id}">${c.Nombre_Categoria}</option>`;
+        });
+    } catch (err) {
+        select.innerHTML = `<option value="">Error al cargar categorías</option>`;
+    }
+}
+
+function cerrarModalEditarProducto() {
+    document.getElementById("modalEditarProducto").classList.add("hidden");
+}
+
+document.getElementById("cerrarModalEditarProducto")?.addEventListener("click", cerrarModalEditarProducto);
+document.getElementById("cancelarEditarProducto")?.addEventListener("click", cerrarModalEditarProducto);
+
+document.getElementById("formEditarProducto")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const id = document.getElementById("editProductoId").value;
+    const nombre = document.getElementById("editNombre").value.trim();
+    const descripcion = document.getElementById("editDescripcion").value.trim();
+    const categoria = document.getElementById("editCategoria").value;
+    const precio = parseFloat(document.getElementById("editPrecio").value);
+    const stock = parseInt(document.getElementById("editStock").value, 10);
+
+    if (!nombre || !descripcion || !categoria || isNaN(precio) || precio <= 0 || isNaN(stock) || stock < 0) {
+        mostrarAlerta("Completa correctamente todos los campos antes de guardar.");
+        return;
+    }
+
+    const body = {
+        idCategoria: parseInt(categoria),
+        nombre_producto: nombre,
+        descripcion,
+        precio,
+        stock
+    };
+
+    try {
+        const res = await fetch(`${API_PRODUCTOS}/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+
+        const json = await res.json();
+
+        if (res.ok && json.success) {
+            cerrarModalEditarProducto();
+            await cargarProductos();
+            mostrarExito(`Producto "${nombre}" actualizado correctamente.`);
+        } else {
+            mostrarAlerta(json.message ?? "No se pudo actualizar el producto.");
+        }
+    } catch (err) {
+        mostrarAlerta("Error de conexión al actualizar el producto.");
+        console.error(err);
+    }
+});
+
+
+
+
+
+
+
+
+// Abrir modal Stock
+function abrirModalStock(id) {
+    const producto = productosCache.find(p => p.Id == id);
+
+    if (!producto) {
+        mostrarAlerta("No se encontró el producto.");
+        return;
+    }
+
+    document.getElementById("stockProductoId").value = producto.Id;
+    document.getElementById("stockProductoNombre").value = producto.Nombre_Producto || "";
+    document.getElementById("stockActual").value = producto.Stock || 0;
+    document.getElementById("tipoMovimientoStock").value = "";
+    document.getElementById("cantidadStock").value = "";
+    document.getElementById("motivoStock").value = "";
+
+    document.getElementById("modalStock").classList.remove("hidden");
+}
+
+// Cerrar modal Stock
+function cerrarModalStock() {
+    document.getElementById("modalStock").classList.add("hidden");
+}
+
+// Funcionamiento y validacion
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("cerrarModalStock")?.addEventListener("click", cerrarModalStock);
+    document.getElementById("cancelarStock")?.addEventListener("click", cerrarModalStock);
+
+    const formStock = document.getElementById("formStock");
+
+    if (!formStock) return;
+
+    formStock.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const id = document.getElementById("stockProductoId").value;
+        const tipo = document.getElementById("tipoMovimientoStock").value;
+        const cantidad = parseInt(document.getElementById("cantidadStock").value, 10);
+        const stockActual = parseInt(document.getElementById("stockActual").value, 10);
+
+        if (!tipo || isNaN(cantidad) || cantidad <= 0) {
+            mostrarAlerta("La cantidad debe ser positiva.");
+            return;
+        }
+
+        if (tipo === "salida" && cantidad > stockActual) {
+            mostrarAlerta("No puedes dejar el stock en negativo.");
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_PRODUCTOS}/${id}/stock`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    tipo: tipo,
+                    cantidad: cantidad,
+                    idUsuario: 2
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                cerrarModalStock();
+                await cargarProductos();
+                mostrarExito("Stock actualizado correctamente.");
+            } else {
+                mostrarAlerta(data.message || "No se pudo actualizar el stock.");
+            }
+
+        } catch (error) {
+            console.error("ERROR STOCK:", error);
+            mostrarAlerta("Error al actualizar el stock.");
+        }
+    });
+});

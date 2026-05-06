@@ -154,6 +154,62 @@
         </div>
 
         <!-- ══════════════════════════════════════════
+             MODAL DE EDITAR PRODUCTO
+        ══════════════════════════════════════════ -->
+    
+<div id="modalEditarProducto" class="modal hidden">
+    <div class="modal-content modal-compact">
+
+        <div class="modal-header-blue">
+            <div>
+                <p class="modal-title-white">Editar Producto</p>
+                <p class="modal-subtitle-white">Modifica los datos del producto seleccionado</p>
+            </div>
+            <button class="btn-close-white" id="cerrarModalEditarProducto" type="button">✕</button>
+        </div>
+
+        <form id="formEditarProducto">
+            <input type="hidden" id="editProductoId">
+
+            <div class="form-group">
+                <label>Nombre <span class="req">*</span></label>
+                <input type="text" id="editNombre" required>
+            </div>
+
+            <div class="form-group">
+                <label>Descripción <span class="req">*</span></label>
+                <textarea id="editDescripcion" required></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Categoría <span class="req">*</span></label>
+                    <select id="editCategoria" required>
+                        <option value="">Seleccionar...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Precio de Venta <span class="req">*</span></label>
+                    <input type="number" id="editPrecio" min="0.01" step="0.01" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Stock Inicial <span class="req">*</span></label>
+                <input type="number" id="editStock" min="0" step="1" required>
+            </div>
+
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">✓ Guardar cambios</button>
+                <button type="button" id="cancelarEditarProducto" class="btn-secondary">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+        
+
+        <!-- ══════════════════════════════════════════
              MODAL ÉXITO / ERROR
         ══════════════════════════════════════════ -->
         <div id="modalExito" class="modal hidden">
@@ -165,6 +221,68 @@
         </div>
 
     </div><!-- cierre div.layout -->
+
+
+    <!-- MODAL ACTUALIZAR STOCK -->
+<div id="modalStock" class="modal hidden">
+    <div class="modal-content modal-compact">
+
+        <div class="modal-header-blue">
+            <div>
+                <p class="modal-title-white">Actualizar Stock</p>
+                <p class="modal-subtitle-white">Registra entrada o salida de producto</p>
+            </div>
+            <button class="btn-close-white" id="cerrarModalStock" type="button">✕</button>
+        </div>
+
+        <form id="formStock">
+            <input type="hidden" id="stockProductoId">
+
+            <div class="form-group">
+                <label>Producto</label>
+                <input type="text" id="stockProductoNombre" disabled>
+            </div>
+
+            <div class="form-group">
+                <label>Stock actual</label>
+                <input type="number" id="stockActual" disabled>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tipo de movimiento <span class="req">*</span></label>
+                    <select id="tipoMovimientoStock" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="entrada">Entrada</option>
+                        <option value="salida">Salida</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Cantidad <span class="req">*</span></label>
+                    <input type="number" id="cantidadStock" min="1" step="1" placeholder="Ej: 5" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Motivo / Observación</label>
+                <textarea id="motivoStock" placeholder="Ej: compra de inventario, venta, ajuste..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">✓ Guardar movimiento</button>
+                <button type="button" id="cancelarStock" class="btn-secondary">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
 
     <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
     <script src="../../js/recepcionista/logout.js"></script>
