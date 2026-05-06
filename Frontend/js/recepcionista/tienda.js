@@ -65,9 +65,9 @@ async function cargarProductos() {
 // ── Filtrar y renderizar según el select ──────────────────────
 function filtrarYRenderizar() {
     const filtro = document.getElementById("filtroEstado")?.value ?? "todos";
-    let lista = todosLosProductos;
-    if (filtro === "activo")   lista = todosLosProductos.filter(p => p.Estado === "activo");
-    if (filtro === "inactivo") lista = todosLosProductos.filter(p => p.Estado === "inactivo");
+    let lista = productosCache;
+    if (filtro === "activo")   lista = productosCache.filter(p => p.Estado === "activo");
+    if (filtro === "inactivo") lista = productosCache.filter(p => p.Estado === "inactivo");
     renderTabla(lista);
 }
 
