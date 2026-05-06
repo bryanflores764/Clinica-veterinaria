@@ -109,16 +109,12 @@ function renderTabla(productos) {
             </td>
             <td data-label="Acciones">
                 <div class="acciones-container">
-                    <button class="btn-tabla btn-editar-tabla" onclick="editarProducto(${p.Id})">Editar</button>
-<<<<<<< HEAD
+                <button class="btn-tabla btn-editar-tabla" onclick="editarProducto(${p.Id})">Editar</button>
+                <button class="btn-tabla btn-stock-tabla" onclick="abrirModalStock(${p.Id})">Stock</button>
                     ${estado === "activo"
                         ? `<button class="btn-tabla btn-cancelar-tabla" onclick="toggleEstadoProducto(${p.Id}, '${nombre}', 'desactivar')">Desactivar</button>`
                         : `<button class="btn-tabla btn-activar-tabla"  onclick="toggleEstadoProducto(${p.Id}, '${nombre}', 'activar')">Activar</button>`
                     }
-=======
-                    <button class="btn-tabla btn-stock-tabla" onclick="abrirModalStock(${p.Id})">Stock</button>
-                    <button class="btn-tabla btn-cancelar-tabla" onclick="desactivarProducto(${p.Id}, '${nombre}')">Eliminar</button>
->>>>>>> 28be20aab6f8677d6eba9925b67b7c82acf5550f
                 </div>
             </td>
         </tr>`;
@@ -287,7 +283,7 @@ async function toggleEstadoProducto(id, nombre, accion) {
     }
 }
 
-// ── Editar producto (próximamente) ────────────────────────────
+// ── Editar producto ────────────────────────────
 async function editarProducto(id) {
     const producto = productosCache.find(p => p.Id == id);
 
@@ -323,6 +319,7 @@ function mostrarExito(mensaje = "Operación realizada correctamente.") {
     if (btn)    btn.style.background = "#28a745";
     if (modal)  modal.classList.remove("hidden");
 }
+
 /*
 function mostrarAlerta(mensaje) {
     const modal  = document.getElementById("modalExito");
