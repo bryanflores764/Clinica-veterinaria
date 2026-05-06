@@ -1,0 +1,294 @@
+/* ============================================================
+   CONTENEDOR PRINCIPAL
+   ============================================================ */
+#contenedorVentas {
+    margin: 20px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ventas-empty {
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* ============================================================
+   HEADER MAIN
+   ============================================================ */
+.header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 20px 20px 0 20px;
+    margin: 0;
+}
+
+.header-main h1 {
+    font-size: 26px;
+    color: #222;
+    margin: 0;
+}
+
+/* ============================================================
+   MODAL NUEVA VENTA
+   ============================================================ */
+.modal-venta {
+    max-width: 680px;
+    width: 95%;
+}
+
+/* ── Bloque fecha / usuario ───────────────────────────────── */
+.venta-meta {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.venta-meta-item {
+    flex: 1;
+    min-width: 160px;
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.venta-meta-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #888;
+}
+
+.venta-meta-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #222;
+}
+
+/* ── Cabecera sección productos ───────────────────────────── */
+.venta-productos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.venta-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #555;
+}
+
+.btn-agregar-producto {
+    background: #e8f5e9;
+    color: #1b5e20;
+    border: 1px solid #c8e6c9;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+}
+
+.btn-agregar-producto:hover {
+    background: #c8e6c9;
+}
+
+/* ── Tabla de productos en la venta ───────────────────────── */
+.venta-tabla-wrapper {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    min-height: 80px;
+}
+
+.venta-tabla {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.venta-tabla th {
+    background: #f1f3f5;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #555;
+    padding: 10px 12px;
+    text-align: left;
+}
+
+.venta-tabla th:nth-child(2),
+.venta-tabla th:nth-child(3),
+.venta-tabla th:nth-child(4) {
+    text-align: center;
+}
+
+.venta-tabla td {
+    padding: 10px 12px;
+    border-top: 1px solid #f2f2f2;
+    font-size: 13px;
+    color: #333;
+    vertical-align: middle;
+}
+
+.venta-tabla td:nth-child(2),
+.venta-tabla td:nth-child(3),
+.venta-tabla td:nth-child(4) {
+    text-align: center;
+}
+
+.venta-tabla select {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    background: #fafafa;
+    color: #333;
+}
+
+.venta-tabla select:focus {
+    outline: none;
+    border-color: #0071BC;
+}
+
+.venta-tabla input[type="number"] {
+    width: 70px;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    text-align: center;
+    background: #fafafa;
+}
+
+.venta-tabla input[type="number"]:focus {
+    outline: none;
+    border-color: #0071BC;
+}
+
+.venta-precio-unit,
+.venta-subtotal {
+    font-weight: 700;
+    color: #0071BC;
+}
+
+.btn-eliminar-fila {
+    background: none;
+    border: none;
+    color: #e53e3e;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    line-height: 1;
+    transition: background 0.2s;
+}
+
+.btn-eliminar-fila:hover {
+    background: #fce4ec;
+}
+
+/* ── Mensaje vacío ────────────────────────────────────────── */
+.venta-empty-productos {
+    text-align: center;
+    color: #aaa;
+    font-size: 13px;
+    padding: 20px;
+    margin: 0;
+}
+
+/* ── Fila de total ────────────────────────────────────────── */
+.venta-total-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 4px;
+    border-top: 2px solid #f0f0f0;
+    margin-bottom: 4px;
+}
+
+.venta-total-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.venta-total-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0071BC;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+    .modal-venta {
+        max-width: 98vw;
+    }
+
+    .venta-tabla th:nth-child(3),
+    .venta-tabla td:nth-child(3) {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .main {
+        display: block;
+    }
+
+    .header-main {
+        padding: 14px 14px 0;
+    }
+
+    #contenedorVentas {
+        margin: 12px;
+    }
+
+    .venta-meta {
+        flex-direction: column;
+    }
+
+    .venta-tabla th:nth-child(3),
+    .venta-tabla td:nth-child(3) {
+        display: none;
+    }
+
+    .venta-tabla th,
+    .venta-tabla td {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .venta-tabla input[type="number"] {
+        width: 54px;
+    }
+}
