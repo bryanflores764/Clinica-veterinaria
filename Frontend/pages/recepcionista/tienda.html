@@ -22,7 +22,7 @@
             </div>
             <ul>
                 <li>
-                    <a href="#" id="btnVerCitas">
+                    <a href="interfazRecepcionista.html" id="btnVerCitas">
                         <img src="../../assets/icons/icon-citas.png" alt="citas">
                         Citas
                     </a>
@@ -36,7 +36,7 @@
                 <li>
                     <a href="propetario.html">
                         <img src="../../assets/icons/icon-user.png" alt="Cliente">
-                        Cliente
+                        Clientes
                     </a>
                 </li>
                 <li>
@@ -71,7 +71,12 @@
 
         <main class="main">
             <header class="header-main">
-                <h1>Productos Disponibles</h1>
+                <h1 class="title">Productos Disponibles</h1>
+                <select id="filtroEstado">
+                    <option value="todos">Todos</option>
+                    <option value="activo" selected>Activos</option>
+                    <option value="inactivo">Inactivos</option>
+                </select>
             </header>
 
             <div id="contenedorProductos">
@@ -79,10 +84,10 @@
                     <thead>
                         <tr>
                             <th>Nombre</th>
-                            <th>Descripción</th>
                             <th>Categoría</th>
-                            <th>Precio de Venta</th>
-                            <th>Stock Inicial</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -150,6 +155,23 @@
                     </div>
 
                 </form>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             MODAL CONFIRMACIÓN
+        ══════════════════════════════════════════ -->
+        <div id="modalConfirmar" class="modal hidden">
+            <div class="modal-content modal-compact modal-sm">
+                <div class="modal-header">
+                    <h2 id="confirmarTitulo">Confirmar acción</h2>
+                    <button class="btn-close-x" id="cerrarConfirmar" type="button">✕</button>
+                </div>
+                <p id="confirmarMensaje" style="font-size:13px; color:#666; margin-bottom:4px;"></p>
+                <div class="modal-actions">
+                    <button type="button" id="confirmarAceptar" class="btn-primary">Confirmar</button>
+                    <button type="button" id="confirmarCancelar" class="btn-secondary">Cancelar</button>
+                </div>
             </div>
         </div>
 

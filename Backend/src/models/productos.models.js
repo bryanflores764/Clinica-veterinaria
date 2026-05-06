@@ -77,6 +77,13 @@ const ProductosQueries = {
     WHERE Id = ?
   `,
 
+  // --- ACTIVAR ---
+  ACTIVAR: `
+    UPDATE productos
+    SET Estado = 'activo'
+    WHERE Id = ?
+  `,
+
   // --- MOVIMIENTOS STOCK ---
   CREATE_MOVIMIENTO: `
     INSERT INTO movimientosstock (Id_Producto, Id_Venta, Id_Usuario, Tipo, Cantidad, Stock_Antes, Stock_Despues)

@@ -30,11 +30,7 @@ const createProducto = async (idCategoria, nombre, descripcion, precio, stock) =
 
 // ── #223-#225  Obtener productos activos ──────────────────────
 const getAllProductos = async () => {
-  // #224 — Solo productos activos
-  const productos = await productosRepository.findAllActivos();
-  if (!productos.length) {
-    throw { status: 404, message: 'No hay productos registrados' };
-  }
+  const productos = await productosRepository.findAll();
   return productos;
 };
 
@@ -116,19 +112,28 @@ const ajustarStock = async (id, tipo, cantidad, idUsuario) => {
 
 // ── #265-#268  Desactivar producto (soft delete) ──────────────
 const desactivarProducto = async (id) => {
-  // #267 — Validar que el producto exista
   const producto = await productosRepository.findById(id);
   if (!producto) {
     throw { status: 404, message: `No existe un producto con id ${id}` };
   }
-
   if (producto.Estado === 'inactivo') {
     throw { status: 409, message: `El producto "${producto.Nombre_Producto}" ya está inactivo` };
   }
-
-  // #266 — Cambiar estado a inactivo (#270 — se mantiene en BD, no se elimina)
   await productosRepository.desactivarProducto(id);
   return { id, mensaje: `Producto "${producto.Nombre_Producto}" desactivado exitosamente` };
+};
+
+// ── Activar producto ──────────────────────────────────────────
+const activarProducto = async (id) => {
+  const producto = await productosRepository.findById(id);
+  if (!producto) {
+    throw { status: 404, message: `No existe un producto con id ${id}` };
+  }
+  if (producto.Estado === 'activo') {
+    throw { status: 409, message: `El producto "${producto.Nombre_Producto}" ya está activo` };
+  }
+  await productosRepository.activarProducto(id);
+  return { id, mensaje: `Producto "${producto.Nombre_Producto}" activado exitosamente` };
 };
 
 // ── Historial de movimientos ──────────────────────────────────
@@ -148,5 +153,6 @@ module.exports = {
   updateProducto,
   ajustarStock,
   desactivarProducto,
+  activarProducto,
   getMovimientos,
 };

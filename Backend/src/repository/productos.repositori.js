@@ -42,6 +42,11 @@ const desactivarProducto = async (id) => {
   return result.affectedRows;
 };
 
+const activarProducto = async (id) => {
+  const [result] = await connection.execute(ProductosQueries.ACTIVAR, [id]);
+  return result.affectedRows;
+};
+
 // ── STOCK ─────────────────────────────────────────────────────
 
 const updateStock = async (id, cantidad) => {
@@ -71,6 +76,7 @@ module.exports = {
   findById,
   updateProducto,
   desactivarProducto,
+  activarProducto,
   updateStock,
   createMovimiento,
   findMovimientosByProducto,

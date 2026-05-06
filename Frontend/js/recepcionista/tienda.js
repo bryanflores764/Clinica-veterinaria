@@ -2,6 +2,8 @@ const API_BASE       = "http://localhost:3000";
 const API_PRODUCTOS  = `${API_BASE}/api/productos`;
 const API_CATEGORIAS = `${API_BASE}/api/categorias`;
 
+let todosLosProductos = [];
+
 // ── Cargar categorías en el select del modal ──────────────────
 async function cargarCategorias() {
     const select = document.getElementById("prodCategoria");
@@ -21,7 +23,7 @@ async function cargarCategorias() {
     }
 }
 
-// ── Cargar y renderizar productos desde la API ────────────────
+// ── Cargar productos desde la API ────────────────────────────
 async function cargarProductos() {
     const tbody = document.querySelector("#tablaProductos tbody");
     if (!tbody) return;
@@ -32,10 +34,10 @@ async function cargarProductos() {
             </td>
         </tr>`;
     try {
-        const res      = await fetch(API_PRODUCTOS);
-        const json     = await res.json();
-        const productos = Array.isArray(json) ? json : (json.data ?? []);
-        renderTabla(productos);
+        const res  = await fetch(API_PRODUCTOS);
+        const json = await res.json();
+        todosLosProductos = Array.isArray(json) ? json : (json.data ?? []);
+        filtrarYRenderizar();
     } catch (err) {
         tbody.innerHTML = `
             <tr>
@@ -47,6 +49,15 @@ async function cargarProductos() {
     }
 }
 
+// ── Filtrar y renderizar según el select ──────────────────────
+function filtrarYRenderizar() {
+    const filtro = document.getElementById("filtroEstado")?.value ?? "todos";
+    let lista = todosLosProductos;
+    if (filtro === "activo")   lista = todosLosProductos.filter(p => p.Estado === "activo");
+    if (filtro === "inactivo") lista = todosLosProductos.filter(p => p.Estado === "inactivo");
+    renderTabla(lista);
+}
+
 // ── Render tabla ──────────────────────────────────────────────
 function renderTabla(productos) {
     const tbody = document.querySelector("#tablaProductos tbody");
@@ -56,36 +67,40 @@ function renderTabla(productos) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="6" style="text-align:center; padding:40px; color:#999; font-size:15px;">
-                    No hay productos registrados.
+                    No hay productos para mostrar.
                 </td>
             </tr>`;
         return;
     }
 
     tbody.innerHTML = productos.map(p => {
-        const catNombre = p.Categoria ?? "Otro";
-        // Normaliza la categoría para el CSS: minúsculas sin tildes ni espacios
-        const catClass = "badge-cat-" + catNombre
+        const catNombre  = p.Categoria ?? "Otro";
+        const catClass   = "badge-cat-" + catNombre
             .toLowerCase()
             .normalize("NFD").replace(/[̀-ͯ]/g, "")
             .replace(/\s+/g, "-");
-
         const stockClass = parseInt(p.Stock) <= 10 ? "stock-bajo" : "stock-normal";
-        const nombre = (p.Nombre_Producto ?? "").replace(/'/g, "\\'");
+        const estado     = p.Estado ?? "activo";
+        const nombre     = (p.Nombre_Producto ?? "").replace(/'/g, "\\'");
 
         return `
         <tr>
             <td data-label="Nombre">${p.Nombre_Producto}</td>
-            <td class="td-descripcion" data-label="Descripción" title="${p.Descripcion ?? ''}">${p.Descripcion ?? '—'}</td>
             <td data-label="Categoría">
                 <span class="badge-categoria ${catClass}">${catNombre}</span>
             </td>
             <td class="td-precio" data-label="Precio">$${parseFloat(p.Precio).toFixed(2)}</td>
             <td data-label="Stock" class="${stockClass}">${p.Stock}</td>
+            <td data-label="Estado">
+                <span class="badge-estado badge-estado-${estado}">${estado === "activo" ? "Activo" : "Inactivo"}</span>
+            </td>
             <td data-label="Acciones">
                 <div class="acciones-container">
                     <button class="btn-tabla btn-editar-tabla" onclick="editarProducto(${p.Id})">Editar</button>
-                    <button class="btn-tabla btn-cancelar-tabla" onclick="desactivarProducto(${p.Id}, '${nombre}')">Eliminar</button>
+                    ${estado === "activo"
+                        ? `<button class="btn-tabla btn-cancelar-tabla" onclick="toggleEstadoProducto(${p.Id}, '${nombre}', 'desactivar')">Desactivar</button>`
+                        : `<button class="btn-tabla btn-activar-tabla"  onclick="toggleEstadoProducto(${p.Id}, '${nombre}', 'activar')">Activar</button>`
+                    }
                 </div>
             </td>
         </tr>`;
@@ -196,21 +211,60 @@ document.getElementById("formProducto")?.addEventListener("submit", async (e) =>
     }
 });
 
-// ── Desactivar producto (soft delete) ────────────────────────
-async function desactivarProducto(id, nombre) {
-    if (!confirm(`¿Deseas desactivar el producto "${nombre}"?`)) return;
+// ── Modal de confirmación personalizado (Promise) ─────────────
+function confirmar(mensaje, titulo = "Confirmar acción", btnClass = "btn-primary") {
+    return new Promise((resolve) => {
+        const modal      = document.getElementById("modalConfirmar");
+        const btnAceptar = document.getElementById("confirmarAceptar");
+
+        document.getElementById("confirmarTitulo").textContent  = titulo;
+        document.getElementById("confirmarMensaje").textContent = mensaje;
+        btnAceptar.className = btnClass;
+        modal.classList.remove("hidden");
+
+        function resolver(resultado) {
+            modal.classList.add("hidden");
+            btnAceptar.removeEventListener("click",  onAceptar);
+            document.getElementById("confirmarCancelar").removeEventListener("click", onCancelar);
+            document.getElementById("cerrarConfirmar").removeEventListener("click",   onCancelar);
+            resolve(resultado);
+        }
+
+        function onAceptar()  { resolver(true);  }
+        function onCancelar() { resolver(false); }
+
+        btnAceptar.addEventListener("click",  onAceptar);
+        document.getElementById("confirmarCancelar").addEventListener("click", onCancelar);
+        document.getElementById("cerrarConfirmar").addEventListener("click",   onCancelar);
+    });
+}
+
+// ── Activar / Desactivar producto ────────────────────────────
+async function toggleEstadoProducto(id, nombre, accion) {
+    const mensaje = accion === "activar"
+        ? `¿Deseas activar el producto "${nombre}"?`
+        : `¿Deseas desactivar el producto "${nombre}"?`;
+    const titulo   = accion === "activar" ? "Activar producto" : "Desactivar producto";
+    const btnClass = accion === "activar" ? "btn-success" : "btn-danger";
+
+    const confirmado = await confirmar(mensaje, titulo, btnClass);
+    if (!confirmado) return;
+
     try {
-        const res  = await fetch(`${API_PRODUCTOS}/${id}/desactivar`, { method: "PATCH" });
+        const res  = await fetch(`${API_PRODUCTOS}/${id}/${accion}`, { method: "PATCH" });
         const json = await res.json();
 
         if (res.ok && json.success) {
             await cargarProductos();
-            mostrarExito(`Producto "${nombre}" desactivado correctamente.`);
+            const msg = accion === "activar"
+                ? `Producto "${nombre}" activado correctamente.`
+                : `Producto "${nombre}" desactivado correctamente.`;
+            mostrarExito(msg);
         } else {
-            mostrarAlerta(json.message ?? "No se pudo desactivar el producto.");
+            mostrarAlerta(json.message ?? `No se pudo ${accion} el producto.`);
         }
     } catch (err) {
-        mostrarAlerta("Error de conexión al intentar desactivar.");
+        mostrarAlerta(`Error de conexión al intentar ${accion} el producto.`);
         console.error(err);
     }
 }
@@ -246,6 +300,9 @@ function mostrarAlerta(mensaje) {
 document.getElementById("cerrarExito")?.addEventListener("click", () => {
     document.getElementById("modalExito").classList.add("hidden");
 });
+
+// ── Filtro de estado ──────────────────────────────────────────
+document.getElementById("filtroEstado")?.addEventListener("change", filtrarYRenderizar);
 
 // ── Inicializar ───────────────────────────────────────────────
 cargarProductos();

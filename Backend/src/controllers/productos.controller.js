@@ -93,6 +93,21 @@ const desactivarProducto = async (req, res) => {
   }
 };
 
+// PATCH /api/productos/:id/activar
+const activarProducto = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await productosService.activarProducto(id);
+    return res.status(200).json({
+      success: true,
+      message: result.mensaje,
+      data: result,
+    });
+  } catch (err) {
+    return res.status(err.status || 500).json({ success: false, message: err.message || 'Error interno del servidor' });
+  }
+};
+
 // GET /api/productos/:id/movimientos
 const getMovimientos = async (req, res) => {
   try {
@@ -117,5 +132,6 @@ module.exports = {
   updateProducto,
   ajustarStock,
   desactivarProducto,
+  activarProducto,
   getMovimientos,
 };
