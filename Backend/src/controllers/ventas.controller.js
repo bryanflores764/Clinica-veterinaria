@@ -140,14 +140,7 @@ const confirmarVenta = async (req, res) => {
 const anularVenta = async (req, res) => {
   try {
     const { id } = req.params;
-    
-    console.log("📝 [Controller] Anular venta:", id);
-    console.log("📝 [Controller] req.usuario:", req.usuario);
-    
-    // ✅ Obtener ID del usuario desde el token
-    const idUsuario = req.usuario?.id || req.usuario?.Id || req.usuario?.usuarioId;
-    
-    console.log("📝 [Controller] ID Usuario obtenido:", idUsuario);
+    const idUsuario = req.usuario?.id || req.usuario?.Id;
     
     if (!idUsuario) {
       return res.status(401).json({ 
@@ -156,8 +149,8 @@ const anularVenta = async (req, res) => {
       });
     }
     
+    // ✅ No leer nada del body, solo el ID de la URL
     const result = await ventasService.anularVenta(id, idUsuario);
-    console.log("✅ [Controller] Venta anulada:", result);
     
     return res.status(200).json({
       success: true,
@@ -165,7 +158,6 @@ const anularVenta = async (req, res) => {
       data: result,
     });
   } catch (err) {
-    console.error("❌ [Controller] Error al anular venta:", err);
     return res.status(err.status || 500).json({ 
       success: false, 
       message: err.message || 'Error interno del servidor' 

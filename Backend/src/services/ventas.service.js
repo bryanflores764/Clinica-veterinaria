@@ -195,10 +195,16 @@ const anularVenta = async (idVenta, idUsuario) => {
         item.Cantidad, stockAntes, stockDespues
       );
     }
-    console.log("✅ Stock devuelto");
   }
 
   await ventasRepository.anularVentaConDatos(idVenta, idUsuario);
+  
+  // ✅ AGREGAR ESTE RETURN
+  return { 
+    id: idVenta, 
+    estado: 'anulada', 
+    mensaje: `Venta #${idVenta} anulada exitosamente. ${venta.Estado === 'confirmada' ? 'Stock devuelto al inventario.' : ''}` 
+  };
 };
 
 module.exports = {
