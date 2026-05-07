@@ -171,10 +171,7 @@ async function anularVenta(idVenta) {
 
         const res = await fetch(`${API_VENTAS}/${idVenta}/anular`, {
             method: "PATCH",
-            headers: obtenerHeadersAuth(),
-            body: JSON.stringify({
-                mensaje: "Venta anulada desde el módulo de recepción"
-            })
+            headers: obtenerHeadersAuth()
         });
 
         const json = await res.json();
