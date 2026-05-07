@@ -5,7 +5,7 @@
 
 const { Router } = require('express');
 const usuariosController = require('../controllers/usuarios.controller');
-const { verifyAdmin } = require('../middlewares/usuarios.middleware');
+const { verifyAdmin } = require('../middlewares/usarios.middleware');
 
 const router = Router();
 router.get('/veterinarios', usuariosController.getVeterinarios);

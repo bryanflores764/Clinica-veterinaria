@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const razasController = require('../controllers/razas.controllers');
-const { verifyAdmin } = require('../middlewares/usuarios.middleware');
+const { verifyAdmin } = require('../middlewares/usarios.middleware');
 
 const router = Router();
 
