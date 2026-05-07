@@ -8,7 +8,7 @@ let productosDisponibles = [];
 let propietariosDisponibles = [];
 
 // ─────────────────────────────────────────────
-// TOKEN Y HEADERS
+// TOKEN Y HEADERS Y AUTENTICACIÓN
 // ─────────────────────────────────────────────
 function obtenerToken() {
     return localStorage.getItem("token");
@@ -22,6 +22,17 @@ function obtenerHeadersAuth() {
         "Authorization": `Bearer ${token}`
     };
 }
+
+function verificarSesion() {
+    const tokenActual = obtenerToken();
+
+    if (!tokenActual || tokenActual === "null" || tokenActual === "undefined") {
+        localStorage.removeItem("token");
+        window.location.replace("../../index.html");
+    }
+}
+
+verificarSesion();
 
 // ─────────────────────────────────────────────
 // UTILIDADES
@@ -83,6 +94,117 @@ document.getElementById("tbodyVentas")?.addEventListener("click", (e) => {
 
     abrirDetalleVenta(idVenta);
 });
+
+// ─────────────────────────────────────────────
+// evento para boton anular venta
+// ─────────────────────────────────────────────
+let idVentaSeleccionadaParaAnular = null;
+
+document.getElementById("tbodyVentas")?.addEventListener("click", (e) => {
+    const btnAnular = e.target.closest(".btn-anular-venta");
+
+    if (!btnAnular) return;
+
+    const idVenta = btnAnular.dataset.id;
+    const estado = btnAnular.dataset.estado?.toLowerCase();
+
+    if (!idVenta) {
+        mostrarAlerta("No se encontró el ID de la venta.");
+        return;
+    }
+
+    if (estado === "anulada") {
+        mostrarAlerta("Esta venta ya está anulada.");
+        return;
+    }
+
+    abrirModalAnularVenta(idVenta);
+});
+
+function abrirModalAnularVenta(idVenta) {
+    idVentaSeleccionadaParaAnular = idVenta;
+
+    const mensaje = document.getElementById("anularVentaMensaje");
+
+    if (mensaje) {
+        mensaje.textContent = `¿Estás seguro de que deseas anular la venta #${idVenta}?`;
+    }
+
+    document.getElementById("modalAnularVenta")?.classList.remove("hidden");
+}
+
+function cerrarModalAnularVenta() {
+    idVentaSeleccionadaParaAnular = null;
+
+    document.getElementById("modalAnularVenta")?.classList.add("hidden");
+}
+
+document.getElementById("btnCancelarAnularVenta")?.addEventListener("click", cerrarModalAnularVenta);
+
+document.getElementById("btnConfirmarAnularVenta")?.addEventListener("click", async () => {
+    if (!idVentaSeleccionadaParaAnular) {
+        mostrarAlerta("No se encontró la venta seleccionada.");
+        return;
+    }
+
+    await anularVenta(idVentaSeleccionadaParaAnular);
+});
+
+// ─────────────────────────────────────────────
+// anular venta
+// ─────────────────────────────────────────────
+async function anularVenta(idVenta) {
+    const token = obtenerToken();
+
+    if (!token) {
+        mostrarAlerta("No hay sesión activa. Inicia sesión nuevamente.");
+        return;
+    }
+
+    const btnConfirmar = document.getElementById("btnConfirmarAnularVenta");
+
+    try {
+        if (btnConfirmar) {
+            btnConfirmar.disabled = true;
+            btnConfirmar.textContent = "Anulando...";
+        }
+
+        const res = await fetch(`${API_VENTAS}/${idVenta}/anular`, {
+            method: "PATCH",
+            headers: obtenerHeadersAuth(),
+            body: JSON.stringify({
+                mensaje: "Venta anulada desde el módulo de recepción"
+            })
+        });
+
+        const json = await res.json();
+
+        console.log("Respuesta anular venta:", json);
+
+        if (!res.ok || json.success === false) {
+            throw new Error(json.message || "No se pudo anular la venta.");
+        }
+
+        cerrarModalAnularVenta();
+
+        mostrarExito(json.message || `Venta #${idVenta} anulada correctamente.`);
+
+        await cargarVentas();
+
+    } catch (error) {
+        console.error("Error al anular venta:", error);
+
+        cerrarModalAnularVenta();
+
+        mostrarAlerta(error.message || "Ocurrió un error al anular la venta.");
+
+    } finally {
+        if (btnConfirmar) {
+            btnConfirmar.disabled = false;
+            btnConfirmar.textContent = "Sí, anular venta";
+        }
+    }
+}
 
 // ─────────────────────────────────────────────
 // CARGAR VENTAS EN TABLA
@@ -187,10 +309,12 @@ async function cargarVentas() {
 
                         <button 
                             type="button" 
-                            class="btn-editar-venta"
+                            class="btn-anular-venta"
                             data-id="${idVenta}"
+                            data-estado="${estado}"
+                            ${estado?.toLowerCase() === "anulada" ? "disabled" : ""}
                         >
-                            Editar
+                            ${estado?.toLowerCase() === "anulada" ? "Anulada" : "Anular"}
                         </button>
                     </div>
                 </td>

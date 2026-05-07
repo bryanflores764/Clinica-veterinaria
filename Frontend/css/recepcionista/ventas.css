@@ -370,7 +370,7 @@
 }
 
 .btn-detalle-venta,
-.btn-editar-venta {
+.btn-anular-venta {
     border: none;
     border-radius: 10px;
     padding: 8px 12px;
@@ -386,13 +386,13 @@
     color: #ffffff;
 }
 
-.btn-editar-venta {
-    background: #28a745;
+.btn-anular-venta {
+    background: #dc3545;
     color: #ffffff;
 }
 
 .btn-detalle-venta:hover,
-.btn-editar-venta:hover {
+.btn-anular-venta:hover {
     transform: translateY(-1px);
     opacity: 0.9;
 }
@@ -413,6 +413,65 @@
 #modalDetalleVenta .venta-tabla td,
 #modalDetalleVenta .venta-tabla th {
     vertical-align: middle;
+}
+
+/* ============================================================
+    MODAL CONFIRMAR ANULACIÓN
+   ============================================================ */
+.modal-anular-venta {
+    text-align: center;
+}
+
+.modal-anular-venta h3 {
+    margin: 0 0 10px 0;
+    color: #c0392b;
+    font-size: 22px;
+}
+
+.modal-anular-venta p {
+    margin: 8px 0;
+    color: #333;
+    font-size: 15px;
+}
+
+.anular-venta-warning {
+    background: #fdecec;
+    color: #c0392b !important;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px !important;
+    font-weight: 700;
+}
+
+.btn-anular-confirmar {
+    background: #dc3545;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: 0.2s ease;
+}
+
+.btn-anular-confirmar:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+.btn-anular-confirmar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Botón anular deshabilitado cuando la venta ya está anulada */
+.btn-anular-venta:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none;
 }
 
 /* ============================================================
@@ -549,7 +608,7 @@
     }
 
     .btn-detalle-venta,
-    .btn-editar-venta {
+    .btn-anular-venta {
         padding: 7px 10px;
         font-size: 12px;
         border-radius: 8px;
