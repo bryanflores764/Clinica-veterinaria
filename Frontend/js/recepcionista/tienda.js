@@ -4,6 +4,8 @@ const API_CATEGORIAS = `${API_BASE}/api/categorias`;
 
 let productosCache = [];
 let categoriasList = [];
+let paginaActual   = 1;
+const POR_PAGINA   = 15;
 
 // ── Helper para obtener el token ──────────────────────────────
 const getToken = () => localStorage.getItem("token");
@@ -60,7 +62,7 @@ async function cargarProductos() {
         const productos = Array.isArray(json) ? json : (json.data ?? []);
 
         productosCache = productos;
-        renderTabla(productos);
+        filtrarYRenderizar();
 
     } catch (err) {
         tbody.innerHTML = `
@@ -73,13 +75,63 @@ async function cargarProductos() {
     }
 }
 
-// ── Filtrar y renderizar según el select ──────────────────────
-function filtrarYRenderizar() {
-    const filtro = document.getElementById("filtroEstado")?.value ?? "todos";
+// ── Filtrar, buscar, paginar y renderizar ─────────────────────
+function filtrarYRenderizar(resetPagina = true) {
+    if (resetPagina) paginaActual = 1;
+
+    const filtro   = document.getElementById("filtroEstado")?.value ?? "todos";
+    const busqueda = (document.getElementById("buscadorProducto")?.value ?? "")
+        .trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+
     let lista = productosCache;
-    if (filtro === "activo")   lista = productosCache.filter(p => p.Estado === "activo");
-    if (filtro === "inactivo") lista = productosCache.filter(p => p.Estado === "inactivo");
-    renderTabla(lista);
+    if (filtro === "activo")   lista = lista.filter(p => p.Estado === "activo");
+    if (filtro === "inactivo") lista = lista.filter(p => p.Estado === "inactivo");
+
+    if (busqueda) {
+        lista = lista.filter(p => {
+            const nombre = (p.Nombre_Producto ?? "").toLowerCase()
+                .normalize("NFD").replace(/[̀-ͯ]/g, "");
+            const cat    = (p.Categoria ?? "").toLowerCase()
+                .normalize("NFD").replace(/[̀-ͯ]/g, "");
+            return nombre.includes(busqueda) || cat.includes(busqueda);
+        });
+    }
+
+    const total  = lista.length;
+    const inicio = (paginaActual - 1) * POR_PAGINA;
+    renderTabla(lista.slice(inicio, inicio + POR_PAGINA));
+    renderPaginacion(total);
+}
+
+function renderPaginacion(total) {
+    const contenedor = document.getElementById("paginacion");
+    if (!contenedor) return;
+
+    const totalPaginas = Math.ceil(total / POR_PAGINA);
+    if (totalPaginas <= 1) { contenedor.innerHTML = ""; return; }
+
+    const btn = (label, pagina, activa = false, disabled = false) =>
+        `<button class="pag-btn${activa ? " pag-activa" : ""}"
+            ${disabled ? "disabled" : `onclick="irPagina(${pagina})"`}>${label}</button>`;
+
+    let html = btn("‹", paginaActual - 1, false, paginaActual === 1);
+
+    for (let i = 1; i <= totalPaginas; i++) {
+        if (i === 1 || i === totalPaginas || (i >= paginaActual - 2 && i <= paginaActual + 2)) {
+            html += btn(i, i, i === paginaActual);
+        } else if (i === paginaActual - 3 || i === paginaActual + 3) {
+            html += `<span class="pag-ellipsis">…</span>`;
+        }
+    }
+
+    html += btn("›", paginaActual + 1, false, paginaActual === totalPaginas);
+    contenedor.innerHTML = html;
+}
+
+function irPagina(n) {
+    paginaActual = n;
+    filtrarYRenderizar(false);
+    document.getElementById("contenedorProductos")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 // ── Render tabla ──────────────────────────────────────────────
@@ -431,7 +483,8 @@ document.getElementById("cerrarExito")?.addEventListener("click", () => {
     document.getElementById("modalExito").classList.add("hidden");
 });
 
-document.getElementById("filtroEstado")?.addEventListener("change", filtrarYRenderizar);
+document.getElementById("filtroEstado")?.addEventListener("change", () => filtrarYRenderizar());
+document.getElementById("buscadorProducto")?.addEventListener("input", () => filtrarYRenderizar());
 
 // ── Inicializar ───────────────────────────────────────────────
 async function inicializar() {
