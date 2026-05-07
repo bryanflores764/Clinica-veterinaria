@@ -284,6 +284,33 @@
         </div>
     </div>
 
+    <!-- ══════════════════════════════════════════
+     MODAL CONFIRMAR ANULACIÓN DE VENTA
+══════════════════════════════════════════ -->
+    <div id="modalAnularVenta" class="modal hidden">
+        <div class="modal-content modal-compact modal-sm modal-anular-venta">
+            <h3>Anular venta</h3>
+
+            <p id="anularVentaMensaje">
+                ¿Estás seguro de que deseas anular esta venta?
+            </p>
+
+            <p class="anular-venta-warning">
+                Esta acción no eliminará el registro, solo cambiará el estado de la venta a anulada.
+            </p>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-anular-confirmar" id="btnConfirmarAnularVenta">
+                    Sí, anular venta
+                </button>
+
+                <button type="button" class="btn-secondary" id="btnCancelarAnularVenta">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
     <script src="../../js/recepcionista/logout.js"></script>
     <script src="../../js/recepcionista/ventas.js"></script>
