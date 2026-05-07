@@ -1,22 +1,18 @@
-// ============================================================
-//  CAPA: Routes
-//  Archivo: ventas.routes.js
-// ============================================================
-
 const { Router } = require('express');
 const ventasController = require('../controllers/ventas.controller');
+const { verifyToken } = require('../middlewares/usuarioRecepcionista.middleware'); // ✅ Tu middleware
 
 const router = Router();
 
-// ── Ventas ────────────────────────────────────────────────────
-router.get('/',                      ventasController.getAllVentas);    // #320
-router.get('/:id',                   ventasController.getVentaById);    // #321
-router.post('/',                     ventasController.createVenta);     // #278
-router.patch('/:id/anular',          ventasController.anularVenta);     // #333
-router.patch('/:id/confirmar',       ventasController.confirmarVenta);  // #346
+// ── Ventas (protegidas con token) ─────────────────────────────
+router.get('/',                      verifyToken, ventasController.getAllVentas);
+router.get('/:id',                   verifyToken, ventasController.getVentaById);
+router.post('/',                     verifyToken, ventasController.createVenta);
+router.patch('/:id/anular',          verifyToken, ventasController.anularVenta);
+router.patch('/:id/confirmar',       verifyToken, ventasController.confirmarVenta);
 
-// ── Detalle ───────────────────────────────────────────────────
-router.post('/:id/detalle',          ventasController.addDetalle);      // #292
-router.get('/:id/total',             ventasController.getTotalVenta);   // #307
+// ── Detalle (protegidas con token) ────────────────────────────
+router.post('/:id/detalle',          verifyToken, ventasController.addDetalle);
+router.get('/:id/total',             verifyToken, ventasController.getTotalVenta);
 
 module.exports = router;

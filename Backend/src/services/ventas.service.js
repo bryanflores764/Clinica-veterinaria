@@ -5,18 +5,20 @@
 
 const ventasRepository = require('../repository/ventas.repository');
 
-// ── #278-#281  Crear venta (cabecera) ─────────────────────────
+// ── Crear venta ──────────────────────────────────────────────
 const createVenta = async (idPropietario) => {
+  console.log("🚀 [Service] Creando venta para propietario:", idPropietario);
   if (!idPropietario) {
     throw { status: 400, message: 'El Id del propietario es obligatorio' };
   }
-
   const venta = await ventasRepository.createVenta(idPropietario);
-  return venta; // devuelve el Id generado (#281)
+  return venta;
 };
 
-// ── #292-#296  Agregar producto al detalle ────────────────────
+// ── Agregar producto al detalle ──────────────────────────────
 const addDetalle = async (idVenta, idProducto, cantidad) => {
+  console.log(`📝 [Service] Agregando producto ${idProducto} a venta ${idVenta}, cantidad: ${cantidad}`);
+  
   if (!idVenta || !idProducto || !cantidad) {
     throw { status: 400, message: 'Id de venta, Id de producto y cantidad son obligatorios' };
   }
@@ -25,19 +27,16 @@ const addDetalle = async (idVenta, idProducto, cantidad) => {
     throw { status: 400, message: 'La cantidad debe ser mayor a 0' };
   }
 
-  // Validar venta
   const venta = await ventasRepository.findVentaById(idVenta);
   if (!venta) {
     throw { status: 404, message: `No existe una venta con id ${idVenta}` };
   }
 
-  // Obtener producto
   const producto = await ventasRepository.getStockProducto(idProducto);
   if (!producto) {
     throw { status: 404, message: `No existe un producto con id ${idProducto}` };
   }
 
-  // 🔥 🔥 🔥 AQUI VA LA VALIDACIÓN QUE QUIERES 🔥 🔥 🔥
   if (producto.Estado === 'inactivo') {
     throw {
       status: 409,
@@ -45,7 +44,6 @@ const addDetalle = async (idVenta, idProducto, cantidad) => {
     };
   }
 
-  // Validar stock
   if (producto.Stock < cantidad) {
     throw {
       status: 409,
@@ -53,7 +51,6 @@ const addDetalle = async (idVenta, idProducto, cantidad) => {
     };
   }
 
-  // Crear detalle
   const detalle = await ventasRepository.createDetalle(
     idVenta,
     idProducto,
@@ -64,103 +61,144 @@ const addDetalle = async (idVenta, idProducto, cantidad) => {
   return detalle;
 };
 
-// ── #307-#310  Calcular y retornar total ──────────────────────
+// ── Calcular total ───────────────────────────────────────────
 const getTotalVenta = async (idVenta) => {
   const venta = await ventasRepository.findVentaById(idVenta);
   if (!venta) {
     throw { status: 404, message: `No existe una venta con id ${idVenta}` };
   }
-
-  // #308 — Suma de subtotales calculada en BD
-  const total = await ventasRepository.calcularTotal(idVenta); // #307 calculado en servidor
-  return { idVenta, total }; // #310 retorna total actualizado
+  const total = await ventasRepository.calcularTotal(idVenta);
+  return { idVenta, total };
 };
 
-// ── #320-#323  Obtener ventas ─────────────────────────────────
+// ── Obtener todas las ventas ─────────────────────────────────
 const getAllVentas = async () => {
   const ventas = await ventasRepository.findAllVentas();
-  if (!ventas.length) {
-    throw { status: 404, message: 'No hay ventas registradas' };
-  }
   return ventas;
 };
 
+// ── Obtener venta por ID ─────────────────────────────────────
 const getVentaById = async (id) => {
-  // #321-#322 — Venta con su detalle completo
   const venta = await ventasRepository.findVentaById(id);
   if (!venta) {
     throw { status: 404, message: `No existe una venta con id ${id}` };
   }
-
   const detalle = await ventasRepository.findDetalleByVenta(id);
   return { ...venta, detalle };
 };
 
-// ── #333-#337  Anular venta ───────────────────────────────────
-// Nota: se agrega columna Estado en ventas: 'activa' | 'anulada'
-const anularVenta = async (id) => {
-  // #334 — Validar que la venta exista
-  const venta = await ventasRepository.findVentaById(id);
+// ── Confirmar venta (descuenta stock) ────────────────────────
+const confirmarVenta = async (idVenta, idUsuario) => {
+  console.log("=== [Service] CONFIRMANDO VENTA ===");
+  console.log("idVenta:", idVenta);
+  console.log("idUsuario:", idUsuario);
+  
+  const venta = await ventasRepository.findVentaById(idVenta);
   if (!venta) {
-    throw { status: 404, message: `No existe una venta con id ${id}` };
+    throw { status: 404, message: `No existe una venta con id ${idVenta}` };
   }
 
-  // #336 — Evitar modificar ventas ya anuladas
-  if (venta.Estado === 'anulada') {
-    throw { status: 409, message: `La venta con id ${id} ya está anulada` };
-  }
-
-  // #335 — Cambiar estado a anulada
-  await ventasRepository.anularVenta(id);
-  return { id, mensaje: `Venta #${id} anulada exitosamente` }; // #337
-};
-
-// ── #346-#350  Confirmar venta y descontar stock ──────────────
-const confirmarVenta = async (id) => {
-  // Validar que la venta exista
-  const venta = await ventasRepository.findVentaById(id);
-  if (!venta) {
-    throw { status: 404, message: `No existe una venta con id ${id}` };
-  }
+  console.log("Estado actual de la venta:", venta.Estado);
 
   if (venta.Estado === 'anulada') {
     throw { status: 409, message: `No se puede confirmar una venta anulada` };
   }
 
   if (venta.Estado === 'confirmada') {
-    throw { status: 409, message: `La venta con id ${id} ya fue confirmada` };
+    throw { status: 409, message: `La venta con id ${idVenta} ya fue confirmada` };
   }
 
-  // #347 — Obtener todos los productos del detalle
-  const detalle = await ventasRepository.findDetalleByVenta(id);
+  const detalle = await ventasRepository.findDetalleByVenta(idVenta);
+  console.log("Productos en detalle:", detalle.length);
+  
   if (!detalle.length) {
     throw { status: 400, message: 'No se puede confirmar una venta sin productos' };
   }
 
-  // #347 — Validar stock de TODOS los productos antes de descontar (#349 evita inconsistencias)
+  // Validar stock
   for (const item of detalle) {
     const producto = await ventasRepository.getStockProducto(item.Id_Producto);
+    console.log(`Validando stock para ${producto?.Nombre_Producto}: stock=${producto?.Stock}, requerido=${item.Cantidad}`);
     if (!producto || producto.Stock < item.Cantidad) {
       throw {
         status: 409,
-        message: `Stock insuficiente para "${item.Nombre_Producto}". Disponible: ${producto?.Stock ?? 0}, requerido: ${item.Cantidad}`,
+        message: `Stock insuficiente para "${item.Nombre_Producto}". Disponible: ${producto?.Stock ?? 0}`,
       };
     }
   }
 
-  // #348 — Descontar cantidad vendida de cada producto
+  // Descontar stock y registrar movimiento
   for (const item of detalle) {
-    const affected = await ventasRepository.descontarStock(item.Id_Producto, item.Cantidad); // #350 movimiento de salida
-    if (affected === 0) {
-      throw { status: 409, message: `Error al descontar stock del producto id ${item.Id_Producto}` };
-    }
+    const producto = await ventasRepository.getStockProducto(item.Id_Producto);
+    const stockAntes = producto.Stock;
+    const stockDespues = stockAntes - item.Cantidad;
+    
+    console.log(`Descontando stock: ${producto.Nombre_Producto} ${stockAntes} → ${stockDespues}`);
+    
+    await ventasRepository.descontarStock(item.Id_Producto, item.Cantidad);
+    
+    await ventasRepository.registrarMovimientoStock(
+      item.Id_Producto, idVenta, idUsuario, 'salida',
+      item.Cantidad, stockAntes, stockDespues
+    );
   }
 
-  // Marcar venta como confirmada
-  await ventasRepository.confirmarVenta(id);
+  // ✅ CALCULAR TOTAL
+  const total = await ventasRepository.calcularTotal(idVenta);
+  console.log("💰 Total calculado:", total);
+  
+  // ✅ ACTUALIZAR VENTA
+  await ventasRepository.confirmarVentaConTotal(idVenta, total);
+  console.log("✅ Venta confirmada en BD");
+  
+  return { 
+    id: idVenta, 
+    estado: 'confirmada', 
+    total, 
+    mensaje: `Venta #${idVenta} confirmada exitosamente` 
+  };
+};
 
-  const total = await ventasRepository.calcularTotal(id);
-  return { id, estado: 'confirmada', total, mensaje: `Venta #${id} confirmada exitosamente` };
+// ── Anular venta (devuelve stock) ────────────────────────────
+const anularVenta = async (idVenta, idUsuario) => {
+  console.log("=== [Service] ANULANDO VENTA ===");
+  console.log("idVenta:", idVenta);
+  console.log("idUsuario:", idUsuario);
+  
+  const venta = await ventasRepository.findVentaById(idVenta);
+  if (!venta) {
+    throw { status: 404, message: `No existe una venta con id ${idVenta}` };
+  }
+
+  console.log("Estado actual de la venta:", venta.Estado);
+
+  if (venta.Estado === 'anulada') {
+    throw { status: 409, message: `La venta con id ${idVenta} ya está anulada` };
+  }
+
+  // Si estaba confirmada, devolver el stock
+  if (venta.Estado === 'confirmada') {
+    console.log("🔄 Venta confirmada, devolviendo stock...");
+    const detalle = await ventasRepository.findDetalleByVenta(idVenta);
+    
+    for (const item of detalle) {
+      const producto = await ventasRepository.getStockProducto(item.Id_Producto);
+      const stockAntes = producto.Stock;
+      const stockDespues = stockAntes + item.Cantidad;
+      
+      console.log(`Devolviendo stock: ${producto.Nombre_Producto} ${stockAntes} → ${stockDespues}`);
+      
+      await ventasRepository.actualizarStock(item.Id_Producto, stockDespues);
+      
+      await ventasRepository.registrarMovimientoStock(
+        item.Id_Producto, idVenta, idUsuario, 'entrada',
+        item.Cantidad, stockAntes, stockDespues
+      );
+    }
+    console.log("✅ Stock devuelto");
+  }
+
+  await ventasRepository.anularVentaConDatos(idVenta, idUsuario);
 };
 
 module.exports = {
@@ -169,6 +207,6 @@ module.exports = {
   getTotalVenta,
   getAllVentas,
   getVentaById,
-  anularVenta,
   confirmarVenta,
+  anularVenta,
 };

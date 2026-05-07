@@ -5,9 +5,10 @@
 
 const ventasService = require('../services/ventas.service');
 
-// #278 — POST /api/ventas
+// ── CREAR VENTA ──────────────────────────────────────────────
 const createVenta = async (req, res) => {
   try {
+    console.log("📝 [Controller] Creando venta");
     const { idPropietario } = req.body;
     const venta = await ventasService.createVenta(idPropietario);
     return res.status(201).json({
@@ -16,15 +17,20 @@ const createVenta = async (req, res) => {
       data: venta,
     });
   } catch (err) {
-    return res.status(err.status || 500).json({ success: false, message: err.message || 'Error interno del servidor' });
+    console.error("❌ [Controller] Error al crear venta:", err);
+    return res.status(err.status || 500).json({ 
+      success: false, 
+      message: err.message || 'Error interno del servidor' 
+    });
   }
 };
 
-// #292 — POST /api/ventas/:id/detalle
+// ── AGREGAR DETALLE ──────────────────────────────────────────
 const addDetalle = async (req, res) => {
   try {
     const { id } = req.params;
     const { idProducto, cantidad } = req.body;
+    console.log(`📝 [Controller] Agregando detalle a venta ${id}, producto ${idProducto}, cantidad ${cantidad}`);
     const detalle = await ventasService.addDetalle(id, idProducto, cantidad);
     return res.status(201).json({
       success: true,
@@ -32,11 +38,15 @@ const addDetalle = async (req, res) => {
       data: detalle,
     });
   } catch (err) {
-    return res.status(err.status || 500).json({ success: false, message: err.message || 'Error interno del servidor' });
+    console.error("❌ [Controller] Error al agregar detalle:", err);
+    return res.status(err.status || 500).json({ 
+      success: false, 
+      message: err.message || 'Error interno del servidor' 
+    });
   }
 };
 
-// #307 — GET /api/ventas/:id/total
+// ── CALCULAR TOTAL ───────────────────────────────────────────
 const getTotalVenta = async (req, res) => {
   try {
     const { id } = req.params;
@@ -47,11 +57,14 @@ const getTotalVenta = async (req, res) => {
       data: result,
     });
   } catch (err) {
-    return res.status(err.status || 500).json({ success: false, message: err.message || 'Error interno del servidor' });
+    return res.status(err.status || 500).json({ 
+      success: false, 
+      message: err.message || 'Error interno del servidor' 
+    });
   }
 };
 
-// #320 — GET /api/ventas
+// ── OBTENER TODAS LAS VENTAS ─────────────────────────────────
 const getAllVentas = async (req, res) => {
   try {
     const ventas = await ventasService.getAllVentas();
@@ -61,11 +74,14 @@ const getAllVentas = async (req, res) => {
       data: ventas,
     });
   } catch (err) {
-    return res.status(err.status || 500).json({ success: false, message: err.message || 'Error interno del servidor' });
+    return res.status(err.status || 500).json({ 
+      success: false, 
+      message: err.message || 'Error interno del servidor' 
+    });
   }
 };
 
-// #321 — GET /api/ventas/:id
+// ── OBTENER VENTA POR ID ─────────────────────────────────────
 const getVentaById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -76,37 +92,84 @@ const getVentaById = async (req, res) => {
       data: venta,
     });
   } catch (err) {
-    return res.status(err.status || 500).json({ success: false, message: err.message || 'Error interno del servidor' });
-  }
-};
-
-// #333 — PATCH /api/ventas/:id/anular
-const anularVenta = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const result = await ventasService.anularVenta(id);
-    return res.status(200).json({
-      success: true,
-      message: result.mensaje,
-      data: result,
+    return res.status(err.status || 500).json({ 
+      success: false, 
+      message: err.message || 'Error interno del servidor' 
     });
-  } catch (err) {
-    return res.status(err.status || 500).json({ success: false, message: err.message || 'Error interno del servidor' });
   }
 };
 
-// #346 — PATCH /api/ventas/:id/confirmar
+// ── CONFIRMAR VENTA (con usuario del token) ──────────────────
 const confirmarVenta = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await ventasService.confirmarVenta(id);
+    
+    console.log("📝 [Controller] Confirmar venta:", id);
+    console.log("📝 [Controller] req.usuario:", req.usuario);
+    
+    // ✅ Obtener ID del usuario desde el token
+    const idUsuario = req.usuario?.id || req.usuario?.Id || req.usuario?.usuarioId;
+    
+    console.log("📝 [Controller] ID Usuario obtenido:", idUsuario);
+    
+    if (!idUsuario) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Usuario no autenticado' 
+      });
+    }
+    
+    const result = await ventasService.confirmarVenta(id, idUsuario);
+    console.log("✅ [Controller] Venta confirmada:", result);
+    
     return res.status(200).json({
       success: true,
       message: result.mensaje,
       data: result,
     });
   } catch (err) {
-    return res.status(err.status || 500).json({ success: false, message: err.message || 'Error interno del servidor' });
+    console.error("❌ [Controller] Error al confirmar venta:", err);
+    return res.status(err.status || 500).json({ 
+      success: false, 
+      message: err.message || 'Error interno del servidor' 
+    });
+  }
+};
+
+// ── ANULAR VENTA (con usuario del token) ─────────────────────
+const anularVenta = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    console.log("📝 [Controller] Anular venta:", id);
+    console.log("📝 [Controller] req.usuario:", req.usuario);
+    
+    // ✅ Obtener ID del usuario desde el token
+    const idUsuario = req.usuario?.id || req.usuario?.Id || req.usuario?.usuarioId;
+    
+    console.log("📝 [Controller] ID Usuario obtenido:", idUsuario);
+    
+    if (!idUsuario) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Usuario no autenticado' 
+      });
+    }
+    
+    const result = await ventasService.anularVenta(id, idUsuario);
+    console.log("✅ [Controller] Venta anulada:", result);
+    
+    return res.status(200).json({
+      success: true,
+      message: result.mensaje,
+      data: result,
+    });
+  } catch (err) {
+    console.error("❌ [Controller] Error al anular venta:", err);
+    return res.status(err.status || 500).json({ 
+      success: false, 
+      message: err.message || 'Error interno del servidor' 
+    });
   }
 };
 
@@ -116,6 +179,6 @@ module.exports = {
   getTotalVenta,
   getAllVentas,
   getVentaById,
-  anularVenta,
   confirmarVenta,
+  anularVenta,
 };
