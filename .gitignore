@@ -1,2 +1,7 @@
 node_modules/
+postman/
 .env
+.claude
+.vscode
+.postman
+.DS_Store

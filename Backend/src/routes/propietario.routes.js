@@ -5,7 +5,7 @@
 
 const { Router } = require('express');
 const propietariosController = require('../controllers/propetario.controllers');
-const { verifyAdmin } = require('../middlewares/usuarios.middleware');
+const { verifyAdmin } = require('../middlewares/usarios.middleware');
 
 const router = Router();
 

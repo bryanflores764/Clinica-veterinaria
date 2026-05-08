@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../../css/recepcionista/interfazRecepcionista.css">
+    <link rel="stylesheet" href="../../css/recepcionista/interfazCitas.css">
+    <link rel="stylesheet" href="../../css/recepcionista/tienda.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
+    <title>RECEPCIONISTA — Tienda</title>
+</head>
+<body>
+<div class="sidebar-backdrop"></div>
+    <div class="layout">
+
+        <aside class="sidebar">
+            <div class="logo">
+                <img id="logo" src="../../assets/img/Logo de clínica Veterinaria azul.png" alt="logo">
+            </div>
+            <ul>
+                <li>
+                    <a href="interfazRecepcionista.html" id="btnVerCitas">
+                        <img src="../../assets/icons/icon-citas.svg" alt="citas">
+                        Citas
+                    </a>
+                </li>
+                <li>
+                    <a href="recepcionistaMascotas.html">
+                        <img src="../../assets/icons/icon-pacientes.svg" alt="pacientes">
+                        Pacientes
+                    </a>
+                </li>
+                <li>
+                    <a href="propetario.html">
+                        <img src="../../assets/icons/icon-user.svg" alt="Cliente">
+                        Clientes
+                    </a>
+                </li>
+                <li>
+                    <a href="tienda.html">
+                        <img src="../../assets/icons/shop.svg" alt="pagos">
+                        Tienda
+                    </a>
+                </li>
+                <li>
+                    <a href="ventas.html">
+                        <img src="../../assets/icons/icon-historial.svg" alt="historial">
+                        Ventas
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src="../../assets/icons/icon-historial.svg" alt="historial">
+                        Historial Citas
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <header class="header">
+            <h1>Tienda</h1>
+            <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">☰</button>
+            <div class="header-actions">
+                <a class="btn-new" id="btnNuevaCita" href="#">
+                    <img src="../../assets/icons/icon-newproduct.svg" alt="">
+                    Añadir producto
+                </a>
+                <a class="btn-logout" id="cerrar-sesion" href="#">
+                    <img src="../../assets/icons/icon-sesion.svg" alt="cerrar-sesion">
+                    Cerrar Sesión
+                </a>
+            </div>
+        </header>
+
+        <main class="main">
+            <header class="header-main">
+                <h1 class="title">Productos Disponibles</h1>
+                <select id="filtroEstado">
+                    <option value="todos">Todos</option>
+                    <option value="activo" selected>Activos</option>
+                    <option value="inactivo">Inactivos</option>
+                </select>
+            </header>
+
+            <div id="contenedorProductos">
+                <table class="tabla-productos" id="tablaProductos">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Filas generadas por tienda.js -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- MODAL AÑADIR PRODUCTO -->
+        <div id="modalProducto" class="modal hidden">
+            <div class="modal-content modal-compact">
+                <div class="modal-header-blue">
+                    <div class="modal-header-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round">
+                            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <path d="M16 10a4 4 0 01-8 0"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="modal-title-white">Añadir Producto</p>
+                        <p class="modal-subtitle-white">Completa los datos del nuevo producto</p>
+                    </div>
+                    <button class="btn-close-white" id="cerrarModalProducto" type="button">✕</button>
+                </div>
+                <form id="formProducto">
+                    <div class="form-group">
+                        <label>Nombre <span class="req">*</span></label>
+                        <input type="text" id="prodNombre" placeholder="Ej: Amoxicilina 500mg" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción <span class="req">*</span></label>
+                        <textarea id="prodDescripcion" placeholder="Breve descripción del producto..." required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Categoría <span class="req">*</span></label>
+                            <select id="prodCategoria" required>
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Precio de Venta <span class="req">*</span></label>
+                            <input type="number" id="prodPrecio" placeholder="0.00" min="0.01" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Stock Inicial <span class="req">*</span></label>
+                        <input type="number" id="prodStock" placeholder="0" min="0" step="1" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn-primary">✓ Guardar producto</button>
+                        <button type="button" id="cerrarModalProductoBtn" class="btn-secondary">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- MODAL CONFIRMACIÓN -->
+        <div id="modalConfirmar" class="modal hidden">
+            <div class="modal-content modal-compact modal-sm">
+                <div class="modal-header">
+                    <h2 id="confirmarTitulo">Confirmar acción</h2>
+                    <button class="btn-close-x" id="cerrarConfirmar" type="button">✕</button>
+                </div>
+                <p id="confirmarMensaje" style="font-size:13px; color:#666; margin-bottom:4px;"></p>
+                <div class="modal-actions">
+                    <button type="button" id="confirmarAceptar" class="btn-primary">Confirmar</button>
+                    <button type="button" id="confirmarCancelar" class="btn-secondary">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    
+        <!-- ══════════════════════════════════════════
+             MODAL EDITAR PRODUCTO (MODIFICADO)
+    <!-- MODAL EDITAR PRODUCTO -->
+<div id="modalEditarProducto" class="modal hidden">
+    <div class="modal-content modal-compact">
+        <div class="modal-header-blue">
+            <div>
+                <p class="modal-title-white">Editar Producto</p>
+                <p class="modal-subtitle-white">Modifica los datos del producto seleccionado</p>
+            </div>
+            <button class="btn-close-white" id="cerrarModalEditarProducto" type="button">✕</button>
+        </div>
+        <form id="formEditarProducto">
+            <input type="hidden" id="editProductoId">
+            
+            <div class="form-group">
+                <label>Nombre <span class="req">*</span></label>
+                <input type="text" id="editNombre" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Descripción <span class="req">*</span></label>
+                <textarea id="editDescripcion" required></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Categoría <span class="req">*</span></label>
+                    <select id="editCategoria" required>
+                        <!-- Las categorías se cargan dinámicamente -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Precio de Venta <span class="req">*</span></label>
+                    <input type="number" id="editPrecio" step="0.01" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Stock (consulta)</label>
+                <input type="text" id="editStock" readonly disabled style="background-color: #f5f5f5; cursor: default;">
+                <small style="color: #666; font-size: 11px;">El stock se gestiona en el botón "Stock"</small>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="submit" class="btn-primary">✓ Guardar cambios</button>
+                <button type="button" id="cancelarEditarProducto" class="btn-secondary">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+        
+        <!-- MODAL ÉXITO / ERROR -->
+        <div id="modalExito" class="modal hidden">
+            <div class="modal-content modal-compact modal-sm modal-exito">
+                <h3 id="exitoTitulo">✅ Éxito</h3>
+                <p id="exitoMensaje">Operación realizada correctamente.</p>
+                <button id="cerrarExito">Aceptar</button>
+            </div>
+        </div>
+
+    </div><!-- cierre div.layout -->
+
+    <!-- MODAL ACTUALIZAR STOCK -->
+    <div id="modalStock" class="modal hidden">
+        <div class="modal-content modal-compact">
+            <div class="modal-header-blue">
+                <div>
+                    <p class="modal-title-white">Actualizar Stock</p>
+                    <p class="modal-subtitle-white">Registra entrada o salida de producto</p>
+                </div>
+                <button class="btn-close-white" id="cerrarModalStock" type="button">✕</button>
+            </div>
+            <form id="formStock">
+                <input type="hidden" id="stockProductoId">
+                <div class="form-group">
+                    <label>Producto</label>
+                    <input type="text" id="stockProductoNombre" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Stock actual</label>
+                    <input type="number" id="stockActual" disabled>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de movimiento <span class="req">*</span></label>
+                        <select id="tipoMovimientoStock" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="entrada">Entrada</option>
+                            <option value="salida">Salida</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cantidad <span class="req">*</span></label>
+                        <input type="number" id="cantidadStock" min="1" step="1" placeholder="Ej: 5" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Motivo / Observación</label>
+                    <textarea id="motivoStock" placeholder="Ej: compra de inventario, venta, ajuste..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">✓ Guardar movimiento</button>
+                    <button type="button" id="cancelarStock" class="btn-secondary">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
+    <script src="../../js/recepcionista/logout.js"></script>
+    <script src="../../js/recepcionista/tienda.js"></script>
+</body>
+</html>
