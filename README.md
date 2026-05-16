@@ -108,22 +108,6 @@ npm install jsonwebtoken bcryptjs
 
 ---
 
-# 🔐 Configuración de variables de entorno
-
-Debes crear un archivo `.env` en la **raíz del proyecto**.
-
-Ejemplo:
-
-```env
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=1234
-DB_NAME=db_veterinaria
-PORT=3000
-```
-
----
-
 # ▶️ Ejecutar el proyecto
 
 Para iniciar el servidor puedes utilizar:
@@ -143,6 +127,42 @@ El servidor se ejecutará en:
 ```
 http://localhost:3000
 ```
+
+# ▶️ Ejecucion de base de datos
+
+El servidor se ejecutará en:
+
+Primero lo que debemos de hacer es crear la base de datos en un motor de base datos **MYSQl**
+El script de base datos esta en el repositorio el nombre del script VetCare.sql. Para ejecutar ese archivo nosotros utilizamos MySql Workbench
+donde solo importamos el archivo y lo ejecutamos y se crea la base de datos. Despues de crear la base de datos creamos un usuario para iniciar sesión.
+#### POST `/api/usuarios` — Crear usuario
+```json
+// Body
+{
+  "nombre_usuario": "Bryan García",
+  "correo": "bryan@gmail.com",
+  "contrasena": "123456",
+  "rolId": 1
+}
+
+Este es el json para crear el usuario el usario que crearemos es de tipo administrador con ese usuario ingresamos como administrador y crearemos más usuarios para ingresar como veterinario o recepcionista donde podemos probar los otros 2 modulos.
+
+Luego en el archivo connection.js modificar las credenciales que posee el motor de base de datos para crear la configuración  y creación de la base de datos utilizada.
+const mysql = require('mysql2/promise');
+require('dotenv').config();
+
+const connection = mysql.createPool({
+  host     : process.env.DB_HOST     || 'localhost',
+  user     : process.env.DB_USER     || 'root',
+  password : process.env.DB_PASSWORD || '1234',
+  database : process.env.DB_NAME     || 'vetcare',
+  port     : process.env.DB_PORT     || 3306,
+  waitForConnections: true,
+  connectionLimit   : 10,
+});
+
+module.exports = connection;
+
 
 ---
 
