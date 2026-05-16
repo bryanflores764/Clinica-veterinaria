@@ -69,6 +69,14 @@ const findMovimientosByProducto = async (idProducto) => {
   return rows;
 };
 
+// ── BUSCAR PRODUCTO POR NOMBRE (para validar duplicados) ─────
+const findProductoByNombre = async (nombre) => {
+  const [rows] = await connection.execute(
+    "SELECT Id, Nombre_Producto FROM productos WHERE Nombre_Producto = ?",
+    [nombre]
+  );
+  return rows[0] || null;
+};
 module.exports = {
   createProducto,
   findAllActivos,
@@ -80,6 +88,7 @@ module.exports = {
   updateStock,
   createMovimiento,
   findMovimientosByProducto,
+  findProductoByNombre,
 };
 
 

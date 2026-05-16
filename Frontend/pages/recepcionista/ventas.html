@@ -49,8 +49,14 @@
                 </li>
                 <li>
                     <a href="ventas.html">
-                        <img src="../../assets/icons/icon-historial.svg" alt="ventas">
+                        <img src="../../assets/icons/ico-sale.svg" alt="ventas">
                         Ventas
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src="../../assets/icons/icon-historial.svg" alt="historial">
+                        Historial Citas
                     </a>
                 </li>
             </ul>
@@ -76,9 +82,29 @@
                 <h1 class="title">Registro de Ventas</h1>
             </header>
 
-            <div id="contenedorVentas">
-                <p class="ventas-empty">No hay ventas registradas aún.</p>
+            <div id="contenedorVentas" class="ventas-table-card">
+                <div class="table-responsive">
+                    <table class="ventas-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Usuario / Cliente</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyVentas">
+                            <!-- Ventas dinámicas -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="ventas-empty hidden" id="ventasEmpty">
+                    No hay ventas registradas aún.
+                </p>
             </div>
+
         </main>
 
         <!-- ══════════════════════════════════════════
@@ -89,9 +115,11 @@
 
                 <div class="modal-header-blue">
                     <div class="modal-header-icon">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                            <path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.97-1.67L23 6H6"/>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="9" cy="21" r="1" />
+                            <circle cx="20" cy="21" r="1" />
+                            <path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.97-1.67L23 6H6" />
                         </svg>
                     </div>
                     <div>
@@ -101,15 +129,23 @@
                     <button class="btn-close-white" id="cerrarModalVenta" type="button">✕</button>
                 </div>
 
-                <!-- Fecha y usuario -->
+                <!-- Fecha, usuario y propietario -->
                 <div class="venta-meta">
                     <div class="venta-meta-item">
                         <span class="venta-meta-label">Fecha</span>
                         <span class="venta-meta-value" id="ventaFecha">—</span>
                     </div>
+
                     <div class="venta-meta-item">
                         <span class="venta-meta-label">Registrado por</span>
                         <span class="venta-meta-value" id="ventaUsuario">—</span>
+                    </div>
+
+                    <div class="venta-meta-item">
+                        <span class="venta-meta-label">Propietario</span>
+                        <select id="selectPropietarioVenta" class="select-producto">
+                            <option value="">Seleccionar propietario...</option>
+                        </select>
                     </div>
                 </div>
 
@@ -168,8 +204,116 @@
 
     </div>
 
+    <!-- ══════════════════════════════════════════
+     MODAL DETALLE DE VENTA
+══════════════════════════════════════════ -->
+    <div id="modalDetalleVenta" class="modal hidden">
+        <div class="modal-content modal-compact modal-venta">
+
+            <div class="modal-header-blue">
+                <div class="modal-header-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 11H5a2 2 0 0 0-2 2v7h18v-7a2 2 0 0 0-2-2h-4" />
+                        <path d="M9 11V5a3 3 0 0 1 6 0v6" />
+                        <path d="M9 11h6" />
+                    </svg>
+                </div>
+
+                <div>
+                    <p class="modal-title-white">Detalle de Venta</p>
+                    <p class="modal-subtitle-white">Productos incluidos en la venta</p>
+                </div>
+
+                <button class="btn-close-white" id="cerrarModalDetalleVenta" type="button">✕</button>
+            </div>
+
+            <div class="venta-meta">
+                <div class="venta-meta-item">
+                    <span class="venta-meta-label">Fecha</span>
+                    <span class="venta-meta-value" id="detalleFecha">—</span>
+                </div>
+
+                <div class="venta-meta-item">
+                    <span class="venta-meta-label">Propietario</span>
+                    <span class="venta-meta-value" id="detallePropietario">—</span>
+                </div>
+
+                <div class="venta-meta-item">
+                    <span class="venta-meta-label">Estado</span>
+                    <span class="venta-meta-value" id="detalleEstado">—</span>
+                </div>
+            </div>
+
+            <div class="venta-productos-header">
+                <span class="venta-section-title">Productos vendidos</span>
+            </div>
+
+            <div class="venta-tabla-wrapper">
+                <table class="venta-tabla">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cant.</th>
+                            <th>Precio unit.</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tbodyDetalleVenta">
+                        <!-- Productos dinámicos -->
+                    </tbody>
+                </table>
+
+                <p class="venta-empty-productos hidden" id="detalleEmptyMsg">
+                    Esta venta no tiene productos registrados.
+                </p>
+            </div>
+
+            <div class="venta-total-row">
+                <span class="venta-total-label">Total</span>
+                <span class="venta-total-value" id="detalleTotal">$0.00</span>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="cerrarModalDetalleVentaBtn">
+                    Cerrar
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+     MODAL CONFIRMAR ANULACIÓN DE VENTA
+══════════════════════════════════════════ -->
+    <div id="modalAnularVenta" class="modal hidden">
+        <div class="modal-content modal-compact modal-sm modal-anular-venta">
+            <h3>Anular venta</h3>
+
+            <p id="anularVentaMensaje">
+                ¿Estás seguro de que deseas anular esta venta?
+            </p>
+
+            <p class="anular-venta-warning">
+                Esta acción no eliminará el registro, solo cambiará el estado de la venta a anulada.
+            </p>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-anular-confirmar" id="btnConfirmarAnularVenta">
+                    Sí, anular venta
+                </button>
+
+                <button type="button" class="btn-secondary" id="btnCancelarAnularVenta">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
     <script src="../../js/recepcionista/logout.js"></script>
     <script src="../../js/recepcionista/ventas.js"></script>
 </body>
+
 </html>
