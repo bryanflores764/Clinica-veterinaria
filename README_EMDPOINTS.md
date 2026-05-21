@@ -1328,4 +1328,255 @@ src/
 
 ---
 
+# 📚 Cruds de Historial Clínico, Vacunas y Auditoría
 
+> Base URL: `http://localhost:3000/api`
+
+---
+
+## 📖 Historial Clínico — `/api/historial`
+
+### 1. Crear historial clínico
+**POST** `/api/historial`
+
+```json
+{
+  "mascota_id": 2,
+  "motivo": "Revisión general",
+  "diagnostico_inicial": "Paciente sano",
+  "observaciones": "Sin novedades",
+  "veterinario_id": 6
+}
+
+
+# 📚 API Documentation — Historial Clínico, Vacunas y Auditoría
+
+> **Base URL:** `http://localhost:3000/api`
+
+---
+
+## 📖 Historial Clínico — `/api/historial`
+
+### 1. Crear historial clínico
+**`POST`** `/api/historial`
+
+```json
+{
+  "mascota_id": 2,
+  "motivo": "Revisión general",
+  "diagnostico_inicial": "Paciente sano",
+  "observaciones": "Sin novedades",
+  "veterinario_id": 6
+}
+```
+
+---
+
+### 2. Obtener historial por ID
+**`GET`** `/api/historial/:id`
+
+---
+
+### 3. Obtener historial por mascota
+**`GET`** `/api/historial/mascota/:mascota_id`
+
+---
+
+### 4. Actualizar historial
+**`PUT`** `/api/historial/:id`
+
+```json
+{
+  "motivo": "Revisión anual",
+  "diagnostico_inicial": "Paciente saludable",
+  "observaciones": "Todo en orden"
+}
+```
+
+---
+
+### 5. Eliminar historial *(soft delete)*
+**`DELETE`** `/api/historial/:id`
+
+---
+
+### 6. Agregar consulta médica
+**`POST`** `/api/historial/consultas`
+
+```json
+{
+  "historial_id": 1,
+  "fecha": "2026-05-19T10:00:00",
+  "sintomas": "Tos seca, fiebre 39°C",
+  "diagnostico": "Infección respiratoria",
+  "tratamiento": "Amoxicilina 250mg cada 12h",
+  "observaciones": "Reposo por 3 días",
+  "veterinario_id": 6
+}
+```
+
+---
+
+### 7. Obtener consultas por historial
+**`GET`** `/api/historial/:historial_id/consultas`
+
+---
+
+### 8. Obtener consulta por ID
+**`GET`** `/api/historial/consultas/:id`
+
+---
+
+### 9. Actualizar consulta médica
+**`PUT`** `/api/historial/consultas/:id`
+
+```json
+{
+  "fecha": "2026-05-20T10:00:00",
+  "sintomas": "Tos seca, fiebre 38.5°C",
+  "diagnostico": "Infección respiratoria mejorando",
+  "tratamiento": "Amoxicilina 250mg cada 12h por 5 días",
+  "observaciones": "Evolución favorable"
+}
+```
+
+---
+
+### 10. Eliminar consulta médica *(soft delete)*
+**`DELETE`** `/api/historial/consultas/:id`
+
+---
+
+## 💉 Vacunas — `/api/vacunas`
+
+### 1. Registrar vacuna
+**`POST`** `/api/vacunas`
+
+```json
+{
+  "mascota_id": 2,
+  "nombre_vacuna": "Antirrábica",
+  "fecha_aplicacion": "2026-05-19",
+  "proxima_dosis": "2027-05-19",
+  "lote": "ABC123",
+  "observaciones": "Sin reacciones adversas",
+  "veterinario_id": 6
+}
+```
+
+---
+
+### 2. Obtener vacunas por mascota
+**`GET`** `/api/vacunas/mascota/:mascota_id`
+
+---
+
+### 3. Obtener vacuna por ID
+**`GET`** `/api/vacunas/:id`
+
+---
+
+### 4. Actualizar vacuna
+**`PUT`** `/api/vacunas/:id`
+
+```json
+{
+  "nombre_vacuna": "Antirrábica (Refuerzo)",
+  "fecha_aplicacion": "2026-05-20",
+  "proxima_dosis": "2027-05-20",
+  "lote": "DEF456",
+  "observaciones": "Vacuna aplicada sin complicaciones"
+}
+```
+
+---
+
+### 5. Eliminar vacuna *(soft delete)*
+**`DELETE`** `/api/vacunas/:id`
+
+---
+
+### 6. Obtener alertas de vacunas próximas
+**`GET`** `/api/vacunas/alertas`
+
+---
+
+### 7. Marcar notificación como enviada
+**`POST`** `/api/vacunas/:id/notificar`
+
+```json
+POST /api/vacunas/5/notificar     # ← 5 es el ID de la vacuna
+{
+  "propietario_id": 3              # ← ID del propietario
+}
+```
+
+---
+
+## 📜 Auditoría — `/api/auditoria`
+
+> ⚠️ **Todos los endpoints requieren rol de Administrador.**
+
+---
+
+### 1. Obtener todas las acciones *(con filtros)*
+**`GET`** `/api/auditoria`
+
+| Query Param | Ejemplo | Descripción |
+|---|---|---|
+| `usuario_id` | `?usuario_id=1` | Filtrar por usuario |
+| `modulo` | `&modulo=ventas` | Filtrar por módulo |
+| `accion` | `&accion=CREATE` | Filtrar por tipo de acción |
+| `fecha_inicio` | `&fecha_inicio=2026-01-01` | Fecha de inicio del rango |
+| `fecha_fin` | `&fecha_fin=2026-12-31` | Fecha de fin del rango |
+| `limit` | `&limit=50` | Límite de resultados |
+| `offset` | `&offset=0` | Desplazamiento de resultados |
+
+---
+
+### 2. Obtener acciones por usuario
+**`GET`** `/api/auditoria/usuario/:usuario_id`
+
+---
+
+### 3. Obtener acciones por módulo
+**`GET`** `/api/auditoria/modulo/:modulo`
+
+**Módulos disponibles:**
+
+| Módulo |
+|---|
+| `ventas` |
+| `historial_clinico` |
+| `consultas_medicas` |
+| `vacunas` |
+
+---
+
+### 4. Obtener acciones por acción específica
+**`GET`** `/api/auditoria/accion/:accion`
+
+**Acciones disponibles:**
+
+| Acción |
+|---|
+| `CREATE` |
+| `UPDATE` |
+| `DELETE` |
+| `CONFIRMAR` |
+| `ANULAR` |
+
+---
+
+### 5. Obtener acciones por rango de fechas
+**`GET`** `/api/auditoria/fecha/:fecha_inicio/:fecha_fin`
+
+---
+
+### 6. Dashboard — Conteo por módulo
+**`GET`** `/api/auditoria/dashboard/modulos`
+
+---
+
+### 7. Dashboard — Conteo por usuario
+**`GET`** `/api/auditoria/dashboard/usuarios`
