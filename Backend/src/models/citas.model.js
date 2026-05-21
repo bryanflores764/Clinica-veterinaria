@@ -1,6 +1,6 @@
 // ============================================================
 //  CAPA: Model
-//  Archivo: citas.model.js
+//  Archivo: citas.model.js (MODIFICADO)
 // ============================================================
 
 const CitasQueries = {
@@ -78,6 +78,116 @@ const CitasQueries = {
     DELETE FROM citas
     WHERE IdCita = ?
   `,
+
+  // ============================================================
+  //  NUEVAS CONSULTAS PARA VALIDACIONES (AGREGAR)
+  // ============================================================
+
+  // 1. Buscar cita por mascota en una fecha específica (mismo día)
+  FIND_BY_MASCOTA_AND_FECHA: `
+    SELECT IdCita, Id_Mascota, Id_Veterinario, FechaHora, IdEstadoCita
+    FROM citas
+    WHERE Id_Mascota = ? 
+      AND DATE(FechaHora) = DATE(?)
+      AND IdEstadoCita NOT IN (3)
+    LIMIT 1
+  `,
+
+  // 1b. Buscar cita por mascota en una fecha (excluyendo un ID)
+  FIND_BY_MASCOTA_AND_FECHA_EXCLUDE: `
+    SELECT IdCita, Id_Mascota, Id_Veterinario, FechaHora, IdEstadoCita
+    FROM citas
+    WHERE Id_Mascota = ? 
+      AND DATE(FechaHora) = DATE(?)
+      AND IdEstadoCita NOT IN (3)
+      AND IdCita != ?
+    LIMIT 1
+  `,
+
+  // 2. Buscar cita por veterinario en una fecha/hora específica
+  FIND_BY_VETERINARIO_AND_FECHA: `
+    SELECT IdCita, Id_Mascota, Id_Veterinario, FechaHora, IdEstadoCita
+    FROM citas
+    WHERE Id_Veterinario = ? 
+      AND FechaHora = ?
+      AND IdEstadoCita NOT IN (3)
+    LIMIT 1
+  `,
+
+  // 2b. Buscar cita por veterinario en una fecha/hora (excluyendo un ID)
+  FIND_BY_VETERINARIO_AND_FECHA_EXCLUDE: `
+    SELECT IdCita, Id_Mascota, Id_Veterinario, FechaHora, IdEstadoCita
+    FROM citas
+    WHERE Id_Veterinario = ? 
+      AND FechaHora = ?
+      AND IdEstadoCita NOT IN (3)
+      AND IdCita != ?
+    LIMIT 1
+  `,
+
+  // 3. Buscar cita duplicada exacta (misma mascota, mismo veterinario, misma fecha/hora)
+  FIND_DUPLICADA: `
+    SELECT IdCita, Id_Mascota, Id_Veterinario, FechaHora, IdEstadoCita
+    FROM citas
+    WHERE Id_Mascota = ? 
+      AND Id_Veterinario = ?
+      AND FechaHora = ?
+      AND IdEstadoCita NOT IN (3)
+    LIMIT 1
+  `,
+
+  // 3b. Buscar cita duplicada exacta (excluyendo un ID)
+  FIND_DUPLICADA_EXCLUDE: `
+    SELECT IdCita, Id_Mascota, Id_Veterinario, FechaHora, IdEstadoCita
+    FROM citas
+    WHERE Id_Mascota = ? 
+      AND Id_Veterinario = ?
+      AND FechaHora = ?
+      AND IdEstadoCita NOT IN (3)
+      AND IdCita != ?
+    LIMIT 1
+  `,
+
+
+  // ============================================================
+//  NUEVAS CONSULTAS PARA VETERINARIO (AGREGAR)
+// ============================================================
+
+// Obtener citas por veterinario
+FIND_BY_VETERINARIO: `
+  SELECT 
+    c.IdCita,
+    c.FechaHora,
+    m.Nombre AS Mascota,
+    m.Id AS Id_Mascota,
+    tc.Tipo_Consulta,
+    ec.Estado,
+    c.Id_Veterinario,
+    c.IdTipoConsulta,
+    c.IdEstadoCita,
+    p.Nombre AS Propietario
+  FROM citas c
+  INNER JOIN mascotas m ON m.Id = c.Id_Mascota
+  INNER JOIN propietarios p ON p.Id = m.Id_Propietario
+  INNER JOIN tipoconsulta tc ON tc.Id = c.IdTipoConsulta
+  INNER JOIN estadocita ec ON ec.Id = c.IdEstadoCita
+  WHERE c.Id_Veterinario = ?
+  ORDER BY c.FechaHora DESC
+`,
+
+// Obtener citas por mascota (para ver historial)
+FIND_BY_MASCOTA_ID: `
+  SELECT 
+    c.IdCita,
+    c.FechaHora,
+    tc.Tipo_Consulta,
+    ec.Estado
+  FROM citas c
+  INNER JOIN tipoconsulta tc ON tc.Id = c.IdTipoConsulta
+  INNER JOIN estadocita ec ON ec.Id = c.IdEstadoCita
+  WHERE c.Id_Mascota = ?
+  ORDER BY c.FechaHora DESC
+`,
 
 };
 

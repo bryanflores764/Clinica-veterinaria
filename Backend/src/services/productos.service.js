@@ -21,6 +21,16 @@ const createProducto = async (idCategoria, nombre, descripcion, precio, stock) =
     throw { status: 400, message: 'El stock no puede ser negativo' };
   }
 
+  // ✅ VALIDACIÓN: Verificar si ya existe un producto con el mismo nombre
+  const existe = await productosRepository.findProductoByNombre(nombre);
+  
+  if (existe) {
+    throw { 
+      status: 409, 
+      message: `Ya existe un producto con el nombre "${nombre}". Usa otro nombre.` 
+    };
+  }
+
   const producto = await productosRepository.createProducto(
     idCategoria, nombre, descripcion || null, precio, stock || 0
   );

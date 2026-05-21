@@ -1328,4 +1328,562 @@ src/
 
 ---
 
+# 📚 Cruds de Historial Clínico, Vacunas y Auditoría
 
+> Base URL: `http://localhost:3000/api`
+
+---
+
+## 📖 Historial Clínico — `/api/historial`
+
+### 1. Crear historial clínico
+**POST** `/api/historial`
+
+```json
+{
+  "mascota_id": 2,
+  "motivo": "Revisión general",
+  "diagnostico_inicial": "Paciente sano",
+  "observaciones": "Sin novedades",
+  "veterinario_id": 6
+}
+
+
+# 📚 API Documentation — Historial Clínico, Vacunas y Auditoría
+
+> **Base URL:** `http://localhost:3000/api`
+
+---
+
+## 📖 Historial Clínico — `/api/historial`
+
+### 1. Crear historial clínico
+**`POST`** `/api/historial`
+
+```json
+{
+  "mascota_id": 2,
+  "motivo": "Revisión general",
+  "diagnostico_inicial": "Paciente sano",
+  "observaciones": "Sin novedades",
+  "veterinario_id": 6
+}
+```
+
+---
+
+### 2. Obtener historial por ID
+**`GET`** `/api/historial/:id`
+
+---
+
+### 3. Obtener historial por mascota
+**`GET`** `/api/historial/mascota/:mascota_id`
+
+---
+
+### 4. Actualizar historial
+**`PUT`** `/api/historial/:id`
+
+```json
+{
+  "motivo": "Revisión anual",
+  "diagnostico_inicial": "Paciente saludable",
+  "observaciones": "Todo en orden"
+}
+```
+
+---
+
+### 5. Eliminar historial *(soft delete)*
+**`DELETE`** `/api/historial/:id`
+
+---
+
+### 6. Agregar consulta médica
+**`POST`** `/api/historial/consultas`
+
+```json
+{
+  "historial_id": 1,
+  "fecha": "2026-05-19T10:00:00",
+  "sintomas": "Tos seca, fiebre 39°C",
+  "diagnostico": "Infección respiratoria",
+  "tratamiento": "Amoxicilina 250mg cada 12h",
+  "observaciones": "Reposo por 3 días",
+  "veterinario_id": 6
+}
+```
+
+---
+
+### 7. Obtener consultas por historial
+**`GET`** `/api/historial/:historial_id/consultas`
+
+---
+
+### 8. Obtener consulta por ID
+**`GET`** `/api/historial/consultas/:id`
+
+---
+
+### 9. Actualizar consulta médica
+**`PUT`** `/api/historial/consultas/:id`
+
+```json
+{
+  "fecha": "2026-05-20T10:00:00",
+  "sintomas": "Tos seca, fiebre 38.5°C",
+  "diagnostico": "Infección respiratoria mejorando",
+  "tratamiento": "Amoxicilina 250mg cada 12h por 5 días",
+  "observaciones": "Evolución favorable"
+}
+```
+
+---
+
+### 10. Eliminar consulta médica *(soft delete)*
+**`DELETE`** `/api/historial/consultas/:id`
+
+---
+
+## 💉 Vacunas — `/api/vacunas`
+
+### 1. Registrar vacuna
+**`POST`** `/api/vacunas`
+
+```json
+{
+  "mascota_id": 2,
+  "nombre_vacuna": "Antirrábica",
+  "fecha_aplicacion": "2026-05-19",
+  "proxima_dosis": "2027-05-19",
+  "lote": "ABC123",
+  "observaciones": "Sin reacciones adversas",
+  "veterinario_id": 6
+}
+```
+
+### 2. Obtener vacunas por mascota *(con ordenamiento)*
+**`GET`** `/api/vacunas/mascota/:mascota_id`
+
+**Query params opcionales:**
+
+| Parámetro | Tipo | Valores permitidos | Por defecto |
+|---|---|---|---|
+| `order_by` | `string` | `fecha_aplicacion`, `proxima_dosis`, `nombre_vacuna`, `lote` | `fecha_aplicacion` |
+| `order` | `string` | `ASC`, `DESC` | `DESC` |
+
+**Ejemplos:**
+```bash
+# Orden por defecto (fecha_aplicacion DESC)
+GET /api/vacunas/mascota/2
+
+# Orden por próxima dosis ascendente
+GET /api/vacunas/mascota/2?order_by=proxima_dosis&order=ASC
+
+# Orden por nombre de vacuna descendente
+GET /api/vacunas/mascota/2?order_by=nombre_vacuna&order=DESC
+
+# Orden por lote ascendente
+GET /api/vacunas/mascota/2?order_by=lote&order=ASC
+```
+
+---
+
+### 3. Obtener vacuna por ID
+**`GET`** `/api/vacunas/:id`
+
+---
+
+### 4. Actualizar vacuna
+**`PUT`** `/api/vacunas/:id`
+
+```json
+{
+  "nombre_vacuna": "Antirrábica (Refuerzo)",
+  "fecha_aplicacion": "2026-05-20",
+  "proxima_dosis": "2027-05-20",
+  "lote": "DEF456",
+  "observaciones": "Vacuna aplicada sin complicaciones"
+}
+```
+
+---
+
+### 5. Eliminar vacuna *(soft delete)*
+**`DELETE`** `/api/vacunas/:id`
+
+---
+
+### 6. Obtener alertas de vacunas próximas
+**`GET`** `/api/vacunas/alertas`
+
+---
+
+### 7. Marcar notificación como enviada
+**`POST`** `/api/vacunas/:id/notificar`
+
+```json
+POST /api/vacunas/5/notificar     # ← 5 es el ID de la vacuna
+{
+  "propietario_id": 3             # ← ID del propietario
+}
+```
+
+---
+
+## 📜 Auditoría — `/api/auditoria`
+
+> ⚠️ **Todos los endpoints requieren rol de Administrador.**
+> 🔐 **Header requerido en todos los endpoints:** `Authorization: Bearer <token>`
+
+---
+
+### 1. Obtener todas las acciones *(con filtros y paginación)*
+**`GET`** `/api/auditoria`
+
+**Query params opcionales:**
+
+| Parámetro | Tipo | Descripción |
+|---|---|---|
+| `usuario_id` | `number` | Filtrar por ID de usuario |
+| `modulo` | `string` | Filtrar por módulo (`ventas`, `historial_clinico`, `vacunas`, `consultas_medicas`) |
+| `accion` | `string` | Filtrar por acción (`CREATE`, `UPDATE`, `DELETE`, `CONFIRMAR`, `ANULAR`) |
+| `fecha_inicio` | `date` | Fecha de inicio del rango (`YYYY-MM-DD`) |
+| `fecha_fin` | `date` | Fecha de fin del rango (`YYYY-MM-DD`) |
+| `page` | `number` | Número de página *(por defecto: 1)* |
+| `limit` | `number` | Registros por página *(por defecto: 20)* |
+
+**Ejemplos:**
+```bash
+# Página 1, 20 registros (valores por defecto)
+GET /api/auditoria
+
+# Página 2, 10 registros por página
+GET /api/auditoria?page=2&limit=10
+
+# Filtrar por módulo de ventas
+GET /api/auditoria?modulo=ventas&page=1&limit=15
+
+# Filtrar por usuario y rango de fechas
+GET /api/auditoria?usuario_id=6&fecha_inicio=2026-05-01&fecha_fin=2026-05-31&page=1&limit=20
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "usuario_id": 6,
+      "usuario_nombre": "Dr Luis",
+      "modulo": "vacunas",
+      "accion": "CREATE",
+      "descripcion": "Registró vacuna Antirrábica para mascota ID 2",
+      "ip": "127.0.0.1",
+      "referencia_id": 1,
+      "fecha": "2026-05-19T13:44:01.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 150,
+    "totalPages": 8
+  }
+}
+```
+
+**Error `401` — sin autenticación:**
+```json
+{
+  "success": false,
+  "message": "No autorizado: token no proporcionado"
+}
+```
+
+**Error `403` — sin permiso de administrador:**
+```json
+{
+  "success": false,
+  "message": "Acceso denegado: se requiere rol de administrador"
+}
+```
+
+---
+
+### 2. Obtener acciones por usuario *(con paginación)*
+**`GET`** `/api/auditoria/usuario/:usuario_id`
+
+**Query params opcionales:** `page`, `limit`
+
+```bash
+GET /api/auditoria/usuario/6?page=1&limit=10
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [...],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 25,
+    "totalPages": 3
+  }
+}
+```
+
+---
+
+### 3. Obtener acciones por módulo *(con paginación)*
+**`GET`** `/api/auditoria/modulo/:modulo`
+
+**Query params opcionales:** `page`, `limit`
+
+**Módulos disponibles:** `ventas` · `historial_clinico` · `consultas_medicas` · `vacunas`
+
+```bash
+GET /api/auditoria/modulo/ventas?page=2&limit=15
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [...],
+  "pagination": {
+    "page": 2,
+    "limit": 15,
+    "total": 45,
+    "totalPages": 3
+  }
+}
+```
+
+---
+
+### 4. Obtener acciones por acción específica *(con paginación)*
+**`GET`** `/api/auditoria/accion/:accion`
+
+**Query params opcionales:** `page`, `limit`
+
+**Acciones disponibles:** `CREATE` · `UPDATE` · `DELETE` · `CONFIRMAR` · `ANULAR`
+
+```bash
+GET /api/auditoria/accion/CREATE?page=1&limit=20
+```
+
+---
+
+### 5. Obtener acciones por rango de fechas *(con paginación)*
+**`GET`** `/api/auditoria/fecha/:fecha_inicio/:fecha_fin`
+
+**Query params opcionales:** `page`, `limit`
+
+```bash
+GET /api/auditoria/fecha/2026-05-01/2026-05-31?page=1&limit=50
+```
+
+---
+
+### 6. Dashboard — Conteo por módulo
+**`GET`** `/api/auditoria/dashboard/modulos`
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    { "modulo": "ventas", "total": 45 },
+    { "modulo": "vacunas", "total": 12 },
+    { "modulo": "historial_clinico", "total": 8 }
+  ]
+}
+```
+
+---
+
+### 7. Dashboard — Conteo por usuario
+**`GET`** `/api/auditoria/dashboard/usuarios`
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    { "Nombre_Usuario": "Admin", "total": 30 },
+    { "Nombre_Usuario": "Dr Luis", "total": 25 }
+  ]
+}
+```
+
+---
+
+### 📋 Resumen de endpoints
+
+| Método | Endpoint | Paginación | Requiere Admin |
+|---|---|---|---|
+| `GET` | `/api/auditoria` | ✅ `page`, `limit` | ✅ |
+| `GET` | `/api/auditoria/usuario/:id` | ✅ `page`, `limit` | ✅ |
+| `GET` | `/api/auditoria/modulo/:modulo` | ✅ `page`, `limit` | ✅ |
+| `GET` | `/api/auditoria/accion/:accion` | ✅ `page`, `limit` | ✅ |
+| `GET` | `/api/auditoria/fecha/:inicio/:fin` | ✅ `page`, `limit` | ✅ |
+| `GET` | `/api/auditoria/dashboard/modulos` | ❌ No | ✅ |
+| `GET` | `/api/auditoria/dashboard/usuarios` | ❌ No | ✅ |
+
+---
+
+---
+
+### Obtener citas por veterinario
+**`GET`** `/api/citas/veterinario/:id`
+
+Obtiene todas las citas asignadas a un veterinario específico.
+
+**Parámetros de URL:**
+
+| Parámetro | Tipo | Descripción |
+|---|---|---|
+| `id` | `number` | ID del veterinario |
+
+```bash
+GET /api/citas/veterinario/6
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "IdCita": 10,
+      "FechaHora": "2026-05-20T04:16:00.000Z",
+      "Mascota": "canelo 2",
+      "Id_Mascota": 2,
+      "Tipo_Consulta": "Consulta General",
+      "Estado": "Cancelada",
+      "Id_Veterinario": 6,
+      "Propietario": "Bryan"
+    }
+  ]
+}
+```
+
+**Error `404`:**
+```json
+{
+  "success": false,
+  "message": "No se encontraron citas para este veterinario"
+}
+```
+
+---
+
+### Obtener historial de citas por mascota
+**`GET`** `/api/citas/mascota/historial/:id`
+
+Obtiene el historial completo de citas de una mascota específica.
+
+**Parámetros de URL:**
+
+| Parámetro | Tipo | Descripción |
+|---|---|---|
+| `id` | `number` | ID de la mascota |
+
+```bash
+GET /api/citas/mascota/historial/2
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "IdCita": 10,
+      "FechaHora": "2026-05-20T04:16:00.000Z",
+      "Tipo_Consulta": "Consulta General",
+      "Estado": "Cancelada"
+    },
+    {
+      "IdCita": 8,
+      "FechaHora": "2026-05-15T10:30:00.000Z",
+      "Tipo_Consulta": "Vacunación",
+      "Estado": "Completada"
+    }
+  ]
+}
+```
+
+**Error `404`:**
+```json
+{
+  "success": false,
+  "message": "No se encontraron citas para esta mascota"
+}
+```
+
+---
+
+### Completar cita
+**`PATCH`** `/api/citas/:id/completar`
+
+Marca una cita como completada. No requiere body.
+
+**Parámetros de URL:**
+
+| Parámetro | Tipo | Descripción |
+|---|---|---|
+| `id` | `number` | ID de la cita |
+
+```bash
+PATCH /api/citas/10/completar
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "message": "Cita completada exitosamente",
+  "data": {
+    "id": 10,
+    "estado": "completada"
+  }
+}
+```
+
+**Errores posibles:**
+
+| Código | Mensaje |
+|---|---|
+| `404` | No existe una cita con IdCita 10 |
+| `409` | La cita ya está completada |
+
+**Error `409`:**
+```json
+{
+  "success": false,
+  "message": "La cita ya está completada"
+}
+```
+
+---
+
+## 📋 Resumen de endpoints — Citas
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/citas` | Obtener todas las citas |
+| `GET` | `/api/citas/:id` | Obtener cita por ID |
+| `GET` | `/api/citas/mascota/:idMascota` | Obtener citas por mascota |
+| `GET` | `/api/citas/veterinario/:id` | Obtener citas por veterinario |
+| `GET` | `/api/citas/mascota/historial/:id` | Historial de citas de mascota |
+| `POST` | `/api/citas` | Crear nueva cita |
+| `PUT` | `/api/citas/:id` | Actualizar cita completa |
+| `PATCH` | `/api/citas/:id/estado` | Actualizar solo el estado |
+| `PATCH` | `/api/citas/:id/completar` | Completar cita |
+| `DELETE` | `/api/citas/:id` | Eliminar cita |
