@@ -248,6 +248,23 @@ const CitasRepository = {
     return { disponible: true };
   },
 
+
+  // ============================================================
+//  NUEVAS FUNCIONES (AGREGAR)
+// ============================================================
+
+// Obtener citas por veterinario
+async findByVeterinario(idVeterinario) {
+  const [rows] = await connection.query(CitasQueries.FIND_BY_VETERINARIO, [idVeterinario]);
+  return rows;
+},
+
+// Obtener citas por mascota
+async findByMascotaId(idMascota) {
+  const [rows] = await connection.query(CitasQueries.FIND_BY_MASCOTA_ID, [idMascota]);
+  return rows;
+},
+
 };
 
 module.exports = CitasRepository;

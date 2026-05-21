@@ -73,6 +73,62 @@ const CitasController = {
     }
   },
 
+  // ============================================================
+  //  NUEVAS FUNCIONES PARA VETERINARIO
+  // ============================================================
+
+  // GET /api/citas/veterinario/:id
+  async getCitasByVeterinario(req, res) {
+    try {
+      const { id } = req.params;
+      const citas = await citasService.getCitasByVeterinario(id);
+      res.status(200).json({
+        success: true,
+        data: citas
+      });
+    } catch (err) {
+      res.status(err.status || 500).json({ 
+        success: false, 
+        message: err.message || 'Error interno del servidor' 
+      });
+    }
+  },
+
+  // GET /api/citas/mascota/:id
+  async getCitasByMascotaId(req, res) {
+    try {
+      const { id } = req.params;
+      const citas = await citasService.getCitasByMascotaId(id);
+      res.status(200).json({
+        success: true,
+        data: citas
+      });
+    } catch (err) {
+      res.status(err.status || 500).json({ 
+        success: false, 
+        message: err.message || 'Error interno del servidor' 
+      });
+    }
+  },
+
+  // PATCH /api/citas/:id/completar
+  async completarCita(req, res) {
+    try {
+      const { id } = req.params;
+      const result = await citasService.completarCita(id);
+      res.status(200).json({
+        success: true,
+        message: result.message,
+        data: result
+      });
+    } catch (err) {
+      res.status(err.status || 500).json({ 
+        success: false, 
+        message: err.message || 'Error interno del servidor' 
+      });
+    }
+  }
+
 };
 
 module.exports = CitasController;

@@ -1736,3 +1736,154 @@ GET /api/auditoria/fecha/2026-05-01/2026-05-31?page=1&limit=50
 | `GET` | `/api/auditoria/dashboard/usuarios` | ❌ No | ✅ |
 
 ---
+
+---
+
+### Obtener citas por veterinario
+**`GET`** `/api/citas/veterinario/:id`
+
+Obtiene todas las citas asignadas a un veterinario específico.
+
+**Parámetros de URL:**
+
+| Parámetro | Tipo | Descripción |
+|---|---|---|
+| `id` | `number` | ID del veterinario |
+
+```bash
+GET /api/citas/veterinario/6
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "IdCita": 10,
+      "FechaHora": "2026-05-20T04:16:00.000Z",
+      "Mascota": "canelo 2",
+      "Id_Mascota": 2,
+      "Tipo_Consulta": "Consulta General",
+      "Estado": "Cancelada",
+      "Id_Veterinario": 6,
+      "Propietario": "Bryan"
+    }
+  ]
+}
+```
+
+**Error `404`:**
+```json
+{
+  "success": false,
+  "message": "No se encontraron citas para este veterinario"
+}
+```
+
+---
+
+### Obtener historial de citas por mascota
+**`GET`** `/api/citas/mascota/historial/:id`
+
+Obtiene el historial completo de citas de una mascota específica.
+
+**Parámetros de URL:**
+
+| Parámetro | Tipo | Descripción |
+|---|---|---|
+| `id` | `number` | ID de la mascota |
+
+```bash
+GET /api/citas/mascota/historial/2
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "IdCita": 10,
+      "FechaHora": "2026-05-20T04:16:00.000Z",
+      "Tipo_Consulta": "Consulta General",
+      "Estado": "Cancelada"
+    },
+    {
+      "IdCita": 8,
+      "FechaHora": "2026-05-15T10:30:00.000Z",
+      "Tipo_Consulta": "Vacunación",
+      "Estado": "Completada"
+    }
+  ]
+}
+```
+
+**Error `404`:**
+```json
+{
+  "success": false,
+  "message": "No se encontraron citas para esta mascota"
+}
+```
+
+---
+
+### Completar cita
+**`PATCH`** `/api/citas/:id/completar`
+
+Marca una cita como completada. No requiere body.
+
+**Parámetros de URL:**
+
+| Parámetro | Tipo | Descripción |
+|---|---|---|
+| `id` | `number` | ID de la cita |
+
+```bash
+PATCH /api/citas/10/completar
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "message": "Cita completada exitosamente",
+  "data": {
+    "id": 10,
+    "estado": "completada"
+  }
+}
+```
+
+**Errores posibles:**
+
+| Código | Mensaje |
+|---|---|
+| `404` | No existe una cita con IdCita 10 |
+| `409` | La cita ya está completada |
+
+**Error `409`:**
+```json
+{
+  "success": false,
+  "message": "La cita ya está completada"
+}
+```
+
+---
+
+## 📋 Resumen de endpoints — Citas
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/citas` | Obtener todas las citas |
+| `GET` | `/api/citas/:id` | Obtener cita por ID |
+| `GET` | `/api/citas/mascota/:idMascota` | Obtener citas por mascota |
+| `GET` | `/api/citas/veterinario/:id` | Obtener citas por veterinario |
+| `GET` | `/api/citas/mascota/historial/:id` | Historial de citas de mascota |
+| `POST` | `/api/citas` | Crear nueva cita |
+| `PUT` | `/api/citas/:id` | Actualizar cita completa |
+| `PATCH` | `/api/citas/:id/estado` | Actualizar solo el estado |
+| `PATCH` | `/api/citas/:id/completar` | Completar cita |
+| `DELETE` | `/api/citas/:id` | Eliminar cita |
