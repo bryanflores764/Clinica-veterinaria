@@ -1464,10 +1464,30 @@ src/
 }
 ```
 
----
-
-### 2. Obtener vacunas por mascota
+### 2. Obtener vacunas por mascota *(con ordenamiento)*
 **`GET`** `/api/vacunas/mascota/:mascota_id`
+
+**Query params opcionales:**
+
+| Parámetro | Tipo | Valores permitidos | Por defecto |
+|---|---|---|---|
+| `order_by` | `string` | `fecha_aplicacion`, `proxima_dosis`, `nombre_vacuna`, `lote` | `fecha_aplicacion` |
+| `order` | `string` | `ASC`, `DESC` | `DESC` |
+
+**Ejemplos:**
+```bash
+# Orden por defecto (fecha_aplicacion DESC)
+GET /api/vacunas/mascota/2
+
+# Orden por próxima dosis ascendente
+GET /api/vacunas/mascota/2?order_by=proxima_dosis&order=ASC
+
+# Orden por nombre de vacuna descendente
+GET /api/vacunas/mascota/2?order_by=nombre_vacuna&order=DESC
+
+# Orden por lote ascendente
+GET /api/vacunas/mascota/2?order_by=lote&order=ASC
+```
 
 ---
 
@@ -1507,7 +1527,7 @@ src/
 ```json
 POST /api/vacunas/5/notificar     # ← 5 es el ID de la vacuna
 {
-  "propietario_id": 3              # ← ID del propietario
+  "propietario_id": 3             # ← ID del propietario
 }
 ```
 
@@ -1516,67 +1536,203 @@ POST /api/vacunas/5/notificar     # ← 5 es el ID de la vacuna
 ## 📜 Auditoría — `/api/auditoria`
 
 > ⚠️ **Todos los endpoints requieren rol de Administrador.**
+> 🔐 **Header requerido en todos los endpoints:** `Authorization: Bearer <token>`
 
 ---
 
-### 1. Obtener todas las acciones *(con filtros)*
+### 1. Obtener todas las acciones *(con filtros y paginación)*
 **`GET`** `/api/auditoria`
 
-| Query Param | Ejemplo | Descripción |
+**Query params opcionales:**
+
+| Parámetro | Tipo | Descripción |
 |---|---|---|
-| `usuario_id` | `?usuario_id=1` | Filtrar por usuario |
-| `modulo` | `&modulo=ventas` | Filtrar por módulo |
-| `accion` | `&accion=CREATE` | Filtrar por tipo de acción |
-| `fecha_inicio` | `&fecha_inicio=2026-01-01` | Fecha de inicio del rango |
-| `fecha_fin` | `&fecha_fin=2026-12-31` | Fecha de fin del rango |
-| `limit` | `&limit=50` | Límite de resultados |
-| `offset` | `&offset=0` | Desplazamiento de resultados |
+| `usuario_id` | `number` | Filtrar por ID de usuario |
+| `modulo` | `string` | Filtrar por módulo (`ventas`, `historial_clinico`, `vacunas`, `consultas_medicas`) |
+| `accion` | `string` | Filtrar por acción (`CREATE`, `UPDATE`, `DELETE`, `CONFIRMAR`, `ANULAR`) |
+| `fecha_inicio` | `date` | Fecha de inicio del rango (`YYYY-MM-DD`) |
+| `fecha_fin` | `date` | Fecha de fin del rango (`YYYY-MM-DD`) |
+| `page` | `number` | Número de página *(por defecto: 1)* |
+| `limit` | `number` | Registros por página *(por defecto: 20)* |
+
+**Ejemplos:**
+```bash
+# Página 1, 20 registros (valores por defecto)
+GET /api/auditoria
+
+# Página 2, 10 registros por página
+GET /api/auditoria?page=2&limit=10
+
+# Filtrar por módulo de ventas
+GET /api/auditoria?modulo=ventas&page=1&limit=15
+
+# Filtrar por usuario y rango de fechas
+GET /api/auditoria?usuario_id=6&fecha_inicio=2026-05-01&fecha_fin=2026-05-31&page=1&limit=20
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "usuario_id": 6,
+      "usuario_nombre": "Dr Luis",
+      "modulo": "vacunas",
+      "accion": "CREATE",
+      "descripcion": "Registró vacuna Antirrábica para mascota ID 2",
+      "ip": "127.0.0.1",
+      "referencia_id": 1,
+      "fecha": "2026-05-19T13:44:01.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 150,
+    "totalPages": 8
+  }
+}
+```
+
+**Error `401` — sin autenticación:**
+```json
+{
+  "success": false,
+  "message": "No autorizado: token no proporcionado"
+}
+```
+
+**Error `403` — sin permiso de administrador:**
+```json
+{
+  "success": false,
+  "message": "Acceso denegado: se requiere rol de administrador"
+}
+```
 
 ---
 
-### 2. Obtener acciones por usuario
+### 2. Obtener acciones por usuario *(con paginación)*
 **`GET`** `/api/auditoria/usuario/:usuario_id`
 
+**Query params opcionales:** `page`, `limit`
+
+```bash
+GET /api/auditoria/usuario/6?page=1&limit=10
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [...],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 25,
+    "totalPages": 3
+  }
+}
+```
+
 ---
 
-### 3. Obtener acciones por módulo
+### 3. Obtener acciones por módulo *(con paginación)*
 **`GET`** `/api/auditoria/modulo/:modulo`
 
-**Módulos disponibles:**
+**Query params opcionales:** `page`, `limit`
 
-| Módulo |
-|---|
-| `ventas` |
-| `historial_clinico` |
-| `consultas_medicas` |
-| `vacunas` |
+**Módulos disponibles:** `ventas` · `historial_clinico` · `consultas_medicas` · `vacunas`
+
+```bash
+GET /api/auditoria/modulo/ventas?page=2&limit=15
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [...],
+  "pagination": {
+    "page": 2,
+    "limit": 15,
+    "total": 45,
+    "totalPages": 3
+  }
+}
+```
 
 ---
 
-### 4. Obtener acciones por acción específica
+### 4. Obtener acciones por acción específica *(con paginación)*
 **`GET`** `/api/auditoria/accion/:accion`
 
-**Acciones disponibles:**
+**Query params opcionales:** `page`, `limit`
 
-| Acción |
-|---|
-| `CREATE` |
-| `UPDATE` |
-| `DELETE` |
-| `CONFIRMAR` |
-| `ANULAR` |
+**Acciones disponibles:** `CREATE` · `UPDATE` · `DELETE` · `CONFIRMAR` · `ANULAR`
+
+```bash
+GET /api/auditoria/accion/CREATE?page=1&limit=20
+```
 
 ---
 
-### 5. Obtener acciones por rango de fechas
+### 5. Obtener acciones por rango de fechas *(con paginación)*
 **`GET`** `/api/auditoria/fecha/:fecha_inicio/:fecha_fin`
+
+**Query params opcionales:** `page`, `limit`
+
+```bash
+GET /api/auditoria/fecha/2026-05-01/2026-05-31?page=1&limit=50
+```
 
 ---
 
 ### 6. Dashboard — Conteo por módulo
 **`GET`** `/api/auditoria/dashboard/modulos`
 
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    { "modulo": "ventas", "total": 45 },
+    { "modulo": "vacunas", "total": 12 },
+    { "modulo": "historial_clinico", "total": 8 }
+  ]
+}
+```
+
 ---
 
 ### 7. Dashboard — Conteo por usuario
 **`GET`** `/api/auditoria/dashboard/usuarios`
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    { "Nombre_Usuario": "Admin", "total": 30 },
+    { "Nombre_Usuario": "Dr Luis", "total": 25 }
+  ]
+}
+```
+
+---
+
+### 📋 Resumen de endpoints
+
+| Método | Endpoint | Paginación | Requiere Admin |
+|---|---|---|---|
+| `GET` | `/api/auditoria` | ✅ `page`, `limit` | ✅ |
+| `GET` | `/api/auditoria/usuario/:id` | ✅ `page`, `limit` | ✅ |
+| `GET` | `/api/auditoria/modulo/:modulo` | ✅ `page`, `limit` | ✅ |
+| `GET` | `/api/auditoria/accion/:accion` | ✅ `page`, `limit` | ✅ |
+| `GET` | `/api/auditoria/fecha/:inicio/:fin` | ✅ `page`, `limit` | ✅ |
+| `GET` | `/api/auditoria/dashboard/modulos` | ❌ No | ✅ |
+| `GET` | `/api/auditoria/dashboard/usuarios` | ❌ No | ✅ |
+
+---
