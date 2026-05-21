@@ -45,14 +45,20 @@ const VacunasController = {
     }
   },
 
-  // GET /api/vacunas/mascota/:mascota_id
+  // GET /api/vacunas/mascota/:mascota_id (CON ORDENAMIENTO DINÁMICO)
   async getVacunasByMascota(req, res) {
     try {
       const { mascota_id } = req.params;
-      const result = await vacunasService.getVacunasByMascota(mascota_id);
+      const { order_by = 'fecha_aplicacion', order = 'DESC' } = req.query;
+      
+      const result = await vacunasService.getVacunasByMascota(mascota_id, order_by, order);
       res.status(200).json({
         success: true,
-        data: result
+        data: result,
+        ordenamiento: {
+          order_by: order_by,
+          order: order.toUpperCase()
+        }
       });
     } catch (error) {
       res.status(error.status || 500).json({

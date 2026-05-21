@@ -24,9 +24,30 @@ const VacunasRepository = {
     return rows[0] || null;
   },
 
-  // Obtener vacunas por mascota
-  async findVacunasByMascota(mascota_id) {
-    const [rows] = await connection.query(VacunasQueries.FIND_VACUNAS_BY_MASCOTA, [mascota_id]);
+  // Obtener vacunas por mascota (CON ORDENAMIENTO DINÁMICO)
+  async findVacunasByMascota(mascota_id, order_by = 'fecha_aplicacion', order = 'DESC') {
+    // Validar que no haya inyección SQL - solo permitir columnas válidas
+    const columnasPermitidas = ['fecha_aplicacion', 'proxima_dosis', 'nombre_vacuna', 'id', 'lote'];
+    const ordenesPermitidas = ['ASC', 'DESC'];
+    
+    const columna = columnasPermitidas.includes(order_by) ? order_by : 'fecha_aplicacion';
+    const direccion = ordenesPermitidas.includes(order.toUpperCase()) ? order.toUpperCase() : 'DESC';
+    
+    const query = `
+      SELECT v.*, u.Nombre_Usuario AS veterinario_nombre,
+        CASE 
+          WHEN v.proxima_dosis IS NULL THEN 'completado'
+          WHEN v.proxima_dosis < CURDATE() THEN 'vencida'
+          WHEN v.proxima_dosis <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) THEN 'proxima'
+          ELSE 'aplicada'
+        END AS estado_vacuna
+      FROM vacunas_aplicadas v
+      INNER JOIN usuarios u ON u.id = v.veterinario_id
+      WHERE v.mascota_id = ? AND v.estado = 'activo'
+      ORDER BY ${columna} ${direccion}
+    `;
+    
+    const [rows] = await connection.query(query, [mascota_id]);
     return rows;
   },
 

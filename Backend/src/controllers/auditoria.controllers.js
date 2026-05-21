@@ -2,17 +2,19 @@
 //  CAPA: Controller
 //  Archivo: auditoria.controller.js
 //  Módulo: Auditoría de Acciones
-//  Nota: Solo accesible para administradores
 // ============================================================
 
 const auditoriaService = require('../services/auditoria.service');
 
 const AuditoriaController = {
 
-  // GET /api/auditoria
+  // GET /api/auditoria?page=1&limit=20&usuario_id=1&modulo=ventas...
   async getAllAcciones(req, res) {
     try {
-      const { usuario_id, modulo, accion, fecha_inicio, fecha_fin, limit, offset } = req.query;
+      const { 
+        usuario_id, modulo, accion, fecha_inicio, fecha_fin, 
+        page = 1, limit = 20 
+      } = req.query;
 
       const filtros = {};
       if (usuario_id) filtros.usuario_id = usuario_id;
@@ -22,14 +24,13 @@ const AuditoriaController = {
         filtros.fecha_inicio = fecha_inicio;
         filtros.fecha_fin = fecha_fin;
       }
-      if (limit) filtros.limit = parseInt(limit);
-      if (offset) filtros.offset = parseInt(offset);
 
-      const result = await auditoriaService.getAllAcciones(filtros);
+      const result = await auditoriaService.getAllAcciones(filtros, parseInt(page), parseInt(limit));
+      
       res.status(200).json({
         success: true,
-        data: result,
-        total: result.length
+        data: result.data,
+        pagination: result.pagination
       });
     } catch (error) {
       res.status(error.status || 500).json({
@@ -39,14 +40,18 @@ const AuditoriaController = {
     }
   },
 
-  // GET /api/auditoria/usuario/:usuario_id
+  // GET /api/auditoria/usuario/:usuario_id?page=1&limit=20
   async getAccionesByUsuario(req, res) {
     try {
       const { usuario_id } = req.params;
-      const result = await auditoriaService.getAccionesByUsuario(usuario_id);
+      const { page = 1, limit = 20 } = req.query;
+      
+      const result = await auditoriaService.getAccionesByUsuario(usuario_id, parseInt(page), parseInt(limit));
+      
       res.status(200).json({
         success: true,
-        data: result
+        data: result.data,
+        pagination: result.pagination
       });
     } catch (error) {
       res.status(error.status || 500).json({
@@ -56,14 +61,18 @@ const AuditoriaController = {
     }
   },
 
-  // GET /api/auditoria/modulo/:modulo
+  // GET /api/auditoria/modulo/:modulo?page=1&limit=20
   async getAccionesByModulo(req, res) {
     try {
       const { modulo } = req.params;
-      const result = await auditoriaService.getAccionesByModulo(modulo);
+      const { page = 1, limit = 20 } = req.query;
+      
+      const result = await auditoriaService.getAccionesByModulo(modulo, parseInt(page), parseInt(limit));
+      
       res.status(200).json({
         success: true,
-        data: result
+        data: result.data,
+        pagination: result.pagination
       });
     } catch (error) {
       res.status(error.status || 500).json({
@@ -73,14 +82,18 @@ const AuditoriaController = {
     }
   },
 
-  // GET /api/auditoria/accion/:accion
+  // GET /api/auditoria/accion/:accion?page=1&limit=20
   async getAccionesByAccion(req, res) {
     try {
       const { accion } = req.params;
-      const result = await auditoriaService.getAccionesByAccion(accion);
+      const { page = 1, limit = 20 } = req.query;
+      
+      const result = await auditoriaService.getAccionesByAccion(accion, parseInt(page), parseInt(limit));
+      
       res.status(200).json({
         success: true,
-        data: result
+        data: result.data,
+        pagination: result.pagination
       });
     } catch (error) {
       res.status(error.status || 500).json({
@@ -90,14 +103,20 @@ const AuditoriaController = {
     }
   },
 
-  // GET /api/auditoria/fecha/:fecha_inicio/:fecha_fin
+  // GET /api/auditoria/fecha/:fecha_inicio/:fecha_fin?page=1&limit=20
   async getAccionesByFechaRango(req, res) {
     try {
       const { fecha_inicio, fecha_fin } = req.params;
-      const result = await auditoriaService.getAccionesByFechaRango(fecha_inicio, fecha_fin);
+      const { page = 1, limit = 20 } = req.query;
+      
+      const result = await auditoriaService.getAccionesByFechaRango(
+        fecha_inicio, fecha_fin, parseInt(page), parseInt(limit)
+      );
+      
       res.status(200).json({
         success: true,
-        data: result
+        data: result.data,
+        pagination: result.pagination
       });
     } catch (error) {
       res.status(error.status || 500).json({
@@ -107,7 +126,7 @@ const AuditoriaController = {
     }
   },
 
-  // GET /api/auditoria/dashboard/modulos
+  // GET /api/auditoria/dashboard/modulos (sin paginación)
   async getCountAccionesByModulo(req, res) {
     try {
       const result = await auditoriaService.getCountAccionesByModulo();
@@ -123,7 +142,7 @@ const AuditoriaController = {
     }
   },
 
-  // GET /api/auditoria/dashboard/usuarios
+  // GET /api/auditoria/dashboard/usuarios (sin paginación)
   async getCountAccionesByUsuario(req, res) {
     try {
       const result = await auditoriaService.getCountAccionesByUsuario();

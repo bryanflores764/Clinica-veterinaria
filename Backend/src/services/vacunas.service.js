@@ -71,9 +71,16 @@ const VacunasService = {
     return vacuna;
   },
 
-  // Obtener vacunas por mascota
-  async getVacunasByMascota(mascota_id) {
-    const vacunas = await vacunasRepository.findVacunasByMascota(mascota_id);
+  // Obtener vacunas por mascota (CON ORDENAMIENTO DINÁMICO)
+  async getVacunasByMascota(mascota_id, order_by = 'fecha_aplicacion', order = 'DESC') {
+    // Validar parámetros de ordenamiento
+    const ordenesPermitidos = ['fecha_aplicacion', 'proxima_dosis', 'nombre_vacuna', 'id', 'lote'];
+    if (!ordenesPermitidos.includes(order_by)) {
+      order_by = 'fecha_aplicacion';
+    }
+    order = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+    
+    const vacunas = await vacunasRepository.findVacunasByMascota(mascota_id, order_by, order);
     return vacunas;
   },
 

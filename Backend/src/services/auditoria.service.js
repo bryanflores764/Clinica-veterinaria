@@ -8,11 +8,9 @@ const auditoriaRepository = require('../repository/auditoria.repository');
 
 const AuditoriaService = {
 
-  // Registrar una acción (llamado desde otros servicios)
   async registrarAccion(data) {
     const { usuario_id, modulo, accion, descripcion, ip, referencia_id } = data;
 
-    // Validaciones
     if (!usuario_id) {
       throw { status: 400, message: 'El usuario es obligatorio' };
     }
@@ -35,55 +33,53 @@ const AuditoriaService = {
     return nuevaAccion;
   },
 
-  // Obtener todas las acciones (con filtros)
-  async getAllAcciones(filtros = {}) {
-    const acciones = await auditoriaRepository.findAllAcciones(filtros);
-    return acciones;
+  // Obtener todas las acciones (con filtros y paginación)
+  async getAllAcciones(filtros = {}, page = 1, limit = 20) {
+    const result = await auditoriaRepository.findAllAcciones(filtros, page, limit);
+    return result;
   },
 
-  // Obtener acciones por usuario
-  async getAccionesByUsuario(usuario_id) {
+  // Obtener acciones por usuario (con paginación)
+  async getAccionesByUsuario(usuario_id, page = 1, limit = 20) {
     if (!usuario_id) {
       throw { status: 400, message: 'El ID del usuario es obligatorio' };
     }
-    const acciones = await auditoriaRepository.findAccionesByUsuario(usuario_id);
-    return acciones;
+    const result = await auditoriaRepository.findAccionesByUsuario(usuario_id, page, limit);
+    return result;
   },
 
-  // Obtener acciones por módulo
-  async getAccionesByModulo(modulo) {
+  // Obtener acciones por módulo (con paginación)
+  async getAccionesByModulo(modulo, page = 1, limit = 20) {
     if (!modulo) {
       throw { status: 400, message: 'El módulo es obligatorio' };
     }
-    const acciones = await auditoriaRepository.findAccionesByModulo(modulo);
-    return acciones;
+    const result = await auditoriaRepository.findAccionesByModulo(modulo, page, limit);
+    return result;
   },
 
-  // Obtener acciones por acción
-  async getAccionesByAccion(accion) {
+  // Obtener acciones por acción (con paginación)
+  async getAccionesByAccion(accion, page = 1, limit = 20) {
     if (!accion) {
       throw { status: 400, message: 'La acción es obligatoria' };
     }
-    const acciones = await auditoriaRepository.findAccionesByAccion(accion);
-    return acciones;
+    const result = await auditoriaRepository.findAccionesByAccion(accion, page, limit);
+    return result;
   },
 
-  // Obtener acciones por rango de fechas
-  async getAccionesByFechaRango(fecha_inicio, fecha_fin) {
+  // Obtener acciones por rango de fechas (con paginación)
+  async getAccionesByFechaRango(fecha_inicio, fecha_fin, page = 1, limit = 20) {
     if (!fecha_inicio || !fecha_fin) {
       throw { status: 400, message: 'Las fechas de inicio y fin son obligatorias' };
     }
-    const acciones = await auditoriaRepository.findAccionesByFechaRango(fecha_inicio, fecha_fin);
-    return acciones;
+    const result = await auditoriaRepository.findAccionesByFechaRango(fecha_inicio, fecha_fin, page, limit);
+    return result;
   },
 
-  // Dashboard: Contar acciones por módulo
   async getCountAccionesByModulo() {
     const conteo = await auditoriaRepository.countAccionesByModulo();
     return conteo;
   },
 
-  // Dashboard: Contar acciones por usuario
   async getCountAccionesByUsuario() {
     const conteo = await auditoriaRepository.countAccionesByUsuario();
     return conteo;
