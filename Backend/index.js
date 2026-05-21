@@ -66,6 +66,16 @@ app.use('/api/productos', ProductosRoutes);
 const categoriasRoutes = require('./src/routes/categorias.routes');
 app.use('/api/categorias', categoriasRoutes);
 
+// Importar nuevas rutas
+const historialRoutes = require('./src/routes/historial.routes');
+const vacunasRoutes = require('./src/routes/vacunas.routes');
+const auditoriaRoutes = require('./src/routes/auditoria.routes');
+
+// Registrar rutas - DEBE SER SOLO EL ROUTER, NADA MÁS
+app.use('/api/historial', historialRoutes);
+app.use('/api/vacunas', vacunasRoutes);
+app.use('/api/auditoria', auditoriaRoutes);
+
 
 
 // ── Health check ──────────────────────────────────────────────
