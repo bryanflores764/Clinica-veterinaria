@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico" type="image/x-icon">
-    <link rel="stylesheet" href="../../css/veterinario/interfazPacientes.css"> 
+    <link rel="stylesheet" href="../../css/veterinario/interfazPacientes.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
     <title>Veterinario - Pacientes</title>
 </head>
+
 <body>
     <div class="layout">
 
@@ -42,7 +44,7 @@
                         Tratamientos
                     </a>
                 </li>
-                
+
             </ul>
         </aside>
 
@@ -98,7 +100,58 @@
         </main>
 
     </div>
+    <!-- Modal crear historial clínico -->
+    <div class="modal" id="modal-historial">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Crear historial clínico</h2>
+                <button type="button" class="btn-cerrar-modal" id="cerrar-modal-historial">×</button>
+            </div>
+
+            <p class="modal-subtitle">
+                Complete la información médica inicial de la mascota.
+            </p>
+
+            <form id="form-historial" class="form-historial">
+                <input type="hidden" id="historial-mascota-id">
+
+                <div class="form-group">
+                    <label for="historial-mascota-nombre">Mascota</label>
+                    <input type="text" id="historial-mascota-nombre" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="motivo">Motivo</label>
+                    <input type="text" id="motivo" placeholder="Ej: Revisión general">
+                    <small class="error-msg"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="diagnostico-inicial">Diagnóstico inicial</label>
+                    <input type="text" id="diagnostico-inicial" placeholder="Ej: Paciente sano">
+                    <small class="error-msg"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="observaciones">Observaciones</label>
+                    <textarea id="observaciones" rows="4" placeholder="Ej: Sin novedades"></textarea>
+                    <small class="error-msg"></small>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancelar" id="cancelar-historial">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn-guardar">
+                        Guardar historial
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
     <script src="../../js/veterinario/logout.js"></script>
     <script src="../../js/veterinario/interfazPacientes.js"></script>
 </body>
+
 </html>

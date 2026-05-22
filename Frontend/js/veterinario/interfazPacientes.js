@@ -1,7 +1,6 @@
 // ============================================================
 // Archivo: js/veterinario/interfazPacientes.js
 // Vista: Pacientes del veterinario
-// Función: Mostrar pacientes registrados y permitir búsqueda
 // ============================================================
 
 const URL_API = "http://localhost:3000";
@@ -11,6 +10,15 @@ const tbody = document.getElementById("users-tbody");
 const emptyMsg = document.getElementById("empty-msg");
 const searchInput = document.getElementById("search");
 const menuToggle = document.querySelector(".menu-toggle");
+const modalHistorial = document.getElementById("modal-historial");
+const formHistorial = document.getElementById("form-historial");
+const btnCerrarModalHistorial = document.getElementById("cerrar-modal-historial");
+const btnCancelarHistorial = document.getElementById("cancelar-historial");
+const inputMascotaIdHistorial = document.getElementById("historial-mascota-id");
+const inputMascotaNombreHistorial = document.getElementById("historial-mascota-nombre");
+const inputMotivo = document.getElementById("motivo");
+const inputDiagnosticoInicial = document.getElementById("diagnostico-inicial");
+const inputObservaciones = document.getElementById("observaciones");
 
 // Datos en memoria
 let mascotas = [];
@@ -33,12 +41,18 @@ function verificarSesion() {
     }
 }
 
-function obtenerEncabezados() {
+function obtenerEncabezados(conJson = false) {
     const token = obtenerToken();
 
-    return {
+    const headers = {
         Authorization: `Bearer ${token}`
     };
+
+    if (conJson) {
+        headers["Content-Type"] = "application/json";
+    }
+
+    return headers;
 }
 
 // ============================================================
@@ -151,22 +165,216 @@ function configurarBusqueda() {
 }
 
 // ============================================================
-// Botón historial clínico
+// Historial clínico
 // ============================================================
 
 function configurarBotonHistorial() {
-    tbody.addEventListener("click", (e) => {
+    tbody.addEventListener("click", async (e) => {
         const boton = e.target.closest(".btn-historial");
 
         if (!boton) return;
 
         const mascotaId = boton.dataset.id;
+        const mascotaSeleccionada = mascotas.find((mascota) => String(mascota.Id) === String(mascotaId));
 
-        console.log("Mascota seleccionada para historial clínico:", mascotaId);
+        if (!mascotaSeleccionada) {
+            alert("No se encontró la información de la mascota seleccionada.");
+            return;
+        }
 
-        // Cuando tengas la vista de historial, puedes redireccionar así:
-        // window.location.href = `historialClinico.html?mascotaId=${mascotaId}`;
+        await verificarHistorialMascota(mascotaSeleccionada);
     });
+}
+
+async function verificarHistorialMascota(mascota) {
+    try {
+        const respuesta = await fetch(`${URL_API}/api/historial/mascota/${mascota.Id}`, {
+            method: "GET",
+            headers: obtenerEncabezados()
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+
+        if (respuesta.ok && resultado.data) {
+            alert("Esta mascota ya tiene un historial clínico registrado.");
+            console.log("Historial existente:", resultado.data);
+            return;
+        }
+
+        abrirModalCrearHistorial(mascota);
+
+    } catch (error) {
+        console.error("Error al verificar historial clínico:", error);
+        abrirModalCrearHistorial(mascota);
+    }
+}
+
+function abrirModalCrearHistorial(mascota) {
+    limpiarFormularioHistorial();
+
+    inputMascotaIdHistorial.value = mascota.Id;
+    inputMascotaNombreHistorial.value = mascota.Nombre || "";
+
+    modalHistorial.classList.add("show");
+}
+
+function cerrarModalCrearHistorial() {
+    modalHistorial.classList.remove("show");
+    limpiarFormularioHistorial();
+}
+
+function limpiarFormularioHistorial() {
+    formHistorial.reset();
+    limpiarErroresFormulario();
+}
+
+function configurarModalHistorial() {
+    btnCerrarModalHistorial.addEventListener("click", cerrarModalCrearHistorial);
+    btnCancelarHistorial.addEventListener("click", cerrarModalCrearHistorial);
+
+    modalHistorial.addEventListener("click", (e) => {
+        if (e.target === modalHistorial) {
+            cerrarModalCrearHistorial();
+        }
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modalHistorial.classList.contains("show")) {
+            cerrarModalCrearHistorial();
+        }
+    });
+
+    formHistorial.addEventListener("submit", guardarHistorialClinico);
+}
+
+async function guardarHistorialClinico(e) {
+    e.preventDefault();
+
+    const mascotaId = inputMascotaIdHistorial.value;
+    const motivo = inputMotivo.value.trim();
+    const diagnosticoInicial = inputDiagnosticoInicial.value.trim();
+    const observaciones = inputObservaciones.value.trim();
+
+    const formularioValido = validarFormularioHistorial({
+        motivo,
+        diagnosticoInicial,
+        observaciones
+    });
+
+    if (!formularioValido) return;
+
+    const veterinarioId = obtenerVeterinarioId();
+
+    if (!veterinarioId) {
+        alert("No se encontró el ID del veterinario en la sesión.");
+        return;
+    }
+
+    const datosHistorial = {
+        mascota_id: Number(mascotaId),
+        motivo: motivo,
+        diagnostico_inicial: diagnosticoInicial,
+        observaciones: observaciones,
+        veterinario_id: Number(veterinarioId)
+    };
+
+    try {
+        const respuesta = await fetch(`${URL_API}/api/historial`, {
+            method: "POST",
+            headers: obtenerEncabezados(true),
+            body: JSON.stringify(datosHistorial)
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(resultado.message || "No se pudo crear el historial clínico.");
+        }
+
+        alert("Historial clínico creado correctamente.");
+        console.log("Historial creado:", resultado.data);
+
+        cerrarModalCrearHistorial();
+
+    } catch (error) {
+        console.error("Error al crear historial clínico:", error);
+        alert(error.message || "Ocurrió un error al crear el historial clínico.");
+    }
+}
+
+function validarFormularioHistorial(datos) {
+    limpiarErroresFormulario();
+
+    let valido = true;
+
+    if (!datos.motivo) {
+        mostrarErrorCampo(inputMotivo, "El motivo es obligatorio.");
+        valido = false;
+    }
+
+    if (!datos.diagnosticoInicial) {
+        mostrarErrorCampo(inputDiagnosticoInicial, "El diagnóstico inicial es obligatorio.");
+        valido = false;
+    }
+
+    if (!datos.observaciones) {
+        mostrarErrorCampo(inputObservaciones, "Las observaciones son obligatorias.");
+        valido = false;
+    }
+
+    return valido;
+}
+
+function mostrarErrorCampo(input, mensaje) {
+    const formGroup = input.closest(".form-group");
+    const errorMsg = formGroup.querySelector(".error-msg");
+
+    formGroup.classList.add("error");
+    errorMsg.textContent = mensaje;
+}
+
+function limpiarErroresFormulario() {
+    const grupos = formHistorial.querySelectorAll(".form-group");
+
+    grupos.forEach((grupo) => {
+        grupo.classList.remove("error");
+
+        const errorMsg = grupo.querySelector(".error-msg");
+
+        if (errorMsg) {
+            errorMsg.textContent = "";
+        }
+    });
+}
+
+function obtenerVeterinarioId() {
+    const usuarioStorage = localStorage.getItem("usuario");
+
+    if (!usuarioStorage) return null;
+
+    try {
+        const usuario = JSON.parse(usuarioStorage);
+
+        return usuario.id || usuario.Id || usuario.veterinario_id || usuario.VeterinarioId || null;
+
+    } catch (error) {
+        console.error("Error al leer usuario desde localStorage:", error);
+        return null;
+    }
 }
 
 // ============================================================
@@ -237,5 +445,6 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarMenuMovil();
     configurarBusqueda();
     configurarBotonHistorial();
+    configurarModalHistorial();
     cargarMascotas();
 });

@@ -315,6 +315,174 @@ body {
 }
 
 /* ============================================================
+   Modal historial clínico
+============================================================ */
+.modal {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 2000;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 520px;
+    background-color: #ffffff;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.modal-header h2 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #111111;
+}
+
+.btn-cerrar-modal {
+    border: none;
+    background-color: transparent;
+    font-size: 34px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #555555;
+    line-height: 1;
+}
+
+.btn-cerrar-modal:hover {
+    color: #000000;
+}
+
+.modal-subtitle {
+    margin: 8px 0 18px;
+    color: #666666;
+    font-size: 16px;
+}
+
+.form-historial {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-group label {
+    font-weight: 700;
+    color: #222222;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    border: 1px solid #d7d7d7;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 16px;
+    outline: none;
+    resize: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #42ab49;
+    box-shadow: 0 0 0 3px rgba(66, 171, 73, 0.12);
+}
+
+.form-group input:disabled {
+    background-color: #eeeeee;
+    color: #555555;
+}
+
+.form-group.error input,
+.form-group.error textarea {
+    border-color: #d93025;
+    box-shadow: 0 0 0 3px rgba(217, 48, 37, 0.10);
+}
+
+.error-msg {
+    min-height: 18px;
+    color: #d93025;
+    font-size: 14px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.btn-cancelar,
+.btn-guardar {
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-cancelar {
+    background-color: #e5e5e5;
+    color: #222222;
+}
+
+.btn-cancelar:hover {
+    background-color: #d5d5d5;
+}
+
+.btn-guardar {
+    background-color: #42ab49;
+    color: #ffffff;
+}
+
+.btn-guardar:hover {
+    background-color: #348c3a;
+}
+
+@media (max-width: 600px) {
+    .modal-content {
+        padding: 18px;
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+    }
+
+    .modal-header h2 {
+        font-size: 24px;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .btn-cancelar,
+    .btn-guardar {
+        width: 100%;
+    }
+}
+
+/* ============================================================
    tablet: sidebar horizontal
 ============================================================ */
 @media (max-width: 900px) and (min-width: 601px) {
