@@ -10,7 +10,10 @@ const createVenta = async (req, res) => {
   try {
     console.log("📝 [Controller] Creando venta");
     const { idPropietario } = req.body;
-    const venta = await ventasService.createVenta(idPropietario);
+    const idUsuario = req.usuario?.id || req.usuario?.Id;
+    const ip = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
+    
+    const venta = await ventasService.createVenta(idPropietario, idUsuario, ip);
     return res.status(201).json({
       success: true,
       message: 'Venta creada exitosamente',
@@ -30,8 +33,11 @@ const addDetalle = async (req, res) => {
   try {
     const { id } = req.params;
     const { idProducto, cantidad } = req.body;
+    const idUsuario = req.usuario?.id || req.usuario?.Id;
+    const ip = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
+    
     console.log(`📝 [Controller] Agregando detalle a venta ${id}, producto ${idProducto}, cantidad ${cantidad}`);
-    const detalle = await ventasService.addDetalle(id, idProducto, cantidad);
+    const detalle = await ventasService.addDetalle(id, idProducto, cantidad, idUsuario, ip);
     return res.status(201).json({
       success: true,
       message: 'Producto agregado al detalle exitosamente',
@@ -107,8 +113,8 @@ const confirmarVenta = async (req, res) => {
     console.log("📝 [Controller] Confirmar venta:", id);
     console.log("📝 [Controller] req.usuario:", req.usuario);
     
-    // ✅ Obtener ID del usuario desde el token
     const idUsuario = req.usuario?.id || req.usuario?.Id || req.usuario?.usuarioId;
+    const ip = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
     
     console.log("📝 [Controller] ID Usuario obtenido:", idUsuario);
     
@@ -119,7 +125,7 @@ const confirmarVenta = async (req, res) => {
       });
     }
     
-    const result = await ventasService.confirmarVenta(id, idUsuario);
+    const result = await ventasService.confirmarVenta(id, idUsuario, ip);
     console.log("✅ [Controller] Venta confirmada:", result);
     
     return res.status(200).json({
@@ -141,6 +147,7 @@ const anularVenta = async (req, res) => {
   try {
     const { id } = req.params;
     const idUsuario = req.usuario?.id || req.usuario?.Id;
+    const ip = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
     
     if (!idUsuario) {
       return res.status(401).json({ 
@@ -149,8 +156,7 @@ const anularVenta = async (req, res) => {
       });
     }
     
-    // ✅ No leer nada del body, solo el ID de la URL
-    const result = await ventasService.anularVenta(id, idUsuario);
+    const result = await ventasService.anularVenta(id, idUsuario, ip);
     
     return res.status(200).json({
       success: true,
