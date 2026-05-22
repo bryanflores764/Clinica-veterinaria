@@ -10,8 +10,9 @@ router.delete('/:id', verifyToken, verifyVeterinario, vacunasController.deleteVa
 router.post('/:id/notificar', verifyToken, verifyVeterinario, vacunasController.marcarNotificacion);
 
 // Lectura solo requiere autenticación
+router.get('/alertas', verifyToken, vacunasController.getAlertasVacunas);
 router.get('/:id', verifyToken, vacunasController.getVacunaById);
 router.get('/mascota/:mascota_id', verifyToken, vacunasController.getVacunasByMascota);
-router.get('/alertas', verifyToken, vacunasController.getAlertasVacunas);
+
 
 module.exports = router;
