@@ -4,19 +4,41 @@
 // ============================================================
 
 const ventasRepository = require('../repository/ventas.repository');
+const auditoriaService = require('./auditoria.service');
+
+// ── Función auxiliar para obtener IP (si no viene, usar valor por defecto)
+const getIp = (reqIp) => reqIp || '0.0.0.0';
 
 // ── Crear venta ──────────────────────────────────────────────
-const createVenta = async (idPropietario) => {
+const createVenta = async (idPropietario, idUsuario, ip) => {
   console.log("🚀 [Service] Creando venta para propietario:", idPropietario);
+  console.log("👤 Usuario ID:", idUsuario);
+  
   if (!idPropietario) {
     throw { status: 400, message: 'El Id del propietario es obligatorio' };
   }
+  
   const venta = await ventasRepository.createVenta(idPropietario);
+  
+  // ✅ Registrar en auditoría
+  try {
+    await auditoriaService.registrarAccion({
+      usuario_id: idUsuario,
+      modulo: 'ventas',
+      accion: 'CREATE',
+      descripcion: `Creó venta #${venta.id} para propietario ID ${idPropietario}`,
+      ip: getIp(ip),
+      referencia_id: venta.id
+    });
+  } catch (error) {
+    console.error("Error al registrar auditoría:", error);
+  }
+  
   return venta;
 };
 
 // ── Agregar producto al detalle ──────────────────────────────
-const addDetalle = async (idVenta, idProducto, cantidad) => {
+const addDetalle = async (idVenta, idProducto, cantidad, idUsuario, ip) => {
   console.log(`📝 [Service] Agregando producto ${idProducto} a venta ${idVenta}, cantidad: ${cantidad}`);
   
   if (!idVenta || !idProducto || !cantidad) {
@@ -57,6 +79,20 @@ const addDetalle = async (idVenta, idProducto, cantidad) => {
     cantidad,
     producto.Precio
   );
+  
+  // ✅ Registrar en auditoría (opcional, para trazabilidad de productos agregados)
+  try {
+    await auditoriaService.registrarAccion({
+      usuario_id: idUsuario,
+      modulo: 'ventas',
+      accion: 'ADD_DETALLE',
+      descripcion: `Agregó producto "${producto.Nombre_Producto}" x${cantidad} a venta #${idVenta}`,
+      ip: getIp(ip),
+      referencia_id: idVenta
+    });
+  } catch (error) {
+    console.error("Error al registrar auditoría:", error);
+  }
 
   return detalle;
 };
@@ -88,7 +124,7 @@ const getVentaById = async (id) => {
 };
 
 // ── Confirmar venta (descuenta stock) ────────────────────────
-const confirmarVenta = async (idVenta, idUsuario) => {
+const confirmarVenta = async (idVenta, idUsuario, ip) => {
   console.log("=== [Service] CONFIRMANDO VENTA ===");
   console.log("idVenta:", idVenta);
   console.log("idUsuario:", idUsuario);
@@ -151,6 +187,20 @@ const confirmarVenta = async (idVenta, idUsuario) => {
   await ventasRepository.confirmarVentaConTotal(idVenta, total);
   console.log("✅ Venta confirmada en BD");
   
+  // ✅ Registrar en auditoría
+  try {
+    await auditoriaService.registrarAccion({
+      usuario_id: idUsuario,
+      modulo: 'ventas',
+      accion: 'CONFIRMAR',
+      descripcion: `Confirmó venta #${idVenta} por $${total}`,
+      ip: getIp(ip),
+      referencia_id: idVenta
+    });
+  } catch (error) {
+    console.error("Error al registrar auditoría:", error);
+  }
+  
   return { 
     id: idVenta, 
     estado: 'confirmada', 
@@ -160,7 +210,7 @@ const confirmarVenta = async (idVenta, idUsuario) => {
 };
 
 // ── Anular venta (devuelve stock) ────────────────────────────
-const anularVenta = async (idVenta, idUsuario) => {
+const anularVenta = async (idVenta, idUsuario, ip) => {
   console.log("=== [Service] ANULANDO VENTA ===");
   console.log("idVenta:", idVenta);
   console.log("idUsuario:", idUsuario);
@@ -176,6 +226,8 @@ const anularVenta = async (idVenta, idUsuario) => {
     throw { status: 409, message: `La venta con id ${idVenta} ya está anulada` };
   }
 
+  let mensajeStock = '';
+  
   // Si estaba confirmada, devolver el stock
   if (venta.Estado === 'confirmada') {
     console.log("🔄 Venta confirmada, devolviendo stock...");
@@ -195,15 +247,29 @@ const anularVenta = async (idVenta, idUsuario) => {
         item.Cantidad, stockAntes, stockDespues
       );
     }
+    mensajeStock = 'Stock devuelto al inventario.';
   }
 
   await ventasRepository.anularVentaConDatos(idVenta, idUsuario);
   
-  // ✅ AGREGAR ESTE RETURN
+  // ✅ Registrar en auditoría
+  try {
+    await auditoriaService.registrarAccion({
+      usuario_id: idUsuario,
+      modulo: 'ventas',
+      accion: 'ANULAR',
+      descripcion: `Anuló venta #${idVenta}. ${mensajeStock}`,
+      ip: getIp(ip),
+      referencia_id: idVenta
+    });
+  } catch (error) {
+    console.error("Error al registrar auditoría:", error);
+  }
+  
   return { 
     id: idVenta, 
     estado: 'anulada', 
-    mensaje: `Venta #${idVenta} anulada exitosamente. ${venta.Estado === 'confirmada' ? 'Stock devuelto al inventario.' : ''}` 
+    mensaje: `Venta #${idVenta} anulada exitosamente. ${mensajeStock}` 
   };
 };
 
