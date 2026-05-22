@@ -17,26 +17,16 @@ const registrarAuditoria = (modulo) => {
     
     // Sobrescribir res.json
     res.json = function(data) {
-      // Log para depuración
-      console.log(`📌 [Auditoría] Módulo: ${modulo}, URL: ${req.method} ${req.originalUrl}, Success: ${data?.success}`);
-      
       // Solo registrar si la operación fue exitosa
       if (data && data.success === true) {
-        // ✅ Obtener ID del usuario de múltiples fuentes posibles
-        let idUsuario = req.usuario?.id || req.usuario?.Id || req.usuario?.usuarioId;
-        
-        // ✅ Si el usuario es 2 pero no existe, forzar a 1 (solución temporal)
-        if (idUsuario === 2) {
-          console.log("⚠️ [Auditoría] Usuario ID 2 detectado, reemplazando por ID 1");
-          idUsuario = 1;
-        }
-        
+        const idUsuario = req.usuario?.id || req.usuario?.Id || req.usuario?.usuarioId;
         const ip = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress || '0.0.0.0';
         
-        // ✅ Si no hay usuario autenticado, usar ID 1 por defecto
+        // ✅ Si no hay usuario autenticado, no registrar (evita error de foreign key)
         if (!idUsuario) {
-          console.log("⚠️ [Auditoría] Usuario no autenticado, usando ID 1 por defecto");
-          idUsuario = 1;
+          console.log("⚠️ [Auditoría] Omitida - Usuario no autenticado");
+          originalJson.call(this, data);
+          return;
         }
         
         // Determinar la acción basada en el método HTTP y la URL
@@ -69,13 +59,13 @@ const registrarAuditoria = (modulo) => {
           return;
         }
         
-        // Obtener ID de referencia (de params o body)
-        const referenciaId = req.params.id || req.body?.id || null;
+        // Obtener ID de referencia (de params)
+        const referenciaId = req.params.id || null;
         
         // Construir descripción
         let descripcion = `${accion} en ${modulo}`;
         
-        // Descripciones específicas
+        // Descripciones específicas para acciones comunes
         if (url.includes('/stock')) {
           const { tipo, cantidad } = req.body;
           descripcion = `Ajustó stock de ${modulo} ID ${referenciaId}: ${tipo} de ${cantidad} unidades`;
@@ -95,9 +85,7 @@ const registrarAuditoria = (modulo) => {
           descripcion = `${accion} en ${modulo} - ID: ${referenciaId}`;
         }
         
-        console.log(`✅ [Auditoría] Registrando: ${accion} en ${modulo} por usuario ${idUsuario}`);
-        
-        // Registrar en auditoría
+        // Registrar en auditoría (sin await para no bloquear la respuesta)
         auditoriaService.registrarAccion({
           usuario_id: idUsuario,
           modulo: modulo,

@@ -42,7 +42,6 @@ async registrarAccion(data) {
       
       if (admin && admin.length > 0) {
         idUsuarioFinal = 1;
-        console.log("✅ Usando administrador ID 1 para auditoría");
       } else {
         console.log("❌ No hay usuarios activos disponibles para auditoría");
         return { id: null, omitido: true };
@@ -63,7 +62,6 @@ async registrarAccion(data) {
     referencia_id: referencia_id || null
   });
 
-  console.log(`✅ Auditoría registrada: ${accion} en ${modulo} por usuario ${idUsuarioFinal}`);
   return nuevaAccion;
 },
   // Obtener todas las acciones (con filtros y paginación)
