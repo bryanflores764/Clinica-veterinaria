@@ -13,12 +13,10 @@ const filtroFecha = document.getElementById("filtroFecha");
 const btnBuscarHistorial = document.getElementById("btnBuscarHistorial");
 const btnLimpiarHistorial = document.getElementById("btnLimpiarHistorial");
 
-// Obtener token
 function getToken() {
     return localStorage.getItem("token");
 }
 
-// Mostrar mensaje dentro de la tabla
 function mostrarMensaje(mensaje) {
     if (!tablaHistorialAcciones) return;
 
@@ -31,7 +29,47 @@ function mostrarMensaje(mensaje) {
     `;
 }
 
-// Cargar historial desde backend
+function normalizarModulo(modulo) {
+    const modulos = {
+        "Usuarios": "usuarios",
+        "usuarios": "usuarios",
+        "Clientes": "clientes",
+        "clientes": "clientes",
+        "Mascotas": "mascotas",
+        "mascotas": "mascotas",
+        "Productos": "productos",
+        "productos": "productos",
+        "Ventas": "ventas",
+        "ventas": "ventas"
+    };
+
+    return modulos[modulo] || modulo;
+}
+
+function normalizarAccion(accion) {
+    const acciones = {
+        "Crear": "CREATE",
+        "crear": "CREATE",
+        "CREATE": "CREATE",
+
+        "Editar": "UPDATE",
+        "editar": "UPDATE",
+        "UPDATE": "UPDATE",
+
+        "Eliminar": "DELETE",
+        "eliminar": "DELETE",
+        "DELETE": "DELETE",
+
+        "Agregar detalle": "ADD_DETALLE",
+        "ADD_DETALLE": "ADD_DETALLE",
+
+        "Confirmar": "CONFIRMAR",
+        "CONFIRMAR": "CONFIRMAR"
+    };
+
+    return acciones[accion] || accion;
+}
+
 async function cargarHistorialAcciones() {
     console.log("Ejecutando cargarHistorialAcciones");
 
@@ -46,18 +84,16 @@ async function cargarHistorialAcciones() {
 
         const params = new URLSearchParams();
 
-        // Backend espera usuario_id, pero el input dice usuario.
-        // Si escribís un número, se manda como usuario_id.
         if (filtroUsuario && filtroUsuario.value.trim() !== "") {
             params.append("usuario_id", filtroUsuario.value.trim());
         }
 
         if (filtroModulo && filtroModulo.value !== "") {
-            params.append("modulo", filtroModulo.value);
+            params.append("modulo", normalizarModulo(filtroModulo.value));
         }
 
         if (filtroAccion && filtroAccion.value !== "") {
-            params.append("accion", filtroAccion.value);
+            params.append("accion", normalizarAccion(filtroAccion.value));
         }
 
         if (filtroFecha && filtroFecha.value !== "") {
@@ -94,7 +130,9 @@ async function cargarHistorialAcciones() {
             ? resultado
             : resultado.data || resultado.historial || resultado.auditoria || [];
 
-        mostrarHistorial(datos);
+        const datosFiltrados = filtrarDatosLocalmente(datos);
+
+        mostrarHistorial(datosFiltrados);
 
     } catch (error) {
         console.error("Error al cargar historial:", error);
@@ -102,7 +140,68 @@ async function cargarHistorialAcciones() {
     }
 }
 
-// Mostrar datos en la tabla
+function filtrarDatosLocalmente(datos) {
+    let datosFiltrados = datos;
+
+    const usuarioFiltro = filtroUsuario ? filtroUsuario.value.trim().toLowerCase() : "";
+    const moduloFiltro = filtroModulo ? normalizarModulo(filtroModulo.value.trim()).toLowerCase() : "";
+    const accionFiltro = filtroAccion ? normalizarAccion(filtroAccion.value.trim()).toUpperCase() : "";
+    const fechaFiltro = filtroFecha ? filtroFecha.value : "";
+
+    if (usuarioFiltro !== "") {
+        datosFiltrados = datosFiltrados.filter((item) => {
+            const usuario = String(
+                item.usuario_nombre ||
+                item.usuario ||
+                item.Nombre_Usuario ||
+                item.nombre_usuario ||
+                item.usuario_id ||
+                ""
+            ).toLowerCase();
+
+            return usuario.includes(usuarioFiltro);
+        });
+    }
+
+    if (moduloFiltro !== "") {
+        datosFiltrados = datosFiltrados.filter((item) => {
+            const modulo = String(
+                item.modulo ||
+                item.Modulo ||
+                ""
+            ).toLowerCase();
+
+            return modulo === moduloFiltro;
+        });
+    }
+
+    if (accionFiltro !== "") {
+        datosFiltrados = datosFiltrados.filter((item) => {
+            const accion = String(
+                item.accion ||
+                item.Accion ||
+                ""
+            ).toUpperCase();
+
+            return accion === accionFiltro;
+        });
+    }
+
+    if (fechaFiltro !== "") {
+        datosFiltrados = datosFiltrados.filter((item) => {
+            const fecha = item.fecha || item.Fecha || item.created_at || item.createdAt || "";
+
+            if (!fecha) return false;
+
+            const fechaItem = new Date(fecha).toISOString().split("T")[0];
+
+            return fechaItem === fechaFiltro;
+        });
+    }
+
+    return datosFiltrados;
+}
+
 function mostrarHistorial(datos) {
     if (!tablaHistorialAcciones) return;
 
@@ -150,10 +249,10 @@ function mostrarHistorial(datos) {
             <td>${usuario}</td>
             <td>
                 <span class="badge-accion ${String(accion).toLowerCase()}">
-                    ${accion}
+                    ${formatearAccion(accion)}
                 </span>
             </td>
-            <td>${modulo}</td>
+            <td>${formatearModulo(modulo)}</td>
             <td>${descripcion}</td>
             <td>${formatearFecha(fecha)}</td>
         `;
@@ -162,7 +261,6 @@ function mostrarHistorial(datos) {
     });
 }
 
-// Limpiar filtros
 function limpiarFiltros() {
     console.log("Limpiando filtros");
 
@@ -174,7 +272,35 @@ function limpiarFiltros() {
     cargarHistorialAcciones();
 }
 
-// Formatear fecha
+function formatearAccion(accion) {
+    const acciones = {
+        "CREATE": "Crear",
+        "UPDATE": "Editar",
+        "DELETE": "Eliminar",
+        "ADD_DETALLE": "Agregar detalle",
+        "CONFIRMAR": "Confirmar"
+    };
+
+    return acciones[accion] || accion;
+}
+
+function formatearModulo(modulo) {
+    const modulos = {
+        "usuarios": "Usuarios",
+        "Usuarios": "Usuarios",
+        "clientes": "Clientes",
+        "Clientes": "Clientes",
+        "mascotas": "Mascotas",
+        "Mascotas": "Mascotas",
+        "productos": "Productos",
+        "Productos": "Productos",
+        "ventas": "Ventas",
+        "Ventas": "Ventas"
+    };
+
+    return modulos[modulo] || modulo;
+}
+
 function formatearFecha(fecha) {
     if (!fecha) {
         return "Sin fecha";
@@ -193,7 +319,6 @@ function formatearFecha(fecha) {
     });
 }
 
-// Eventos
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM cargado en historial-acciones");
 
