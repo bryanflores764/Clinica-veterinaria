@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico" type="image/x-icon">
-    <link rel="stylesheet" href="../../css/veterinario/interfazveterinario.css">
+    <link rel="stylesheet" href="../../css/veterinario/interfazPacientes.css"> 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
-    <title>VETERINARIO</title>
+    <title>Veterinario - Pacientes</title>
 </head>
 <body>
     <div class="layout">
@@ -25,7 +25,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="interfazPacientes.html">
+                    <a href="#">
                         <img src="../../assets/icons/icon-pacientes.svg" alt="pacientes">
                         Pacientes
                     </a>
@@ -46,8 +46,8 @@
             </ul>
         </aside>
 
-        <header class="header"> <!--Solo Cuadrante-->
-            <h1>Bienvenido, Veterinari@</h1>
+        <header class="header">
+            <h1>Pacientes</h1>
             <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">
                 ☰
             </button>
@@ -60,15 +60,45 @@
         </header>
 
         <main class="main">
-            <header class="header-main">
-                <h1></h1>
-                <span></span>
-            </header>
-            
+
+            <section class="main-container">
+
+                <div class="table-container">
+
+                    <div class="table-header">
+                        <input id="search" class="search" type="text" placeholder="Buscar por nombre o propietario">
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Especie</th>
+                                    <th>Raza</th>
+                                    <th>Peso (lbs)</th>
+                                    <th>Fecha de nacimiento</th>
+                                    <th>Propietario</th>
+                                    <th class="actions-col">Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="users-tbody">
+                                <!-- JS inyecta filas -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p id="empty-msg" class="empty-msg" style="display:none;">No hay pacientes para mostrar</p>
+
+                </div>
+
+            </section>
+
         </main>
 
     </div>
-    <script src="../../js/veterinario/logout.js"></script> <!--Ruta Hacias JS-->
-    <script src="../../js/veterinario/interfazveterinario.js"></script><!--Ruta Hacias JS-->
+    <script src="../../js/veterinario/logout.js"></script>
+    <script src="../../js/veterinario/interfazPacientes.js"></script>
 </body>
 </html>
