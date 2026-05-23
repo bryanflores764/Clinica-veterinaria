@@ -652,6 +652,43 @@ body {
 }
 
 /* ============================================================
+   Botones eliminar registros clínicos
+============================================================ */
+.historial-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-eliminar-historial,
+.btn-eliminar-consulta,
+.btn-eliminar-confirmar {
+    border: none;
+    border-radius: 8px;
+    padding: 7px 14px;
+    background-color: #d93025;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-eliminar-historial:hover,
+.btn-eliminar-consulta:hover,
+.btn-eliminar-confirmar:hover {
+    background-color: #b3261e;
+}
+
+.consulta-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.modal-confirmacion-content {
+    max-width: 440px;
+}
+
+/* ============================================================
    tablet y móvil mediano
 ============================================================ */
 @media (max-width: 900px) {
@@ -758,6 +795,26 @@ body {
 
     .form-consulta .modal-actions {
         flex-direction: column;
+    }
+
+    .historial-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .btn-editar-historial,
+    .btn-eliminar-historial {
+        width: 100%;
+    }
+
+    .consulta-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-editar-consulta,
+    .btn-eliminar-consulta {
+        width: 100%;
     }
 }
 

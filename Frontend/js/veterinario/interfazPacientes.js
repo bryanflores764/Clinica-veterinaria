@@ -54,15 +54,28 @@ const btnSubmitHistorial = document.getElementById("btn-submit-historial");
 const tituloModalConsulta = document.getElementById("titulo-modal-consulta");
 const btnSubmitConsulta = document.getElementById("btn-submit-consulta");
 
+const btnEliminarHistorial = document.getElementById("btn-eliminar-historial");
+
+const modalConfirmacion = document.getElementById("modal-confirmacion");
+const btnCerrarModalConfirmacion = document.getElementById("cerrar-modal-confirmacion");
+const btnCancelarConfirmacion = document.getElementById("cancelar-confirmacion");
+const btnConfirmarEliminacion = document.getElementById("confirmar-eliminacion");
+const tituloConfirmacion = document.getElementById("titulo-confirmacion");
+const mensajeConfirmacion = document.getElementById("mensaje-confirmacion");
+
 // Datos en memoria
 let mascotas = [];
 let consultasHistorialActual = [];
 let historialActualId = null;
 let mascotaActual = null;
 let historialActual = null;
+
 let modoHistorial = "crear";
 let modoConsulta = "crear";
 let consultaActualId = null;
+
+let tipoEliminacion = null;
+let idEliminacion = null;
 
 // ============================================================
 // Sesión
@@ -297,14 +310,11 @@ function abrirModalEditarHistorial() {
     inputMascotaIdHistorial.value = mascotaActual.Id || historialActual.mascota_id || "";
     inputMascotaNombreHistorial.value = mascotaActual.Nombre || historialActual.mascota_nombre || "";
 
-    inputMotivo.value = historialActual.motivo || "";
-    inputDiagnosticoInicial.value = historialActual.diagnostico_inicial || "";
-    inputObservaciones.value = historialActual.observaciones || "";
+    inputMotivo.value = historialActual.motivo || historialActual.Motivo || "";
+    inputDiagnosticoInicial.value = historialActual.diagnostico_inicial || historialActual.Diagnostico_Inicial || "";
+    inputObservaciones.value = historialActual.observaciones || historialActual.Observaciones || "";
 
-    // Oculta solo visualmente el modal de detalle.
-    // No usamos cerrarModalDetalleHistorial() porque limpiaría los datos actuales.
     modalDetalleHistorial.classList.remove("show");
-
     modalHistorial.classList.add("show");
 }
 
@@ -319,9 +329,9 @@ async function abrirModalDetalleHistorial(mascota, historial) {
     detalleMascotaRaza.textContent = mascota.Nombre_Raza || "-";
     detalleMascotaPropietario.textContent = mascota.Propietario || "-";
 
-    detalleMotivo.textContent = historial.motivo || "-";
-    detalleDiagnosticoInicial.textContent = historial.diagnostico_inicial || "-";
-    detalleObservaciones.textContent = historial.observaciones || "-";
+    detalleMotivo.textContent = historial.motivo || historial.Motivo || "-";
+    detalleDiagnosticoInicial.textContent = historial.diagnostico_inicial || historial.Diagnostico_Inicial || "-";
+    detalleObservaciones.textContent = historial.observaciones || historial.Observaciones || "-";
 
     modalDetalleHistorial.classList.add("show");
 
@@ -389,8 +399,8 @@ async function cargarConsultasHistorial(historialId) {
         consultasHistorialActual = Array.isArray(resultado.data) ? resultado.data : [];
 
         consultasHistorialActual.sort((a, b) => {
-            const fechaA = new Date(a.fecha || a.Fecha || a.Fecha_Consulta || 0);
-            const fechaB = new Date(b.fecha || b.Fecha || b.Fecha_Consulta || 0);
+            const fechaA = obtenerFechaOrdenable(obtenerFechaConsulta(a));
+            const fechaB = obtenerFechaOrdenable(obtenerFechaConsulta(b));
 
             return fechaA - fechaB;
         });
@@ -420,7 +430,7 @@ function renderizarConsultas(consultas) {
 
         const consultaId = consulta.id || consulta.Id || consulta.consulta_id || consulta.ConsultaId;
 
-        const fechaConsulta = consulta.fecha || consulta.Fecha || consulta.Fecha_Consulta;
+        const fechaConsulta = obtenerFechaConsulta(consulta);
         const sintomas = consulta.sintomas || consulta.Sintomas || "-";
         const diagnostico = consulta.diagnostico || consulta.Diagnostico || "-";
         const tratamiento = consulta.tratamiento || consulta.Tratamiento || "-";
@@ -428,14 +438,23 @@ function renderizarConsultas(consultas) {
 
         item.innerHTML = `
             <div class="consulta-header">
-                <h4>Consulta del ${formatearFecha(fechaConsulta)}</h4>
+                <h4>Consulta del ${formatearFechaHora(fechaConsulta)}</h4>
 
-                <button 
-                    type="button" 
-                    class="btn-editar-consulta"
-                    data-id="${consultaId}">
-                    Editar
-                </button>
+                <div class="consulta-actions">
+                    <button 
+                        type="button" 
+                        class="btn-editar-consulta"
+                        data-id="${consultaId}">
+                        Editar
+                    </button>
+
+                    <button 
+                        type="button" 
+                        class="btn-eliminar-consulta"
+                        data-id="${consultaId}">
+                        Eliminar
+                    </button>
+                </div>
             </div>
 
             <p><strong>Síntomas:</strong> ${escapeHtml(sintomas)}</p>
@@ -464,6 +483,13 @@ function abrirModalConsulta() {
 
     inputConsultaHistorialId.value = historialActualId;
 
+    if (inputConsultaFecha) {
+        inputConsultaFecha.value = "";
+        inputConsultaFecha.disabled = true;
+        inputConsultaFecha.required = false;
+        inputConsultaFecha.placeholder = "Se asignará automáticamente";
+    }
+
     modalConsulta.classList.add("show");
 }
 
@@ -483,9 +509,11 @@ function abrirModalEditarConsulta(consulta) {
 
     inputConsultaHistorialId.value = historialActualId || "";
 
-    inputConsultaFecha.value = convertirFechaParaInput(
-        consulta.fecha || consulta.Fecha || consulta.Fecha_Consulta
-    );
+    if (inputConsultaFecha) {
+        inputConsultaFecha.value = convertirFechaParaInput(obtenerFechaConsulta(consulta));
+        inputConsultaFecha.disabled = true;
+        inputConsultaFecha.required = false;
+    }
 
     inputConsultaSintomas.value = consulta.sintomas || consulta.Sintomas || "";
     inputConsultaDiagnostico.value = consulta.diagnostico || consulta.Diagnostico || "";
@@ -498,6 +526,11 @@ function abrirModalEditarConsulta(consulta) {
 function cerrarModalConsulta() {
     modalConsulta.classList.remove("show");
     limpiarFormularioConsulta();
+
+    if (inputConsultaFecha) {
+        inputConsultaFecha.disabled = false;
+        inputConsultaFecha.required = false;
+    }
 
     modoConsulta = "crear";
     consultaActualId = null;
@@ -523,11 +556,19 @@ function configurarModalConsulta() {
     });
 
     listaConsultas.addEventListener("click", (e) => {
-        const boton = e.target.closest(".btn-editar-consulta");
+        const botonEliminar = e.target.closest(".btn-eliminar-consulta");
 
-        if (!boton) return;
+        if (botonEliminar) {
+            const consultaId = botonEliminar.dataset.id;
+            abrirConfirmacionEliminar("consulta", consultaId);
+            return;
+        }
 
-        const consultaId = boton.dataset.id;
+        const botonEditar = e.target.closest(".btn-editar-consulta");
+
+        if (!botonEditar) return;
+
+        const consultaId = botonEditar.dataset.id;
 
         const consultaSeleccionada = consultasHistorialActual.find((consulta) => {
             const id = consulta.id || consulta.Id || consulta.consulta_id || consulta.ConsultaId;
@@ -544,14 +585,12 @@ async function guardarConsultaMedica(e) {
     e.preventDefault();
 
     const historialId = inputConsultaHistorialId.value;
-    const fecha = inputConsultaFecha.value;
     const sintomas = inputConsultaSintomas.value.trim();
     const diagnostico = inputConsultaDiagnostico.value.trim();
     const tratamiento = inputConsultaTratamiento.value.trim();
     const observaciones = inputConsultaObservaciones.value.trim();
 
     const formularioValido = validarFormularioConsulta({
-        fecha,
         sintomas,
         diagnostico,
         tratamiento,
@@ -562,7 +601,6 @@ async function guardarConsultaMedica(e) {
 
     if (modoConsulta === "editar") {
         await actualizarConsultaMedica({
-            fecha,
             sintomas,
             diagnostico,
             tratamiento,
@@ -581,11 +619,11 @@ async function guardarConsultaMedica(e) {
 
     const datosConsulta = {
         historial_id: Number(historialId),
-        fecha: fecha,
-        sintomas: sintomas,
-        diagnostico: diagnostico,
-        tratamiento: tratamiento,
-        observaciones: observaciones,
+        fecha: obtenerFechaActualParaApi(),
+        sintomas,
+        diagnostico,
+        tratamiento,
+        observaciones,
         veterinario_id: Number(veterinarioId)
     };
 
@@ -628,7 +666,6 @@ async function actualizarConsultaMedica(datos) {
     }
 
     const datosConsulta = {
-        fecha: datos.fecha,
         sintomas: datos.sintomas,
         diagnostico: datos.diagnostico,
         tratamiento: datos.tratamiento,
@@ -670,6 +707,132 @@ async function actualizarConsultaMedica(datos) {
 }
 
 // ============================================================
+// Confirmación y eliminación
+// ============================================================
+
+function abrirConfirmacionEliminar(tipo, id) {
+    tipoEliminacion = tipo;
+    idEliminacion = id;
+
+    if (tipo === "historial") {
+        tituloConfirmacion.textContent = "Eliminar historial clínico";
+        mensajeConfirmacion.textContent = "¿Está seguro de eliminar el historial clínico de esta mascota? Esta acción ocultará el historial registrado.";
+    }
+
+    if (tipo === "consulta") {
+        tituloConfirmacion.textContent = "Eliminar consulta médica";
+        mensajeConfirmacion.textContent = "¿Está seguro de eliminar esta consulta médica del historial clínico?";
+    }
+
+    modalConfirmacion.classList.add("show");
+}
+
+function cerrarConfirmacionEliminar() {
+    modalConfirmacion.classList.remove("show");
+
+    tipoEliminacion = null;
+    idEliminacion = null;
+
+    tituloConfirmacion.textContent = "Confirmar eliminación";
+    mensajeConfirmacion.textContent = "¿Está seguro de eliminar este registro?";
+}
+
+async function confirmarEliminacionRegistro() {
+    if (!tipoEliminacion || !idEliminacion) {
+        alert("No se encontró el registro a eliminar.");
+        return;
+    }
+
+    if (tipoEliminacion === "historial") {
+        await eliminarHistorialClinico(idEliminacion);
+        return;
+    }
+
+    if (tipoEliminacion === "consulta") {
+        await eliminarConsultaMedica(idEliminacion);
+    }
+}
+
+async function eliminarHistorialClinico(historialId) {
+    try {
+        const respuesta = await fetch(`${URL_API}/api/historial/${historialId}`, {
+            method: "DELETE",
+            headers: obtenerEncabezados()
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(resultado.message || "No se pudo eliminar el historial clínico.");
+        }
+
+        alert("Historial clínico eliminado correctamente.");
+
+        cerrarConfirmacionEliminar();
+        cerrarModalDetalleHistorial();
+
+    } catch (error) {
+        console.error("Error al eliminar historial clínico:", error);
+        alert(error.message || "Ocurrió un error al eliminar el historial clínico.");
+    }
+}
+
+async function eliminarConsultaMedica(consultaId) {
+    try {
+        const respuesta = await fetch(`${URL_API}/api/historial/consultas/${consultaId}`, {
+            method: "DELETE",
+            headers: obtenerEncabezados()
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(resultado.message || "No se pudo eliminar la consulta médica.");
+        }
+
+        alert("Consulta médica eliminada correctamente.");
+
+        consultasHistorialActual = consultasHistorialActual.filter((consulta) => {
+            const id = consulta.id || consulta.Id || consulta.consulta_id || consulta.ConsultaId;
+            return String(id) !== String(consultaId);
+        });
+
+        renderizarConsultas(consultasHistorialActual);
+        cerrarConfirmacionEliminar();
+
+    } catch (error) {
+        console.error("Error al eliminar consulta médica:", error);
+        alert(error.message || "Ocurrió un error al eliminar la consulta médica.");
+    }
+}
+
+function configurarModalConfirmacion() {
+    btnCerrarModalConfirmacion.addEventListener("click", cerrarConfirmacionEliminar);
+    btnCancelarConfirmacion.addEventListener("click", cerrarConfirmacionEliminar);
+    btnConfirmarEliminacion.addEventListener("click", confirmarEliminacionRegistro);
+
+    modalConfirmacion.addEventListener("click", (e) => {
+        if (e.target === modalConfirmacion) {
+            cerrarConfirmacionEliminar();
+        }
+    });
+}
+
+// ============================================================
 // Filtros
 // ============================================================
 
@@ -685,7 +848,7 @@ function configurarFiltrosConsultas() {
         }
 
         const consultasFiltradas = consultasHistorialActual.filter((consulta) => {
-            const fechaConsulta = consulta.fecha || consulta.Fecha || consulta.Fecha_Consulta;
+            const fechaConsulta = obtenerFechaConsulta(consulta);
 
             if (!fechaConsulta) return false;
 
@@ -714,7 +877,6 @@ function cerrarModalCrearHistorial() {
     tituloModalHistorial.textContent = "Crear historial clínico";
     btnSubmitHistorial.textContent = "Guardar historial";
 
-    // Si se cerró el modal de edición sin guardar, regresa al detalle.
     if (historialActual && mascotaActual && !modalDetalleHistorial.classList.contains("show")) {
         modalDetalleHistorial.classList.add("show");
     }
@@ -731,6 +893,15 @@ function configurarModalHistorial() {
 
     btnCerrarModalDetalleHistorial.addEventListener("click", cerrarModalDetalleHistorial);
     btnEditarHistorial.addEventListener("click", abrirModalEditarHistorial);
+
+    btnEliminarHistorial.addEventListener("click", () => {
+        if (!historialActualId) {
+            alert("No se encontró el historial clínico seleccionado.");
+            return;
+        }
+
+        abrirConfirmacionEliminar("historial", historialActualId);
+    });
 
     modalHistorial.addEventListener("click", (e) => {
         if (e.target === modalHistorial) {
@@ -755,6 +926,10 @@ function configurarModalHistorial() {
 
         if (e.key === "Escape" && modalConsulta.classList.contains("show")) {
             cerrarModalConsulta();
+        }
+
+        if (e.key === "Escape" && modalConfirmacion.classList.contains("show")) {
+            cerrarConfirmacionEliminar();
         }
     });
 
@@ -796,9 +971,9 @@ async function guardarHistorialClinico(e) {
 
     const datosHistorial = {
         mascota_id: Number(mascotaId),
-        motivo: motivo,
+        motivo,
         diagnostico_inicial: diagnosticoInicial,
-        observaciones: observaciones,
+        observaciones,
         veterinario_id: Number(veterinarioId)
     };
 
@@ -936,11 +1111,6 @@ function validarFormularioConsulta(datos) {
 
     let valido = true;
 
-    if (!datos.fecha) {
-        mostrarErrorCampoConsulta(inputConsultaFecha, "La fecha y hora son obligatorias.");
-        valido = false;
-    }
-
     if (!datos.sintomas) {
         mostrarErrorCampoConsulta(inputConsultaSintomas, "Los síntomas son obligatorios.");
         valido = false;
@@ -1026,46 +1196,144 @@ function obtenerVeterinarioId() {
     }
 }
 
-function formatearFecha(fecha) {
-    if (!fecha) return "";
+function obtenerFechaConsulta(consulta) {
+    return consulta.fecha
+        || consulta.Fecha
+        || consulta.fecha_consulta
+        || consulta.Fecha_Consulta
+        || consulta.fecha_hora
+        || consulta.FechaHora
+        || consulta.Fecha_Hora
+        || "";
+}
 
-    const fechaObj = new Date(fecha);
+function obtenerFechaActualParaApi() {
+    const ahora = new Date();
 
-    if (isNaN(fechaObj.getTime())) return "";
+    const anio = ahora.getFullYear();
+    const mes = String(ahora.getMonth() + 1).padStart(2, "0");
+    const dia = String(ahora.getDate()).padStart(2, "0");
+    const hora = String(ahora.getHours()).padStart(2, "0");
+    const minutos = String(ahora.getMinutes()).padStart(2, "0");
+    const segundos = String(ahora.getSeconds()).padStart(2, "0");
 
-    const dia = String(fechaObj.getDate()).padStart(2, "0");
-    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
-    const anio = fechaObj.getFullYear();
+    return `${anio}-${mes}-${dia}T${hora}:${minutos}:${segundos}`;
+}
 
-    return `${dia}-${mes}-${anio}`;
+function normalizarFechaParaApi(fechaInput) {
+    if (!fechaInput) return "";
+
+    const fechaLimpia = String(fechaInput).trim();
+
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(fechaLimpia)) {
+        return `${fechaLimpia}:00`;
+    }
+
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(fechaLimpia)) {
+        return fechaLimpia;
+    }
+
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(fechaLimpia)) {
+        return fechaLimpia.replace(" ", "T");
+    }
+
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(fechaLimpia)) {
+        return `${fechaLimpia.replace(" ", "T")}:00`;
+    }
+
+    return "";
 }
 
 function convertirFechaParaInput(fecha) {
     if (!fecha) return "";
 
-    const fechaObj = new Date(fecha);
+    const fechaTexto = String(fecha).trim();
 
-    if (isNaN(fechaObj.getTime())) return "";
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(fechaTexto)) {
+        return fechaTexto.slice(0, 16);
+    }
 
-    const anio = fechaObj.getFullYear();
-    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
-    const dia = String(fechaObj.getDate()).padStart(2, "0");
-    const hora = String(fechaObj.getHours()).padStart(2, "0");
-    const minutos = String(fechaObj.getMinutes()).padStart(2, "0");
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(fechaTexto)) {
+        const [fechaParte, horaParte] = fechaTexto.split(" ");
+        return `${fechaParte}T${horaParte.slice(0, 5)}`;
+    }
 
-    return `${anio}-${mes}-${dia}T${hora}:${minutos}`;
+    return "";
+}
+
+function obtenerFechaOrdenable(fecha) {
+    if (!fecha) return 0;
+
+    const fechaNormalizada = String(fecha).replace(" ", "T");
+    const fechaObj = new Date(fechaNormalizada);
+
+    if (isNaN(fechaObj.getTime())) return 0;
+
+    return fechaObj.getTime();
+}
+
+function formatearFecha(fecha) {
+    if (!fecha) return "";
+
+    const fechaTexto = String(fecha);
+    const soloFecha = fechaTexto.split("T")[0].split(" ")[0];
+    const partes = soloFecha.split("-");
+
+    if (partes.length === 3) {
+        const [anio, mes, dia] = partes;
+        return `${dia}-${mes}-${anio}`;
+    }
+
+    return "";
+}
+
+function formatearFechaHora(fecha) {
+    if (!fecha) return "";
+
+    const fechaTexto = String(fecha).trim();
+
+    let fechaParte = "";
+    let horaParte = "";
+
+    if (fechaTexto.includes("T")) {
+        const partes = fechaTexto.split("T");
+        fechaParte = partes[0];
+        horaParte = partes[1] || "";
+    } else if (fechaTexto.includes(" ")) {
+        const partes = fechaTexto.split(" ");
+        fechaParte = partes[0];
+        horaParte = partes[1] || "";
+    } else {
+        return formatearFecha(fechaTexto);
+    }
+
+    const partesFecha = fechaParte.split("-");
+
+    if (partesFecha.length !== 3) {
+        return formatearFecha(fechaTexto);
+    }
+
+    const [anio, mes, dia] = partesFecha;
+    const horaCorta = horaParte.slice(0, 5);
+
+    if (!horaCorta) {
+        return `${dia}-${mes}-${anio}`;
+    }
+
+    return `${dia}-${mes}-${anio} ${horaCorta}`;
 }
 
 function obtenerFechaInput(fecha) {
-    const fechaObj = new Date(fecha);
+    if (!fecha) return "";
 
-    if (isNaN(fechaObj.getTime())) return "";
+    const fechaTexto = String(fecha);
+    const soloFecha = fechaTexto.split("T")[0].split(" ")[0];
 
-    const anio = fechaObj.getFullYear();
-    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
-    const dia = String(fechaObj.getDate()).padStart(2, "0");
+    if (/^\d{4}-\d{2}-\d{2}$/.test(soloFecha)) {
+        return soloFecha;
+    }
 
-    return `${anio}-${mes}-${dia}`;
+    return "";
 }
 
 function formatearPeso(peso) {
@@ -1100,6 +1368,7 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarBotonHistorial();
     configurarModalHistorial();
     configurarModalConsulta();
+    configurarModalConfirmacion();
     configurarFiltrosConsultas();
     cargarMascotas();
 });
