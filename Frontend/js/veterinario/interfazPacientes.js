@@ -1244,30 +1244,89 @@ function normalizarFechaParaApi(fechaInput) {
     return "";
 }
 
-function convertirFechaParaInput(fecha) {
-    if (!fecha) return "";
+/*
+    IMPORTANTE:
+    Tu backend/base de datos está devolviendo las consultas con un desfase de +12 horas.
+    Ejemplo:
+    - Hora real: 23/05/2026 14:57
+    - Hora recibida: 24/05/2026 02:57
+
+    Esta función corrige ese desfase SOLO al mostrar, filtrar y ordenar las consultas.
+    Cuando arreglen la zona horaria en backend/MySQL, quitá esta línea:
+    fechaObj.setHours(fechaObj.getHours() - 12);
+*/
+function ajustarFechaConsulta(fecha) {
+    if (!fecha) return null;
 
     const fechaTexto = String(fecha).trim();
 
-    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(fechaTexto)) {
-        return fechaTexto.slice(0, 16);
+    // Normalizamos la fecha para trabajarla manualmente
+    // y evitar que JavaScript aplique zona horaria automáticamente.
+    const fechaLimpia = fechaTexto
+        .replace(" ", "T")
+        .replace("Z", "");
+
+    const partes = fechaLimpia.split("T");
+
+    if (partes.length < 2) return null;
+
+    const fechaParte = partes[0];
+    const horaParte = partes[1];
+
+    const partesFecha = fechaParte.split("-");
+    const partesHora = horaParte.split(":");
+
+    if (partesFecha.length !== 3 || partesHora.length < 2) {
+        return null;
     }
 
-    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(fechaTexto)) {
-        const [fechaParte, horaParte] = fechaTexto.split(" ");
-        return `${fechaParte}T${horaParte.slice(0, 5)}`;
+    const anio = Number(partesFecha[0]);
+    const mes = Number(partesFecha[1]) - 1;
+    const dia = Number(partesFecha[2]);
+
+    const hora = Number(partesHora[0]);
+    const minutos = Number(partesHora[1]);
+    const segundos = Number(partesHora[2]?.split(".")[0] || 0);
+
+    if (
+        isNaN(anio) ||
+        isNaN(mes) ||
+        isNaN(dia) ||
+        isNaN(hora) ||
+        isNaN(minutos) ||
+        isNaN(segundos)
+    ) {
+        return null;
     }
 
-    return "";
+    // Creamos la fecha como hora local, NO como UTC.
+    const fechaObj = new Date(anio, mes, dia, hora, minutos, segundos);
+
+    // Corrección temporal por desfase de backend/MySQL:
+    // La fecha está viniendo 12 horas adelantada.
+    fechaObj.setHours(fechaObj.getHours() - 12);
+
+    return fechaObj;
+}
+
+function convertirFechaParaInput(fecha) {
+    const fechaObj = ajustarFechaConsulta(fecha);
+
+    if (!fechaObj) return "";
+
+    const anio = fechaObj.getFullYear();
+    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
+    const dia = String(fechaObj.getDate()).padStart(2, "0");
+    const hora = String(fechaObj.getHours()).padStart(2, "0");
+    const minutos = String(fechaObj.getMinutes()).padStart(2, "0");
+
+    return `${anio}-${mes}-${dia}T${hora}:${minutos}`;
 }
 
 function obtenerFechaOrdenable(fecha) {
-    if (!fecha) return 0;
+    const fechaObj = ajustarFechaConsulta(fecha);
 
-    const fechaNormalizada = String(fecha).replace(" ", "T");
-    const fechaObj = new Date(fechaNormalizada);
-
-    if (isNaN(fechaObj.getTime())) return 0;
+    if (!fechaObj) return 0;
 
     return fechaObj.getTime();
 }
@@ -1275,7 +1334,8 @@ function obtenerFechaOrdenable(fecha) {
 function formatearFecha(fecha) {
     if (!fecha) return "";
 
-    const fechaTexto = String(fecha);
+    const fechaTexto = String(fecha).trim();
+
     const soloFecha = fechaTexto.split("T")[0].split(" ")[0];
     const partes = soloFecha.split("-");
 
@@ -1288,67 +1348,30 @@ function formatearFecha(fecha) {
 }
 
 function formatearFechaHora(fecha) {
-    if (!fecha) return "";
+    const fechaObj = ajustarFechaConsulta(fecha);
 
-    const fechaTexto = String(fecha).trim();
+    if (!fechaObj) return "";
 
-    let fechaParte = "";
-    let horaParte = "";
+    const dia = String(fechaObj.getDate()).padStart(2, "0");
+    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
+    const anio = fechaObj.getFullYear();
 
-    if (fechaTexto.includes("T")) {
-        const partes = fechaTexto.split("T");
-        fechaParte = partes[0];
-        horaParte = partes[1] || "";
-    } else if (fechaTexto.includes(" ")) {
-        const partes = fechaTexto.split(" ");
-        fechaParte = partes[0];
-        horaParte = partes[1] || "";
-    } else {
-        return formatearFecha(fechaTexto);
-    }
+    const hora = String(fechaObj.getHours()).padStart(2, "0");
+    const minutos = String(fechaObj.getMinutes()).padStart(2, "0");
 
-    const partesFecha = fechaParte.split("-");
-
-    if (partesFecha.length !== 3) {
-        return formatearFecha(fechaTexto);
-    }
-
-    const [anio, mes, dia] = partesFecha;
-
-    if (!horaParte) {
-        return `${dia}-${mes}-${anio}`;
-    }
-
-    const partesHora = horaParte.split(":");
-    let hora = Number(partesHora[0]);
-    const minutos = partesHora[1] || "00";
-
-    if (isNaN(hora)) {
-        return `${dia}-${mes}-${anio}`;
-    }
-
-    const periodo = hora >= 12 ? "AM" : "PM";
-
-    hora = hora % 12;
-
-    if (hora === 0) {
-        hora = 12;
-    }
-
-    return `${dia}-${mes}-${anio} ${hora}:${minutos} ${periodo}`;
+    return `${dia}-${mes}-${anio} ${hora}:${minutos}`;
 }
 
 function obtenerFechaInput(fecha) {
-    if (!fecha) return "";
+    const fechaObj = ajustarFechaConsulta(fecha);
 
-    const fechaTexto = String(fecha);
-    const soloFecha = fechaTexto.split("T")[0].split(" ")[0];
+    if (!fechaObj) return "";
 
-    if (/^\d{4}-\d{2}-\d{2}$/.test(soloFecha)) {
-        return soloFecha;
-    }
+    const anio = fechaObj.getFullYear();
+    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
+    const dia = String(fechaObj.getDate()).padStart(2, "0");
 
-    return "";
+    return `${anio}-${mes}-${dia}`;
 }
 
 function formatearPeso(peso) {
