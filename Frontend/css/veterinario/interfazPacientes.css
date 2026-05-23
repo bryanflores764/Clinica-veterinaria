@@ -461,6 +461,165 @@ body {
     background-color: #348c3a;
 }
 
+/* ============================================================
+   Modal detalle historial clínico
+============================================================ */
+.modal-content-detalle {
+    max-width: 900px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+
+.detalle-historial {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.detalle-card {
+    background-color: #f8fbf8;
+    border: 1px solid #e0e6e0;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.detalle-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.detalle-card-header h3 {
+    font-size: 22px;
+    color: #111111;
+}
+
+.detalle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.detalle-grid span {
+    display: block;
+    font-weight: 800;
+    color: #444444;
+    font-size: 15px;
+}
+
+.detalle-grid p {
+    background-color: #ffffff;
+    border: 1px solid #e3e3e3;
+    border-radius: 8px;
+    padding: 10px;
+    min-height: 42px;
+    color: #222222;
+}
+
+.detalle-full {
+    grid-column: 1 / -1;
+}
+
+.btn-editar-historial {
+    border: none;
+    border-radius: 8px;
+    padding: 7px 14px;
+    background-color: #0071bc;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.filtros-historial {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.filtros-historial input {
+    border: 1px solid #d7d7d7;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 15px;
+    outline: none;
+}
+
+.filtros-historial input:focus {
+    border-color: #42ab49;
+    box-shadow: 0 0 0 3px rgba(66, 171, 73, 0.12);
+}
+
+.btn-limpiar-filtro {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background-color: #e5e5e5;
+    color: #222222;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-limpiar-filtro:hover {
+    background-color: #d5d5d5;
+}
+
+.lista-consultas {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.consulta-item {
+    background-color: #ffffff;
+    border-left: 5px solid #42ab49;
+    border-radius: 10px;
+    padding: 12px;
+    border-top: 1px solid #eeeeee;
+    border-right: 1px solid #eeeeee;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.consulta-item h4 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #111111;
+}
+
+.consulta-item p {
+    margin-bottom: 5px;
+    color: #333333;
+}
+
+.consulta-item strong {
+    color: #111111;
+}
+
+.consultas-empty-msg {
+    margin-top: 12px;
+    text-align: center;
+    color: #777777;
+    font-size: 15px;
+}
+
+@media (max-width: 700px) {
+    .detalle-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filtros-historial {
+        flex-direction: column;
+    }
+
+    .detalle-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
 @media (max-width: 600px) {
     .modal-content {
         padding: 18px;

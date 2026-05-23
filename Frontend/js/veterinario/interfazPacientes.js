@@ -19,9 +19,23 @@ const inputMascotaNombreHistorial = document.getElementById("historial-mascota-n
 const inputMotivo = document.getElementById("motivo");
 const inputDiagnosticoInicial = document.getElementById("diagnostico-inicial");
 const inputObservaciones = document.getElementById("observaciones");
+const modalDetalleHistorial = document.getElementById("modal-detalle-historial");
+const btnCerrarModalDetalleHistorial = document.getElementById("cerrar-modal-detalle-historial");
+const detalleMascotaNombre = document.getElementById("detalle-mascota-nombre");
+const detalleMascotaEspecie = document.getElementById("detalle-mascota-especie");
+const detalleMascotaRaza = document.getElementById("detalle-mascota-raza");
+const detalleMascotaPropietario = document.getElementById("detalle-mascota-propietario");
+const detalleMotivo = document.getElementById("detalle-motivo");
+const detalleDiagnosticoInicial = document.getElementById("detalle-diagnostico-inicial");
+const detalleObservaciones = document.getElementById("detalle-observaciones");
+const listaConsultas = document.getElementById("lista-consultas");
+const consultasEmptyMsg = document.getElementById("consultas-empty-msg");
+const filtroFechaConsulta = document.getElementById("filtro-fecha-consulta");
+const btnLimpiarFiltroConsultas = document.getElementById("limpiar-filtro-consultas");
 
 // Datos en memoria
 let mascotas = [];
+let consultasHistorialActual = [];
 
 // ============================================================
 // Sesión
@@ -203,9 +217,14 @@ async function verificarHistorialMascota(mascota) {
         const resultado = await respuesta.json();
 
         if (respuesta.ok && resultado.data) {
-            alert("Esta mascota ya tiene un historial clínico registrado.");
-            console.log("Historial existente:", resultado.data);
-            return;
+            const historialEncontrado = Array.isArray(resultado.data)
+                ? resultado.data[0]
+                : resultado.data;
+
+            if (historialEncontrado) {
+                abrirModalDetalleHistorial(mascota, historialEncontrado);
+                return;
+            }
         }
 
         abrirModalCrearHistorial(mascota);
@@ -225,6 +244,167 @@ function abrirModalCrearHistorial(mascota) {
     modalHistorial.classList.add("show");
 }
 
+async function abrirModalDetalleHistorial(mascota, historial) {
+    limpiarDetalleHistorial();
+
+    console.log("Historial recibido:", historial);
+
+    detalleMascotaNombre.textContent = mascota.Nombre || historial.mascota_nombre || "-";
+    detalleMascotaEspecie.textContent = mascota.Nombre_Especie || "-";
+    detalleMascotaRaza.textContent = mascota.Nombre_Raza || "-";
+    detalleMascotaPropietario.textContent = mascota.Propietario || "-";
+
+    detalleMotivo.textContent = historial.motivo || "-";
+    detalleDiagnosticoInicial.textContent = historial.diagnostico_inicial || "-";
+    detalleObservaciones.textContent = historial.observaciones || "-";
+
+    modalDetalleHistorial.classList.add("show");
+
+    const historialId = historial.id;
+
+    if (historialId) {
+        await cargarConsultasHistorial(historialId);
+    } else {
+        renderizarConsultas([]);
+    }
+}
+
+function cerrarModalDetalleHistorial() {
+    modalDetalleHistorial.classList.remove("show");
+    limpiarDetalleHistorial();
+}
+
+function limpiarDetalleHistorial() {
+    detalleMascotaNombre.textContent = "-";
+    detalleMascotaEspecie.textContent = "-";
+    detalleMascotaRaza.textContent = "-";
+    detalleMascotaPropietario.textContent = "-";
+
+    detalleMotivo.textContent = "-";
+    detalleDiagnosticoInicial.textContent = "-";
+    detalleObservaciones.textContent = "-";
+
+    consultasHistorialActual = [];
+    listaConsultas.innerHTML = "";
+    consultasEmptyMsg.style.display = "block";
+
+    if (filtroFechaConsulta) {
+        filtroFechaConsulta.value = "";
+    }
+}
+
+async function cargarConsultasHistorial(historialId) {
+    try {
+        const respuesta = await fetch(`${URL_API}/api/historial/${historialId}/consultas`, {
+            method: "GET",
+            headers: obtenerEncabezados()
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            consultasHistorialActual = [];
+            renderizarConsultas([]);
+            return;
+        }
+
+        consultasHistorialActual = Array.isArray(resultado.data) ? resultado.data : [];
+
+        consultasHistorialActual.sort((a, b) => {
+            const fechaA = new Date(a.fecha || a.Fecha || a.Fecha_Consulta || 0);
+            const fechaB = new Date(b.fecha || b.Fecha || b.Fecha_Consulta || 0);
+
+            return fechaA - fechaB;
+        });
+
+        renderizarConsultas(consultasHistorialActual);
+
+    } catch (error) {
+        console.error("Error al cargar consultas médicas:", error);
+        consultasHistorialActual = [];
+        renderizarConsultas([]);
+    }
+}
+
+function renderizarConsultas(consultas) {
+    listaConsultas.innerHTML = "";
+
+    if (!consultas || consultas.length === 0) {
+        consultasEmptyMsg.style.display = "block";
+        return;
+    }
+
+    consultasEmptyMsg.style.display = "none";
+
+    consultas.forEach((consulta) => {
+        const item = document.createElement("article");
+        item.classList.add("consulta-item");
+
+        const fechaConsulta = consulta.fecha || consulta.Fecha || consulta.Fecha_Consulta;
+        const sintomas = consulta.sintomas || consulta.Sintomas || "-";
+        const diagnostico = consulta.diagnostico || consulta.Diagnostico || "-";
+        const tratamiento = consulta.tratamiento || consulta.Tratamiento || "-";
+        const observaciones = consulta.observaciones || consulta.Observaciones || "-";
+
+        item.innerHTML = `
+            <h4>Consulta del ${formatearFecha(fechaConsulta)}</h4>
+            <p><strong>Síntomas:</strong> ${escapeHtml(sintomas)}</p>
+            <p><strong>Diagnóstico:</strong> ${escapeHtml(diagnostico)}</p>
+            <p><strong>Tratamiento:</strong> ${escapeHtml(tratamiento)}</p>
+            <p><strong>Observaciones:</strong> ${escapeHtml(observaciones)}</p>
+        `;
+
+        listaConsultas.appendChild(item);
+    });
+}
+
+function configurarFiltrosConsultas() {
+    if (!filtroFechaConsulta || !btnLimpiarFiltroConsultas) return;
+
+    filtroFechaConsulta.addEventListener("change", () => {
+        const fechaFiltro = filtroFechaConsulta.value;
+
+        if (!fechaFiltro) {
+            renderizarConsultas(consultasHistorialActual);
+            return;
+        }
+
+        const consultasFiltradas = consultasHistorialActual.filter((consulta) => {
+            const fechaConsulta = consulta.fecha || consulta.Fecha || consulta.Fecha_Consulta;
+
+            if (!fechaConsulta) return false;
+
+            return obtenerFechaInput(fechaConsulta) === fechaFiltro;
+        });
+
+        renderizarConsultas(consultasFiltradas);
+    });
+
+    btnLimpiarFiltroConsultas.addEventListener("click", () => {
+        filtroFechaConsulta.value = "";
+        renderizarConsultas(consultasHistorialActual);
+    });
+}
+
+function obtenerFechaInput(fecha) {
+    const fechaObj = new Date(fecha);
+
+    if (isNaN(fechaObj.getTime())) return "";
+
+    const anio = fechaObj.getFullYear();
+    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
+    const dia = String(fechaObj.getDate()).padStart(2, "0");
+
+    return `${anio}-${mes}-${dia}`;
+}
+
 function cerrarModalCrearHistorial() {
     modalHistorial.classList.remove("show");
     limpiarFormularioHistorial();
@@ -239,15 +419,27 @@ function configurarModalHistorial() {
     btnCerrarModalHistorial.addEventListener("click", cerrarModalCrearHistorial);
     btnCancelarHistorial.addEventListener("click", cerrarModalCrearHistorial);
 
+    btnCerrarModalDetalleHistorial.addEventListener("click", cerrarModalDetalleHistorial);
+
     modalHistorial.addEventListener("click", (e) => {
         if (e.target === modalHistorial) {
             cerrarModalCrearHistorial();
         }
     });
 
+    modalDetalleHistorial.addEventListener("click", (e) => {
+        if (e.target === modalDetalleHistorial) {
+            cerrarModalDetalleHistorial();
+        }
+    });
+
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && modalHistorial.classList.contains("show")) {
             cerrarModalCrearHistorial();
+        }
+
+        if (e.key === "Escape" && modalDetalleHistorial.classList.contains("show")) {
+            cerrarModalDetalleHistorial();
         }
     });
 
@@ -439,12 +631,12 @@ function escapeHtml(valor) {
 // ============================================================
 // Inicio
 // ============================================================
-
 document.addEventListener("DOMContentLoaded", () => {
     verificarSesion();
     configurarMenuMovil();
     configurarBusqueda();
     configurarBotonHistorial();
     configurarModalHistorial();
+    configurarFiltrosConsultas();
     cargarMascotas();
 });

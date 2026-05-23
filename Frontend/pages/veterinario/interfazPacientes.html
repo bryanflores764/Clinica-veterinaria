@@ -150,6 +150,100 @@
             </form>
         </div>
     </div>
+
+    <!-- Modal visualizar historial clínico completo -->
+<div class="modal" id="modal-detalle-historial">
+    <div class="modal-content modal-content-detalle">
+        <div class="modal-header">
+            <h2>Historial clínico completo</h2>
+            <button type="button" class="btn-cerrar-modal" id="cerrar-modal-detalle-historial">×</button>
+        </div>
+
+        <p class="modal-subtitle">
+            Información médica registrada de la mascota seleccionada.
+        </p>
+
+        <div class="detalle-historial">
+
+            <section class="detalle-card">
+                <div class="detalle-card-header">
+                    <h3>Información de la mascota</h3>
+                </div>
+
+                <div class="detalle-grid">
+                    <div>
+                        <span>Mascota</span>
+                        <p id="detalle-mascota-nombre">-</p>
+                    </div>
+
+                    <div>
+                        <span>Especie</span>
+                        <p id="detalle-mascota-especie">-</p>
+                    </div>
+
+                    <div>
+                        <span>Raza</span>
+                        <p id="detalle-mascota-raza">-</p>
+                    </div>
+
+                    <div>
+                        <span>Propietario</span>
+                        <p id="detalle-mascota-propietario">-</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="detalle-card">
+                <div class="detalle-card-header">
+                    <h3>Información inicial del historial</h3>
+
+                    <button type="button" class="btn-editar-historial" disabled>
+                        Editar
+                    </button>
+                </div>
+
+                <div class="detalle-grid">
+                    <div>
+                        <span>Motivo</span>
+                        <p id="detalle-motivo">-</p>
+                    </div>
+
+                    <div>
+                        <span>Diagnóstico inicial</span>
+                        <p id="detalle-diagnostico-inicial">-</p>
+                    </div>
+
+                    <div class="detalle-full">
+                        <span>Observaciones</span>
+                        <p id="detalle-observaciones">-</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="detalle-card">
+                <div class="detalle-card-header">
+                    <h3>Consultas médicas</h3>
+                </div>
+
+                <div class="filtros-historial">
+                    <input type="date" id="filtro-fecha-consulta">
+                    <button type="button" class="btn-limpiar-filtro" id="limpiar-filtro-consultas">
+                        Limpiar filtro
+                    </button>
+                </div>
+
+                <div id="lista-consultas" class="lista-consultas">
+                    <!-- JS inyecta consultas -->
+                </div>
+
+                <p id="consultas-empty-msg" class="consultas-empty-msg">
+                    Esta mascota aún no tiene consultas médicas registradas.
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div>
     <script src="../../js/veterinario/logout.js"></script>
     <script src="../../js/veterinario/interfazPacientes.js"></script>
 </body>
