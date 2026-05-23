@@ -7,13 +7,14 @@ const MascotasQueries = {
   `,
 
   FIND_ALL: `
-    SELECT 
+    SELECT
       m.Id,
       m.Nombre,
       m.Fecha_Nacimiento,
       m.Peso,
       m.Color,
       p.Nombre AS Propietario,
+      p.Telefono AS Telefono_Propietario,
       r.Nombre_Raza,
       e.Nombre_Especie
     FROM mascotas m

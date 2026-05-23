@@ -620,6 +620,213 @@ body {
     }
 }
 
+/* ============================================================
+   Modal cartilla de vacunación
+============================================================ */
+.modal-content-cartilla {
+    max-width: 900px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.cartilla-seccion {
+    background-color: #f8fbf8;
+    border: 1px solid #e0e6e0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 14px;
+}
+
+.cartilla-seccion-titulo {
+    font-size: 20px;
+    font-weight: 800;
+    color: #111111;
+    margin-bottom: 14px;
+}
+
+.cartilla-seccion-titulo--alertas {
+    color: #b5460f;
+}
+
+.cartilla-seccion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.cartilla-seccion-header .cartilla-seccion-titulo {
+    margin-bottom: 0;
+}
+
+/* Grid datos generales */
+.cartilla-datos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.cartilla-dato span {
+    display: block;
+    font-weight: 700;
+    color: #444444;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.cartilla-dato p {
+    background-color: #ffffff;
+    border: 1px solid #e3e3e3;
+    border-radius: 8px;
+    padding: 9px 12px;
+    min-height: 40px;
+    color: #222222;
+    font-size: 15px;
+}
+
+/* Botón agregar vacuna */
+.btn-agregar-vacuna {
+    border: none;
+    border-radius: 8px;
+    padding: 7px 14px;
+    background-color: #0071bc;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-agregar-vacuna:hover {
+    background-color: #00568f;
+}
+
+/* Formulario nueva vacuna */
+.form-vacuna {
+    background-color: #ffffff;
+    border: 1px solid #d7e8f5;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
+}
+
+.form-vacuna-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.form-group-full {
+    grid-column: 1 / -1;
+}
+
+/* Lista de vacunas */
+.lista-vacunas {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.vacuna-item {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 12px 14px;
+    border-top: 1px solid #eeeeee;
+    border-right: 1px solid #eeeeee;
+    border-bottom: 1px solid #eeeeee;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.vacuna-item.vencida { border-left: 5px solid #d93025; }
+.vacuna-item.proxima { border-left: 5px solid #f5a623; }
+.vacuna-item.aplicada { border-left: 5px solid #42ab49; }
+.vacuna-item.completado { border-left: 5px solid #aaaaaa; }
+
+.vacuna-info { flex: 1; }
+
+.vacuna-nombre {
+    font-weight: 700;
+    font-size: 16px;
+    color: #111111;
+    margin-bottom: 6px;
+}
+
+.vacuna-detalle {
+    font-size: 14px;
+    color: #555555;
+    margin-bottom: 3px;
+}
+
+.vacuna-badge {
+    display: inline-block;
+    padding: 4px 11px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.vacuna-badge.vencida   { background-color: #fdecea; color: #c0392b; }
+.vacuna-badge.proxima   { background-color: #fff8e1; color: #d46b08; }
+.vacuna-badge.aplicada  { background-color: #e8f5e9; color: #27ae60; }
+.vacuna-badge.completado{ background-color: #f5f5f5; color: #777777; }
+
+/* Alertas de vacunación */
+.alerta-item {
+    background-color: #fff8e1;
+    border-left: 4px solid #f5a623;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.alerta-item:last-child { margin-bottom: 0; }
+
+.alerta-item.vencida {
+    background-color: #fdecea;
+    border-left-color: #d93025;
+}
+
+.alerta-item p {
+    color: #333333;
+    margin-bottom: 3px;
+}
+
+.alerta-item p:last-child { margin-bottom: 0; }
+
+.alerta-item strong { color: #111111; }
+
+.cartilla-empty-msg {
+    text-align: center;
+    color: #888888;
+    font-size: 14px;
+    padding: 10px 0;
+}
+
+@media (max-width: 700px) {
+    .cartilla-datos-grid,
+    .form-vacuna-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cartilla-seccion-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
 @media (max-width: 600px) {
     .modal-content {
         padding: 18px;

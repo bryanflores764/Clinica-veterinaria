@@ -33,9 +33,19 @@ const consultasEmptyMsg = document.getElementById("consultas-empty-msg");
 const filtroFechaConsulta = document.getElementById("filtro-fecha-consulta");
 const btnLimpiarFiltroConsultas = document.getElementById("limpiar-filtro-consultas");
 
+// Cartilla de vacunación
+const modalCartilla = document.getElementById("modal-cartilla");
+const btnCerrarModalCartilla = document.getElementById("cerrar-modal-cartilla");
+const formVacuna = document.getElementById("form-vacuna");
+const btnToggleFormVacuna = document.getElementById("btn-toggle-form-vacuna");
+const btnCancelarVacuna = document.getElementById("cancelar-vacuna");
+const inputVacunaMascotaId = document.getElementById("vacuna-mascota-id");
+
 // Datos en memoria
 let mascotas = [];
 let consultasHistorialActual = [];
+let vacunasActuales = [];
+let mascotaCartillaActual = null;
 
 // ============================================================
 // Sesión
@@ -570,6 +580,292 @@ function obtenerVeterinarioId() {
 }
 
 // ============================================================
+// Cartilla de vacunación
+// ============================================================
+
+function configurarBotonVacunacion() {
+    tbody.addEventListener("click", async (e) => {
+        const boton = e.target.closest(".btn-vacunacion");
+        if (!boton) return;
+
+        const mascotaId = boton.dataset.id;
+        const mascotaSeleccionada = mascotas.find((m) => String(m.Id) === String(mascotaId));
+
+        if (!mascotaSeleccionada) {
+            alert("No se encontró la información de la mascota seleccionada.");
+            return;
+        }
+
+        await abrirModalCartilla(mascotaSeleccionada);
+    });
+}
+
+async function abrirModalCartilla(mascota) {
+    mascotaCartillaActual = mascota;
+
+    document.getElementById("cartilla-nombre").textContent = mascota.Nombre || "-";
+    document.getElementById("cartilla-especie").textContent = mascota.Nombre_Especie || "-";
+    document.getElementById("cartilla-raza").textContent = mascota.Nombre_Raza || "-";
+    document.getElementById("cartilla-color").textContent = mascota.Color || "-";
+    document.getElementById("cartilla-fecha-nacimiento").textContent = formatearFecha(mascota.Fecha_Nacimiento) || "-";
+    document.getElementById("cartilla-peso").textContent = mascota.Peso ? `${formatearPeso(mascota.Peso)} lbs` : "-";
+    document.getElementById("cartilla-propietario").textContent = mascota.Propietario || "-";
+    document.getElementById("cartilla-telefono").textContent = mascota.Telefono_Propietario || "-";
+
+    inputVacunaMascotaId.value = mascota.Id;
+
+    formVacuna.style.display = "none";
+    btnToggleFormVacuna.textContent = "+ Registrar vacuna";
+    limpiarFormVacuna();
+
+    modalCartilla.classList.add("show");
+
+    await cargarVacunas(mascota.Id);
+}
+
+function cerrarModalCartilla() {
+    modalCartilla.classList.remove("show");
+    mascotaCartillaActual = null;
+    vacunasActuales = [];
+    limpiarFormVacuna();
+    formVacuna.style.display = "none";
+    btnToggleFormVacuna.textContent = "+ Registrar vacuna";
+}
+
+async function cargarVacunas(mascotaId) {
+    try {
+        const respuesta = await fetch(`${URL_API}/api/vacunas/mascota/${mascotaId}`, {
+            method: "GET",
+            headers: obtenerEncabezados()
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+        vacunasActuales = Array.isArray(resultado.data) ? resultado.data : [];
+
+        renderizarVacunas(vacunasActuales);
+        renderizarAlertas(vacunasActuales);
+
+    } catch (error) {
+        console.error("Error al cargar vacunas:", error);
+        vacunasActuales = [];
+        renderizarVacunas([]);
+        renderizarAlertas([]);
+    }
+}
+
+function renderizarVacunas(vacunas) {
+    const lista = document.getElementById("cartilla-vacunas-lista");
+    const emptyVacunas = document.getElementById("cartilla-vacunas-empty");
+
+    lista.innerHTML = "";
+
+    if (!vacunas || vacunas.length === 0) {
+        emptyVacunas.style.display = "block";
+        return;
+    }
+
+    emptyVacunas.style.display = "none";
+
+    const etiquetas = {
+        vencida: "Vencida",
+        proxima: "Próxima",
+        aplicada: "Aplicada",
+        completado: "Completada"
+    };
+
+    vacunas.forEach((vacuna) => {
+        const estado = vacuna.estado_vacuna || "aplicada";
+        const item = document.createElement("article");
+        item.classList.add("vacuna-item", estado);
+
+        item.innerHTML = `
+            <div class="vacuna-info">
+                <div class="vacuna-nombre">${escapeHtml(vacuna.nombre_vacuna || "-")}</div>
+                <p class="vacuna-detalle"><strong>Fecha de aplicación:</strong> ${formatearFecha(vacuna.fecha_aplicacion) || "-"}</p>
+                <p class="vacuna-detalle"><strong>Próxima dosis:</strong> ${vacuna.proxima_dosis ? formatearFecha(vacuna.proxima_dosis) : "No aplica"}</p>
+                ${vacuna.lote ? `<p class="vacuna-detalle"><strong>Lote:</strong> ${escapeHtml(vacuna.lote)}</p>` : ""}
+                ${vacuna.observaciones ? `<p class="vacuna-detalle"><strong>Observaciones:</strong> ${escapeHtml(vacuna.observaciones)}</p>` : ""}
+                <p class="vacuna-detalle"><strong>Veterinario:</strong> ${escapeHtml(vacuna.veterinario_nombre || "-")}</p>
+            </div>
+            <span class="vacuna-badge ${estado}">${etiquetas[estado] || estado}</span>
+        `;
+
+        lista.appendChild(item);
+    });
+}
+
+function renderizarAlertas(vacunas) {
+    const lista = document.getElementById("cartilla-alertas-lista");
+    const emptyAlertas = document.getElementById("cartilla-alertas-empty");
+
+    lista.innerHTML = "";
+
+    const alertas = vacunas.filter((v) => v.estado_vacuna === "vencida" || v.estado_vacuna === "proxima");
+
+    if (alertas.length === 0) {
+        emptyAlertas.style.display = "block";
+        return;
+    }
+
+    emptyAlertas.style.display = "none";
+
+    alertas.forEach((vacuna) => {
+        const esVencida = vacuna.estado_vacuna === "vencida";
+        const item = document.createElement("div");
+        item.classList.add("alerta-item");
+        if (esVencida) item.classList.add("vencida");
+
+        const fechaProxima = vacuna.proxima_dosis ? formatearFecha(vacuna.proxima_dosis) : "Sin fecha programada";
+
+        item.innerHTML = `
+            <p><strong>${escapeHtml(vacuna.nombre_vacuna)}</strong> — ${esVencida ? "Vacuna vencida" : "Próxima dosis"}</p>
+            <p>Fecha próxima dosis: <strong>${fechaProxima}</strong></p>
+        `;
+
+        lista.appendChild(item);
+    });
+}
+
+function configurarModalCartilla() {
+    btnCerrarModalCartilla.addEventListener("click", cerrarModalCartilla);
+
+    modalCartilla.addEventListener("click", (e) => {
+        if (e.target === modalCartilla) cerrarModalCartilla();
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modalCartilla.classList.contains("show")) {
+            cerrarModalCartilla();
+        }
+    });
+
+    btnToggleFormVacuna.addEventListener("click", () => {
+        const visible = formVacuna.style.display !== "none";
+        formVacuna.style.display = visible ? "none" : "block";
+        btnToggleFormVacuna.textContent = visible ? "+ Registrar vacuna" : "Ocultar formulario";
+    });
+
+    btnCancelarVacuna.addEventListener("click", () => {
+        formVacuna.style.display = "none";
+        btnToggleFormVacuna.textContent = "+ Registrar vacuna";
+        limpiarFormVacuna();
+    });
+
+    formVacuna.addEventListener("submit", guardarVacuna);
+}
+
+async function guardarVacuna(e) {
+    e.preventDefault();
+
+    const mascotaId = inputVacunaMascotaId.value;
+    const nombreVacuna = document.getElementById("vacuna-nombre").value.trim();
+    const fechaAplicacion = document.getElementById("vacuna-fecha").value;
+    const pesoInput = document.getElementById("vacuna-peso").value.trim();
+    const proximaDosis = document.getElementById("vacuna-proxima").value;
+    const lote = document.getElementById("vacuna-lote").value.trim();
+    const observacionesInput = document.getElementById("vacuna-observaciones").value.trim();
+
+    const inputNombreV = document.getElementById("vacuna-nombre");
+    const inputFechaV = document.getElementById("vacuna-fecha");
+
+    [inputNombreV, inputFechaV].forEach((inp) => {
+        const fg = inp.closest(".form-group");
+        fg.classList.remove("error");
+        const em = fg.querySelector(".error-msg");
+        if (em) em.textContent = "";
+    });
+
+    let valido = true;
+
+    if (!nombreVacuna) {
+        const fg = inputNombreV.closest(".form-group");
+        fg.classList.add("error");
+        fg.querySelector(".error-msg").textContent = "El nombre de la vacuna es obligatorio.";
+        valido = false;
+    }
+
+    if (!fechaAplicacion) {
+        const fg = inputFechaV.closest(".form-group");
+        fg.classList.add("error");
+        fg.querySelector(".error-msg").textContent = "La fecha de aplicación es obligatoria.";
+        valido = false;
+    }
+
+    if (!valido) return;
+
+    const veterinarioId = obtenerVeterinarioId();
+    if (!veterinarioId) {
+        alert("No se encontró el ID del veterinario en la sesión.");
+        return;
+    }
+
+    let observacionesFinal = observacionesInput;
+    if (pesoInput) {
+        observacionesFinal = observacionesInput
+            ? `Peso: ${pesoInput} lbs. ${observacionesInput}`
+            : `Peso: ${pesoInput} lbs.`;
+    }
+
+    const datosVacuna = {
+        mascota_id: Number(mascotaId),
+        nombre_vacuna: nombreVacuna,
+        fecha_aplicacion: fechaAplicacion,
+        proxima_dosis: proximaDosis || null,
+        lote: lote || null,
+        observaciones: observacionesFinal || null,
+        veterinario_id: Number(veterinarioId)
+    };
+
+    try {
+        const respuesta = await fetch(`${URL_API}/api/vacunas`, {
+            method: "POST",
+            headers: obtenerEncabezados(true),
+            body: JSON.stringify(datosVacuna)
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(resultado.message || "No se pudo registrar la vacuna.");
+        }
+
+        alert("Vacuna registrada correctamente.");
+        limpiarFormVacuna();
+        formVacuna.style.display = "none";
+        btnToggleFormVacuna.textContent = "+ Registrar vacuna";
+
+        await cargarVacunas(mascotaId);
+
+    } catch (error) {
+        console.error("Error al registrar vacuna:", error);
+        alert(error.message || "Ocurrió un error al registrar la vacuna.");
+    }
+}
+
+function limpiarFormVacuna() {
+    formVacuna.reset();
+    formVacuna.querySelectorAll(".form-group").forEach((fg) => {
+        fg.classList.remove("error");
+        const em = fg.querySelector(".error-msg");
+        if (em) em.textContent = "";
+    });
+}
+
+// ============================================================
 // Menú móvil
 // ============================================================
 
@@ -638,5 +934,7 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarBotonHistorial();
     configurarModalHistorial();
     configurarFiltrosConsultas();
+    configurarBotonVacunacion();
+    configurarModalCartilla();
     cargarMascotas();
 });
