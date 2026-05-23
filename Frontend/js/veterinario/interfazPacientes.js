@@ -1314,13 +1314,28 @@ function formatearFechaHora(fecha) {
     }
 
     const [anio, mes, dia] = partesFecha;
-    const horaCorta = horaParte.slice(0, 5);
 
-    if (!horaCorta) {
+    if (!horaParte) {
         return `${dia}-${mes}-${anio}`;
     }
 
-    return `${dia}-${mes}-${anio} ${horaCorta}`;
+    const partesHora = horaParte.split(":");
+    let hora = Number(partesHora[0]);
+    const minutos = partesHora[1] || "00";
+
+    if (isNaN(hora)) {
+        return `${dia}-${mes}-${anio}`;
+    }
+
+    const periodo = hora >= 12 ? "AM" : "PM";
+
+    hora = hora % 12;
+
+    if (hora === 0) {
+        hora = 12;
+    }
+
+    return `${dia}-${mes}-${anio} ${hora}:${minutos} ${periodo}`;
 }
 
 function obtenerFechaInput(fecha) {
