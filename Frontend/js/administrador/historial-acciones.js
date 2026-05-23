@@ -1,4 +1,3 @@
-
 console.log("historial-acciones.js cargado correctamente");
 
 const API_HISTORIAL = "http://localhost:3000/api/auditoria";
@@ -40,7 +39,8 @@ function normalizarModulo(modulo) {
         "Productos": "productos",
         "productos": "productos",
         "Ventas": "ventas",
-        "ventas": "ventas"
+        "ventas": "ventas",
+        "historial_clinico": "historial_clinico"
     };
 
     return modulos[modulo] || modulo;
@@ -78,7 +78,6 @@ async function cargarHistorialAcciones() {
 
         if (!token) {
             mostrarMensaje("No hay sesión activa. Inicia sesión nuevamente.");
-            console.warn("No hay token en localStorage");
             return;
         }
 
@@ -96,13 +95,15 @@ async function cargarHistorialAcciones() {
             params.append("accion", normalizarAccion(filtroAccion.value));
         }
 
-        if (filtroFecha && filtroFecha.value !== "") {
-            params.append("fecha_inicio", filtroFecha.value);
-            params.append("fecha_fin", filtroFecha.value);
-        }
+        /*
+            IMPORTANTE:
+            No mandamos fecha_inicio ni fecha_fin al backend porque la fecha viene con hora.
+            Si backend compara la fecha exacta, puede dejar registros fuera.
+            La fecha se filtra abajo en filtrarDatosLocalmente().
+        */
 
         params.append("page", "1");
-        params.append("limit", "20");
+        params.append("limit", "100");
 
         const url = `${API_HISTORIAL}?${params.toString()}`;
 
@@ -193,9 +194,7 @@ function filtrarDatosLocalmente(datos) {
 
             if (!fecha) return false;
 
-            const fechaItem = new Date(fecha).toISOString().split("T")[0];
-
-            return fechaItem === fechaFiltro;
+            return obtenerFechaLocal(fecha) === fechaFiltro;
         });
     }
 
@@ -262,8 +261,6 @@ function mostrarHistorial(datos) {
 }
 
 function limpiarFiltros() {
-    console.log("Limpiando filtros");
-
     if (filtroUsuario) filtroUsuario.value = "";
     if (filtroModulo) filtroModulo.value = "";
     if (filtroAccion) filtroAccion.value = "";
@@ -295,10 +292,25 @@ function formatearModulo(modulo) {
         "productos": "Productos",
         "Productos": "Productos",
         "ventas": "Ventas",
-        "Ventas": "Ventas"
+        "Ventas": "Ventas",
+        "historial_clinico": "Historial clínico"
     };
 
     return modulos[modulo] || modulo;
+}
+
+function obtenerFechaLocal(fecha) {
+    const fechaObj = new Date(fecha);
+
+    if (isNaN(fechaObj.getTime())) {
+        return "";
+    }
+
+    const year = fechaObj.getFullYear();
+    const month = String(fechaObj.getMonth() + 1).padStart(2, "0");
+    const day = String(fechaObj.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
 }
 
 function formatearFecha(fecha) {
@@ -320,29 +332,17 @@ function formatearFecha(fecha) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM cargado en historial-acciones");
-
     if (!tablaHistorialAcciones) {
         console.error("No se encontró tbody con id tablaHistorialAcciones");
         return;
     }
 
     if (btnBuscarHistorial) {
-        btnBuscarHistorial.addEventListener("click", () => {
-            console.log("Click en botón Buscar");
-            cargarHistorialAcciones();
-        });
-    } else {
-        console.error("No se encontró botón con id btnBuscarHistorial");
+        btnBuscarHistorial.addEventListener("click", cargarHistorialAcciones);
     }
 
     if (btnLimpiarHistorial) {
-        btnLimpiarHistorial.addEventListener("click", () => {
-            console.log("Click en botón Limpiar");
-            limpiarFiltros();
-        });
-    } else {
-        console.error("No se encontró botón con id btnLimpiarHistorial");
+        btnLimpiarHistorial.addEventListener("click", limpiarFiltros);
     }
 
     cargarHistorialAcciones();
