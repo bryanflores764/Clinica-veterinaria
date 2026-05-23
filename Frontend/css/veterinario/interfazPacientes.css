@@ -40,7 +40,6 @@ body {
 .header h1 {
     font-size: 42px;
     font-weight: 800;
-    letter-spacing: 8px;
 }
 
 .header-actions {
@@ -605,6 +604,54 @@ body {
     font-size: 15px;
 }
 
+/* ============================================================
+   Botón agregar consulta médica
+============================================================ */
+.btn-agregar-consulta {
+    border: none;
+    border-radius: 8px;
+    padding: 7px 14px;
+    background-color: #42ab49;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-agregar-consulta:hover {
+    background-color: #348c3a;
+}
+
+/* ============================================================
+   Formulario consulta médica en grid
+============================================================ */
+.form-consulta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.form-consulta .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Campos que ocuparán todo el ancho */
+.form-consulta .form-group-full {
+    grid-column: 1 / -1;
+}
+
+.form-consulta .modal-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+/* Responsive */
 @media (max-width: 700px) {
     .detalle-grid {
         grid-template-columns: 1fr;
@@ -616,6 +663,21 @@ body {
 
     .detalle-card-header {
         align-items: flex-start;
+        flex-direction: column;
+    }
+     .btn-agregar-consulta {
+        width: 100%;
+    }
+    .form-consulta {
+        grid-template-columns: 1fr;
+    }
+
+    .form-consulta .form-group-full,
+    .form-consulta .modal-actions {
+        grid-column: auto;
+    }
+
+    .form-consulta .modal-actions {
         flex-direction: column;
     }
 }

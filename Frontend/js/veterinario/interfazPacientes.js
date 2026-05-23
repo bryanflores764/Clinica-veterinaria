@@ -32,10 +32,22 @@ const listaConsultas = document.getElementById("lista-consultas");
 const consultasEmptyMsg = document.getElementById("consultas-empty-msg");
 const filtroFechaConsulta = document.getElementById("filtro-fecha-consulta");
 const btnLimpiarFiltroConsultas = document.getElementById("limpiar-filtro-consultas");
+const btnAgregarConsulta = document.getElementById("btn-agregar-consulta");
+const modalConsulta = document.getElementById("modal-consulta");
+const formConsulta = document.getElementById("form-consulta");
+const btnCerrarModalConsulta = document.getElementById("cerrar-modal-consulta");
+const btnCancelarConsulta = document.getElementById("cancelar-consulta");
+const inputConsultaHistorialId = document.getElementById("consulta-historial-id");
+const inputConsultaFecha = document.getElementById("consulta-fecha");
+const inputConsultaSintomas = document.getElementById("consulta-sintomas");
+const inputConsultaDiagnostico = document.getElementById("consulta-diagnostico");
+const inputConsultaTratamiento = document.getElementById("consulta-tratamiento");
+const inputConsultaObservaciones = document.getElementById("consulta-observaciones");
 
 // Datos en memoria
 let mascotas = [];
 let consultasHistorialActual = [];
+let historialActualId = null;
 
 // ============================================================
 // Sesión
@@ -260,7 +272,8 @@ async function abrirModalDetalleHistorial(mascota, historial) {
 
     modalDetalleHistorial.classList.add("show");
 
-    const historialId = historial.id;
+    const historialId = historial.id || historial.Id || historial.historial_id || historial.HistorialId;
+    historialActualId = historialId || null;
 
     if (historialId) {
         await cargarConsultasHistorial(historialId);
@@ -285,6 +298,7 @@ function limpiarDetalleHistorial() {
     detalleObservaciones.textContent = "-";
 
     consultasHistorialActual = [];
+    historialActualId = null;
     listaConsultas.innerHTML = "";
     consultasEmptyMsg.style.display = "block";
 
@@ -365,6 +379,167 @@ function renderizarConsultas(consultas) {
     });
 }
 
+function abrirModalConsulta() {
+    if (!historialActualId) {
+        alert("No se encontró el historial clínico seleccionado.");
+        return;
+    }
+
+    limpiarFormularioConsulta();
+
+    inputConsultaHistorialId.value = historialActualId;
+
+    modalConsulta.classList.add("show");
+}
+
+function cerrarModalConsulta() {
+    modalConsulta.classList.remove("show");
+    limpiarFormularioConsulta();
+}
+
+function limpiarFormularioConsulta() {
+    formConsulta.reset();
+    limpiarErroresFormularioConsulta();
+}
+
+function configurarModalConsulta() {
+    btnAgregarConsulta.addEventListener("click", abrirModalConsulta);
+    btnCerrarModalConsulta.addEventListener("click", cerrarModalConsulta);
+    btnCancelarConsulta.addEventListener("click", cerrarModalConsulta);
+
+    modalConsulta.addEventListener("click", (e) => {
+        if (e.target === modalConsulta) {
+            cerrarModalConsulta();
+        }
+    });
+
+    formConsulta.addEventListener("submit", guardarConsultaMedica);
+}
+
+async function guardarConsultaMedica(e) {
+    e.preventDefault();
+
+    const historialId = inputConsultaHistorialId.value;
+    const fecha = inputConsultaFecha.value;
+    const sintomas = inputConsultaSintomas.value.trim();
+    const diagnostico = inputConsultaDiagnostico.value.trim();
+    const tratamiento = inputConsultaTratamiento.value.trim();
+    const observaciones = inputConsultaObservaciones.value.trim();
+
+    const formularioValido = validarFormularioConsulta({
+        fecha,
+        sintomas,
+        diagnostico,
+        tratamiento,
+        observaciones
+    });
+
+    if (!formularioValido) return;
+
+    const veterinarioId = obtenerVeterinarioId();
+
+    if (!veterinarioId) {
+        alert("No se encontró el ID del veterinario en la sesión.");
+        return;
+    }
+
+    const datosConsulta = {
+        historial_id: Number(historialId),
+        fecha: fecha,
+        sintomas: sintomas,
+        diagnostico: diagnostico,
+        tratamiento: tratamiento,
+        observaciones: observaciones,
+        veterinario_id: Number(veterinarioId)
+    };
+
+    try {
+        const respuesta = await fetch(`${URL_API}/api/historial/consultas`, {
+            method: "POST",
+            headers: obtenerEncabezados(true),
+            body: JSON.stringify(datosConsulta)
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(resultado.message || "No se pudo registrar la consulta médica.");
+        }
+
+        alert("Consulta médica registrada correctamente.");
+
+        cerrarModalConsulta();
+
+        await cargarConsultasHistorial(Number(historialId));
+
+    } catch (error) {
+        console.error("Error al registrar consulta médica:", error);
+        alert(error.message || "Ocurrió un error al registrar la consulta médica.");
+    }
+}
+
+function validarFormularioConsulta(datos) {
+    limpiarErroresFormularioConsulta();
+
+    let valido = true;
+
+    if (!datos.fecha) {
+        mostrarErrorCampoConsulta(inputConsultaFecha, "La fecha y hora son obligatorias.");
+        valido = false;
+    }
+
+    if (!datos.sintomas) {
+        mostrarErrorCampoConsulta(inputConsultaSintomas, "Los síntomas son obligatorios.");
+        valido = false;
+    }
+
+    if (!datos.diagnostico) {
+        mostrarErrorCampoConsulta(inputConsultaDiagnostico, "El diagnóstico es obligatorio.");
+        valido = false;
+    }
+
+    if (!datos.tratamiento) {
+        mostrarErrorCampoConsulta(inputConsultaTratamiento, "El tratamiento es obligatorio.");
+        valido = false;
+    }
+
+    if (!datos.observaciones) {
+        mostrarErrorCampoConsulta(inputConsultaObservaciones, "Las observaciones son obligatorias.");
+        valido = false;
+    }
+
+    return valido;
+}
+
+function mostrarErrorCampoConsulta(input, mensaje) {
+    const formGroup = input.closest(".form-group");
+    const errorMsg = formGroup.querySelector(".error-msg");
+
+    formGroup.classList.add("error");
+    errorMsg.textContent = mensaje;
+}
+
+function limpiarErroresFormularioConsulta() {
+    const grupos = formConsulta.querySelectorAll(".form-group");
+
+    grupos.forEach((grupo) => {
+        grupo.classList.remove("error");
+
+        const errorMsg = grupo.querySelector(".error-msg");
+
+        if (errorMsg) {
+            errorMsg.textContent = "";
+        }
+    });
+}
+
 function configurarFiltrosConsultas() {
     if (!filtroFechaConsulta || !btnLimpiarFiltroConsultas) return;
 
@@ -440,6 +615,10 @@ function configurarModalHistorial() {
 
         if (e.key === "Escape" && modalDetalleHistorial.classList.contains("show")) {
             cerrarModalDetalleHistorial();
+        }
+
+        if (e.key === "Escape" && modalConsulta.classList.contains("show")) {
+            cerrarModalConsulta();
         }
     });
 
@@ -637,6 +816,7 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarBusqueda();
     configurarBotonHistorial();
     configurarModalHistorial();
+    configurarModalConsulta();
     configurarFiltrosConsultas();
     cargarMascotas();
 });
