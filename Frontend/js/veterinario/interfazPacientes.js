@@ -10,6 +10,7 @@ const tbody = document.getElementById("users-tbody");
 const emptyMsg = document.getElementById("empty-msg");
 const searchInput = document.getElementById("search");
 const menuToggle = document.querySelector(".menu-toggle");
+
 const modalHistorial = document.getElementById("modal-historial");
 const formHistorial = document.getElementById("form-historial");
 const btnCerrarModalHistorial = document.getElementById("cerrar-modal-historial");
@@ -19,6 +20,7 @@ const inputMascotaNombreHistorial = document.getElementById("historial-mascota-n
 const inputMotivo = document.getElementById("motivo");
 const inputDiagnosticoInicial = document.getElementById("diagnostico-inicial");
 const inputObservaciones = document.getElementById("observaciones");
+
 const modalDetalleHistorial = document.getElementById("modal-detalle-historial");
 const btnCerrarModalDetalleHistorial = document.getElementById("cerrar-modal-detalle-historial");
 const detalleMascotaNombre = document.getElementById("detalle-mascota-nombre");
@@ -28,11 +30,13 @@ const detalleMascotaPropietario = document.getElementById("detalle-mascota-propi
 const detalleMotivo = document.getElementById("detalle-motivo");
 const detalleDiagnosticoInicial = document.getElementById("detalle-diagnostico-inicial");
 const detalleObservaciones = document.getElementById("detalle-observaciones");
+
 const listaConsultas = document.getElementById("lista-consultas");
 const consultasEmptyMsg = document.getElementById("consultas-empty-msg");
 const filtroFechaConsulta = document.getElementById("filtro-fecha-consulta");
 const btnLimpiarFiltroConsultas = document.getElementById("limpiar-filtro-consultas");
 const btnAgregarConsulta = document.getElementById("btn-agregar-consulta");
+
 const modalConsulta = document.getElementById("modal-consulta");
 const formConsulta = document.getElementById("form-consulta");
 const btnCerrarModalConsulta = document.getElementById("cerrar-modal-consulta");
@@ -44,10 +48,21 @@ const inputConsultaDiagnostico = document.getElementById("consulta-diagnostico")
 const inputConsultaTratamiento = document.getElementById("consulta-tratamiento");
 const inputConsultaObservaciones = document.getElementById("consulta-observaciones");
 
+const btnEditarHistorial = document.getElementById("btn-editar-historial");
+const tituloModalHistorial = document.getElementById("titulo-modal-historial");
+const btnSubmitHistorial = document.getElementById("btn-submit-historial");
+const tituloModalConsulta = document.getElementById("titulo-modal-consulta");
+const btnSubmitConsulta = document.getElementById("btn-submit-consulta");
+
 // Datos en memoria
 let mascotas = [];
 let consultasHistorialActual = [];
 let historialActualId = null;
+let mascotaActual = null;
+let historialActual = null;
+let modoHistorial = "crear";
+let modoConsulta = "crear";
+let consultaActualId = null;
 
 // ============================================================
 // Sesión
@@ -106,7 +121,6 @@ async function cargarMascotas() {
         }
 
         mascotas = Array.isArray(resultado.data) ? resultado.data : [];
-
         mascotas.sort((a, b) => Number(a.Id) - Number(b.Id));
 
         renderizarMascotas(mascotas);
@@ -148,9 +162,13 @@ function renderizarMascotas(listaMascotas) {
                     data-id="${mascota.Id}">
                     Historial clínico
                 </button>
-                <button type="button" class="btn-accion btn-vacunacion" 
-                data-id="${mascota.Id}" data-nombre="${escapeHtml(mascota.Nombre ?? "")}">
-                Cartilla de vacunación
+
+                <button 
+                    type="button" 
+                    class="btn-accion btn-vacunacion" 
+                    data-id="${mascota.Id}" 
+                    data-nombre="${escapeHtml(mascota.Nombre ?? "")}">
+                    Cartilla de vacunación
                 </button>
             </td>
         `;
@@ -248,7 +266,14 @@ async function verificarHistorialMascota(mascota) {
 }
 
 function abrirModalCrearHistorial(mascota) {
+    modoHistorial = "crear";
+    historialActual = null;
+    historialActualId = null;
+
     limpiarFormularioHistorial();
+
+    tituloModalHistorial.textContent = "Crear historial clínico";
+    btnSubmitHistorial.textContent = "Guardar historial";
 
     inputMascotaIdHistorial.value = mascota.Id;
     inputMascotaNombreHistorial.value = mascota.Nombre || "";
@@ -256,10 +281,38 @@ function abrirModalCrearHistorial(mascota) {
     modalHistorial.classList.add("show");
 }
 
+function abrirModalEditarHistorial() {
+    if (!historialActual || !historialActualId || !mascotaActual) {
+        alert("No se encontró el historial clínico seleccionado.");
+        return;
+    }
+
+    modoHistorial = "editar";
+
+    limpiarFormularioHistorial();
+
+    tituloModalHistorial.textContent = "Editar historial clínico";
+    btnSubmitHistorial.textContent = "Actualizar historial";
+
+    inputMascotaIdHistorial.value = mascotaActual.Id || historialActual.mascota_id || "";
+    inputMascotaNombreHistorial.value = mascotaActual.Nombre || historialActual.mascota_nombre || "";
+
+    inputMotivo.value = historialActual.motivo || "";
+    inputDiagnosticoInicial.value = historialActual.diagnostico_inicial || "";
+    inputObservaciones.value = historialActual.observaciones || "";
+
+    // Oculta solo visualmente el modal de detalle.
+    // No usamos cerrarModalDetalleHistorial() porque limpiaría los datos actuales.
+    modalDetalleHistorial.classList.remove("show");
+
+    modalHistorial.classList.add("show");
+}
+
 async function abrirModalDetalleHistorial(mascota, historial) {
     limpiarDetalleHistorial();
 
-    console.log("Historial recibido:", historial);
+    mascotaActual = mascota;
+    historialActual = historial;
 
     detalleMascotaNombre.textContent = mascota.Nombre || historial.mascota_nombre || "-";
     detalleMascotaEspecie.textContent = mascota.Nombre_Especie || "-";
@@ -306,6 +359,10 @@ function limpiarDetalleHistorial() {
         filtroFechaConsulta.value = "";
     }
 }
+
+// ============================================================
+// Consultas médicas
+// ============================================================
 
 async function cargarConsultasHistorial(historialId) {
     try {
@@ -361,6 +418,8 @@ function renderizarConsultas(consultas) {
         const item = document.createElement("article");
         item.classList.add("consulta-item");
 
+        const consultaId = consulta.id || consulta.Id || consulta.consulta_id || consulta.ConsultaId;
+
         const fechaConsulta = consulta.fecha || consulta.Fecha || consulta.Fecha_Consulta;
         const sintomas = consulta.sintomas || consulta.Sintomas || "-";
         const diagnostico = consulta.diagnostico || consulta.Diagnostico || "-";
@@ -368,7 +427,17 @@ function renderizarConsultas(consultas) {
         const observaciones = consulta.observaciones || consulta.Observaciones || "-";
 
         item.innerHTML = `
-            <h4>Consulta del ${formatearFecha(fechaConsulta)}</h4>
+            <div class="consulta-header">
+                <h4>Consulta del ${formatearFecha(fechaConsulta)}</h4>
+
+                <button 
+                    type="button" 
+                    class="btn-editar-consulta"
+                    data-id="${consultaId}">
+                    Editar
+                </button>
+            </div>
+
             <p><strong>Síntomas:</strong> ${escapeHtml(sintomas)}</p>
             <p><strong>Diagnóstico:</strong> ${escapeHtml(diagnostico)}</p>
             <p><strong>Tratamiento:</strong> ${escapeHtml(tratamiento)}</p>
@@ -385,9 +454,43 @@ function abrirModalConsulta() {
         return;
     }
 
+    modoConsulta = "crear";
+    consultaActualId = null;
+
     limpiarFormularioConsulta();
 
+    tituloModalConsulta.textContent = "Agregar consulta médica";
+    btnSubmitConsulta.textContent = "Guardar consulta";
+
     inputConsultaHistorialId.value = historialActualId;
+
+    modalConsulta.classList.add("show");
+}
+
+function abrirModalEditarConsulta(consulta) {
+    if (!consulta) {
+        alert("No se encontró la consulta seleccionada.");
+        return;
+    }
+
+    modoConsulta = "editar";
+    consultaActualId = consulta.id || consulta.Id || consulta.consulta_id || consulta.ConsultaId;
+
+    limpiarFormularioConsulta();
+
+    tituloModalConsulta.textContent = "Editar consulta médica";
+    btnSubmitConsulta.textContent = "Actualizar consulta";
+
+    inputConsultaHistorialId.value = historialActualId || "";
+
+    inputConsultaFecha.value = convertirFechaParaInput(
+        consulta.fecha || consulta.Fecha || consulta.Fecha_Consulta
+    );
+
+    inputConsultaSintomas.value = consulta.sintomas || consulta.Sintomas || "";
+    inputConsultaDiagnostico.value = consulta.diagnostico || consulta.Diagnostico || "";
+    inputConsultaTratamiento.value = consulta.tratamiento || consulta.Tratamiento || "";
+    inputConsultaObservaciones.value = consulta.observaciones || consulta.Observaciones || "";
 
     modalConsulta.classList.add("show");
 }
@@ -395,6 +498,12 @@ function abrirModalConsulta() {
 function cerrarModalConsulta() {
     modalConsulta.classList.remove("show");
     limpiarFormularioConsulta();
+
+    modoConsulta = "crear";
+    consultaActualId = null;
+
+    tituloModalConsulta.textContent = "Agregar consulta médica";
+    btnSubmitConsulta.textContent = "Guardar consulta";
 }
 
 function limpiarFormularioConsulta() {
@@ -411,6 +520,21 @@ function configurarModalConsulta() {
         if (e.target === modalConsulta) {
             cerrarModalConsulta();
         }
+    });
+
+    listaConsultas.addEventListener("click", (e) => {
+        const boton = e.target.closest(".btn-editar-consulta");
+
+        if (!boton) return;
+
+        const consultaId = boton.dataset.id;
+
+        const consultaSeleccionada = consultasHistorialActual.find((consulta) => {
+            const id = consulta.id || consulta.Id || consulta.consulta_id || consulta.ConsultaId;
+            return String(id) === String(consultaId);
+        });
+
+        abrirModalEditarConsulta(consultaSeleccionada);
     });
 
     formConsulta.addEventListener("submit", guardarConsultaMedica);
@@ -435,6 +559,18 @@ async function guardarConsultaMedica(e) {
     });
 
     if (!formularioValido) return;
+
+    if (modoConsulta === "editar") {
+        await actualizarConsultaMedica({
+            fecha,
+            sintomas,
+            diagnostico,
+            tratamiento,
+            observaciones
+        });
+
+        return;
+    }
 
     const veterinarioId = obtenerVeterinarioId();
 
@@ -483,6 +619,316 @@ async function guardarConsultaMedica(e) {
         console.error("Error al registrar consulta médica:", error);
         alert(error.message || "Ocurrió un error al registrar la consulta médica.");
     }
+}
+
+async function actualizarConsultaMedica(datos) {
+    if (!consultaActualId) {
+        alert("No se encontró la consulta médica a actualizar.");
+        return;
+    }
+
+    const datosConsulta = {
+        fecha: datos.fecha,
+        sintomas: datos.sintomas,
+        diagnostico: datos.diagnostico,
+        tratamiento: datos.tratamiento,
+        observaciones: datos.observaciones
+    };
+
+    try {
+        const respuesta = await fetch(`${URL_API}/api/historial/consultas/${consultaActualId}`, {
+            method: "PUT",
+            headers: obtenerEncabezados(true),
+            body: JSON.stringify(datosConsulta)
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(resultado.message || "No se pudo actualizar la consulta médica.");
+        }
+
+        alert("Consulta médica actualizada correctamente.");
+
+        cerrarModalConsulta();
+
+        if (historialActualId) {
+            await cargarConsultasHistorial(historialActualId);
+        }
+
+    } catch (error) {
+        console.error("Error al actualizar consulta médica:", error);
+        alert(error.message || "Ocurrió un error al actualizar la consulta médica.");
+    }
+}
+
+// ============================================================
+// Filtros
+// ============================================================
+
+function configurarFiltrosConsultas() {
+    if (!filtroFechaConsulta || !btnLimpiarFiltroConsultas) return;
+
+    filtroFechaConsulta.addEventListener("change", () => {
+        const fechaFiltro = filtroFechaConsulta.value;
+
+        if (!fechaFiltro) {
+            renderizarConsultas(consultasHistorialActual);
+            return;
+        }
+
+        const consultasFiltradas = consultasHistorialActual.filter((consulta) => {
+            const fechaConsulta = consulta.fecha || consulta.Fecha || consulta.Fecha_Consulta;
+
+            if (!fechaConsulta) return false;
+
+            return obtenerFechaInput(fechaConsulta) === fechaFiltro;
+        });
+
+        renderizarConsultas(consultasFiltradas);
+    });
+
+    btnLimpiarFiltroConsultas.addEventListener("click", () => {
+        filtroFechaConsulta.value = "";
+        renderizarConsultas(consultasHistorialActual);
+    });
+}
+
+// ============================================================
+// Modal historial
+// ============================================================
+
+function cerrarModalCrearHistorial() {
+    modalHistorial.classList.remove("show");
+    limpiarFormularioHistorial();
+
+    modoHistorial = "crear";
+
+    tituloModalHistorial.textContent = "Crear historial clínico";
+    btnSubmitHistorial.textContent = "Guardar historial";
+
+    // Si se cerró el modal de edición sin guardar, regresa al detalle.
+    if (historialActual && mascotaActual && !modalDetalleHistorial.classList.contains("show")) {
+        modalDetalleHistorial.classList.add("show");
+    }
+}
+
+function limpiarFormularioHistorial() {
+    formHistorial.reset();
+    limpiarErroresFormulario();
+}
+
+function configurarModalHistorial() {
+    btnCerrarModalHistorial.addEventListener("click", cerrarModalCrearHistorial);
+    btnCancelarHistorial.addEventListener("click", cerrarModalCrearHistorial);
+
+    btnCerrarModalDetalleHistorial.addEventListener("click", cerrarModalDetalleHistorial);
+    btnEditarHistorial.addEventListener("click", abrirModalEditarHistorial);
+
+    modalHistorial.addEventListener("click", (e) => {
+        if (e.target === modalHistorial) {
+            cerrarModalCrearHistorial();
+        }
+    });
+
+    modalDetalleHistorial.addEventListener("click", (e) => {
+        if (e.target === modalDetalleHistorial) {
+            cerrarModalDetalleHistorial();
+        }
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modalHistorial.classList.contains("show")) {
+            cerrarModalCrearHistorial();
+        }
+
+        if (e.key === "Escape" && modalDetalleHistorial.classList.contains("show")) {
+            cerrarModalDetalleHistorial();
+        }
+
+        if (e.key === "Escape" && modalConsulta.classList.contains("show")) {
+            cerrarModalConsulta();
+        }
+    });
+
+    formHistorial.addEventListener("submit", guardarHistorialClinico);
+}
+
+async function guardarHistorialClinico(e) {
+    e.preventDefault();
+
+    const mascotaId = inputMascotaIdHistorial.value;
+    const motivo = inputMotivo.value.trim();
+    const diagnosticoInicial = inputDiagnosticoInicial.value.trim();
+    const observaciones = inputObservaciones.value.trim();
+
+    const formularioValido = validarFormularioHistorial({
+        motivo,
+        diagnosticoInicial,
+        observaciones
+    });
+
+    if (!formularioValido) return;
+
+    if (modoHistorial === "editar") {
+        await actualizarHistorialClinico({
+            motivo,
+            diagnosticoInicial,
+            observaciones
+        });
+
+        return;
+    }
+
+    const veterinarioId = obtenerVeterinarioId();
+
+    if (!veterinarioId) {
+        alert("No se encontró el ID del veterinario en la sesión.");
+        return;
+    }
+
+    const datosHistorial = {
+        mascota_id: Number(mascotaId),
+        motivo: motivo,
+        diagnostico_inicial: diagnosticoInicial,
+        observaciones: observaciones,
+        veterinario_id: Number(veterinarioId)
+    };
+
+    try {
+        const respuesta = await fetch(`${URL_API}/api/historial`, {
+            method: "POST",
+            headers: obtenerEncabezados(true),
+            body: JSON.stringify(datosHistorial)
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(resultado.message || "No se pudo crear el historial clínico.");
+        }
+
+        alert("Historial clínico creado correctamente.");
+        cerrarModalCrearHistorial();
+
+    } catch (error) {
+        console.error("Error al crear historial clínico:", error);
+        alert(error.message || "Ocurrió un error al crear el historial clínico.");
+    }
+}
+
+async function actualizarHistorialClinico(datos) {
+    if (!historialActualId) {
+        alert("No se encontró el historial clínico a actualizar.");
+        return;
+    }
+
+    const datosHistorial = {
+        motivo: datos.motivo,
+        diagnostico_inicial: datos.diagnosticoInicial,
+        observaciones: datos.observaciones
+    };
+
+    try {
+        const respuesta = await fetch(`${URL_API}/api/historial/${historialActualId}`, {
+            method: "PUT",
+            headers: obtenerEncabezados(true),
+            body: JSON.stringify(datosHistorial)
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(resultado.message || "No se pudo actualizar el historial clínico.");
+        }
+
+        alert("Historial clínico actualizado correctamente.");
+
+        modalHistorial.classList.remove("show");
+        limpiarFormularioHistorial();
+
+        modoHistorial = "crear";
+        tituloModalHistorial.textContent = "Crear historial clínico";
+        btnSubmitHistorial.textContent = "Guardar historial";
+
+        if (mascotaActual) {
+            await verificarHistorialMascota(mascotaActual);
+        }
+
+    } catch (error) {
+        console.error("Error al actualizar historial clínico:", error);
+        alert(error.message || "Ocurrió un error al actualizar el historial clínico.");
+    }
+}
+
+// ============================================================
+// Validaciones
+// ============================================================
+
+function validarFormularioHistorial(datos) {
+    limpiarErroresFormulario();
+
+    let valido = true;
+
+    if (!datos.motivo) {
+        mostrarErrorCampo(inputMotivo, "El motivo es obligatorio.");
+        valido = false;
+    }
+
+    if (!datos.diagnosticoInicial) {
+        mostrarErrorCampo(inputDiagnosticoInicial, "El diagnóstico inicial es obligatorio.");
+        valido = false;
+    }
+
+    if (!datos.observaciones) {
+        mostrarErrorCampo(inputObservaciones, "Las observaciones son obligatorias.");
+        valido = false;
+    }
+
+    return valido;
+}
+
+function mostrarErrorCampo(input, mensaje) {
+    const formGroup = input.closest(".form-group");
+    const errorMsg = formGroup.querySelector(".error-msg");
+
+    formGroup.classList.add("error");
+    errorMsg.textContent = mensaje;
+}
+
+function limpiarErroresFormulario() {
+    const grupos = formHistorial.querySelectorAll(".form-group");
+
+    grupos.forEach((grupo) => {
+        grupo.classList.remove("error");
+
+        const errorMsg = grupo.querySelector(".error-msg");
+
+        if (errorMsg) {
+            errorMsg.textContent = "";
+        }
+    });
 }
 
 function validarFormularioConsulta(datos) {
@@ -540,214 +986,6 @@ function limpiarErroresFormularioConsulta() {
     });
 }
 
-function configurarFiltrosConsultas() {
-    if (!filtroFechaConsulta || !btnLimpiarFiltroConsultas) return;
-
-    filtroFechaConsulta.addEventListener("change", () => {
-        const fechaFiltro = filtroFechaConsulta.value;
-
-        if (!fechaFiltro) {
-            renderizarConsultas(consultasHistorialActual);
-            return;
-        }
-
-        const consultasFiltradas = consultasHistorialActual.filter((consulta) => {
-            const fechaConsulta = consulta.fecha || consulta.Fecha || consulta.Fecha_Consulta;
-
-            if (!fechaConsulta) return false;
-
-            return obtenerFechaInput(fechaConsulta) === fechaFiltro;
-        });
-
-        renderizarConsultas(consultasFiltradas);
-    });
-
-    btnLimpiarFiltroConsultas.addEventListener("click", () => {
-        filtroFechaConsulta.value = "";
-        renderizarConsultas(consultasHistorialActual);
-    });
-}
-
-function obtenerFechaInput(fecha) {
-    const fechaObj = new Date(fecha);
-
-    if (isNaN(fechaObj.getTime())) return "";
-
-    const anio = fechaObj.getFullYear();
-    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
-    const dia = String(fechaObj.getDate()).padStart(2, "0");
-
-    return `${anio}-${mes}-${dia}`;
-}
-
-function cerrarModalCrearHistorial() {
-    modalHistorial.classList.remove("show");
-    limpiarFormularioHistorial();
-}
-
-function limpiarFormularioHistorial() {
-    formHistorial.reset();
-    limpiarErroresFormulario();
-}
-
-function configurarModalHistorial() {
-    btnCerrarModalHistorial.addEventListener("click", cerrarModalCrearHistorial);
-    btnCancelarHistorial.addEventListener("click", cerrarModalCrearHistorial);
-
-    btnCerrarModalDetalleHistorial.addEventListener("click", cerrarModalDetalleHistorial);
-
-    modalHistorial.addEventListener("click", (e) => {
-        if (e.target === modalHistorial) {
-            cerrarModalCrearHistorial();
-        }
-    });
-
-    modalDetalleHistorial.addEventListener("click", (e) => {
-        if (e.target === modalDetalleHistorial) {
-            cerrarModalDetalleHistorial();
-        }
-    });
-
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && modalHistorial.classList.contains("show")) {
-            cerrarModalCrearHistorial();
-        }
-
-        if (e.key === "Escape" && modalDetalleHistorial.classList.contains("show")) {
-            cerrarModalDetalleHistorial();
-        }
-
-        if (e.key === "Escape" && modalConsulta.classList.contains("show")) {
-            cerrarModalConsulta();
-        }
-    });
-
-    formHistorial.addEventListener("submit", guardarHistorialClinico);
-}
-
-async function guardarHistorialClinico(e) {
-    e.preventDefault();
-
-    const mascotaId = inputMascotaIdHistorial.value;
-    const motivo = inputMotivo.value.trim();
-    const diagnosticoInicial = inputDiagnosticoInicial.value.trim();
-    const observaciones = inputObservaciones.value.trim();
-
-    const formularioValido = validarFormularioHistorial({
-        motivo,
-        diagnosticoInicial,
-        observaciones
-    });
-
-    if (!formularioValido) return;
-
-    const veterinarioId = obtenerVeterinarioId();
-
-    if (!veterinarioId) {
-        alert("No se encontró el ID del veterinario en la sesión.");
-        return;
-    }
-
-    const datosHistorial = {
-        mascota_id: Number(mascotaId),
-        motivo: motivo,
-        diagnostico_inicial: diagnosticoInicial,
-        observaciones: observaciones,
-        veterinario_id: Number(veterinarioId)
-    };
-
-    try {
-        const respuesta = await fetch(`${URL_API}/api/historial`, {
-            method: "POST",
-            headers: obtenerEncabezados(true),
-            body: JSON.stringify(datosHistorial)
-        });
-
-        if (respuesta.status === 401 || respuesta.status === 403) {
-            localStorage.removeItem("token");
-            localStorage.removeItem("usuario");
-            window.location.replace("../../index.html");
-            return;
-        }
-
-        const resultado = await respuesta.json();
-
-        if (!respuesta.ok) {
-            throw new Error(resultado.message || "No se pudo crear el historial clínico.");
-        }
-
-        alert("Historial clínico creado correctamente.");
-        console.log("Historial creado:", resultado.data);
-
-        cerrarModalCrearHistorial();
-
-    } catch (error) {
-        console.error("Error al crear historial clínico:", error);
-        alert(error.message || "Ocurrió un error al crear el historial clínico.");
-    }
-}
-
-function validarFormularioHistorial(datos) {
-    limpiarErroresFormulario();
-
-    let valido = true;
-
-    if (!datos.motivo) {
-        mostrarErrorCampo(inputMotivo, "El motivo es obligatorio.");
-        valido = false;
-    }
-
-    if (!datos.diagnosticoInicial) {
-        mostrarErrorCampo(inputDiagnosticoInicial, "El diagnóstico inicial es obligatorio.");
-        valido = false;
-    }
-
-    if (!datos.observaciones) {
-        mostrarErrorCampo(inputObservaciones, "Las observaciones son obligatorias.");
-        valido = false;
-    }
-
-    return valido;
-}
-
-function mostrarErrorCampo(input, mensaje) {
-    const formGroup = input.closest(".form-group");
-    const errorMsg = formGroup.querySelector(".error-msg");
-
-    formGroup.classList.add("error");
-    errorMsg.textContent = mensaje;
-}
-
-function limpiarErroresFormulario() {
-    const grupos = formHistorial.querySelectorAll(".form-group");
-
-    grupos.forEach((grupo) => {
-        grupo.classList.remove("error");
-
-        const errorMsg = grupo.querySelector(".error-msg");
-
-        if (errorMsg) {
-            errorMsg.textContent = "";
-        }
-    });
-}
-
-function obtenerVeterinarioId() {
-    const usuarioStorage = localStorage.getItem("usuario");
-
-    if (!usuarioStorage) return null;
-
-    try {
-        const usuario = JSON.parse(usuarioStorage);
-
-        return usuario.id || usuario.Id || usuario.veterinario_id || usuario.VeterinarioId || null;
-
-    } catch (error) {
-        console.error("Error al leer usuario desde localStorage:", error);
-        return null;
-    }
-}
-
 // ============================================================
 // Menú móvil
 // ============================================================
@@ -772,6 +1010,22 @@ function configurarMenuMovil() {
 // Utilidades
 // ============================================================
 
+function obtenerVeterinarioId() {
+    const usuarioStorage = localStorage.getItem("usuario");
+
+    if (!usuarioStorage) return null;
+
+    try {
+        const usuario = JSON.parse(usuarioStorage);
+
+        return usuario.id || usuario.Id || usuario.veterinario_id || usuario.VeterinarioId || null;
+
+    } catch (error) {
+        console.error("Error al leer usuario desde localStorage:", error);
+        return null;
+    }
+}
+
 function formatearFecha(fecha) {
     if (!fecha) return "";
 
@@ -784,6 +1038,34 @@ function formatearFecha(fecha) {
     const anio = fechaObj.getFullYear();
 
     return `${dia}-${mes}-${anio}`;
+}
+
+function convertirFechaParaInput(fecha) {
+    if (!fecha) return "";
+
+    const fechaObj = new Date(fecha);
+
+    if (isNaN(fechaObj.getTime())) return "";
+
+    const anio = fechaObj.getFullYear();
+    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
+    const dia = String(fechaObj.getDate()).padStart(2, "0");
+    const hora = String(fechaObj.getHours()).padStart(2, "0");
+    const minutos = String(fechaObj.getMinutes()).padStart(2, "0");
+
+    return `${anio}-${mes}-${dia}T${hora}:${minutos}`;
+}
+
+function obtenerFechaInput(fecha) {
+    const fechaObj = new Date(fecha);
+
+    if (isNaN(fechaObj.getTime())) return "";
+
+    const anio = fechaObj.getFullYear();
+    const mes = String(fechaObj.getMonth() + 1).padStart(2, "0");
+    const dia = String(fechaObj.getDate()).padStart(2, "0");
+
+    return `${anio}-${mes}-${dia}`;
 }
 
 function formatearPeso(peso) {
@@ -810,6 +1092,7 @@ function escapeHtml(valor) {
 // ============================================================
 // Inicio
 // ============================================================
+
 document.addEventListener("DOMContentLoaded", () => {
     verificarSesion();
     configurarMenuMovil();

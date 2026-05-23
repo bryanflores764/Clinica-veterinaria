@@ -74,7 +74,6 @@ body {
     border-color: #ffb3b3;
 }
 
-/* Botón hamburguesa */
 .menu-toggle {
     display: none;
     border: 1px solid rgb(165, 165, 165);
@@ -248,7 +247,7 @@ body {
 }
 
 /* ============================================================
-   Botonres de acción
+   botones de acción
 ============================================================ */
 .btn-accion {
     border: none;
@@ -271,16 +270,15 @@ body {
 
 .btn-vacunacion {
     background-color: #0071bc;
-    color: white;
+    color: #ffffff;
 }
 
 .btn-vacunacion:hover {
     background-color: #00568f;
 }
 
-
 /* ============================================================
-   mensaje vacio
+   mensaje vacío
 ============================================================ */
 .empty-msg {
     text-align: center;
@@ -290,31 +288,7 @@ body {
 }
 
 /* ============================================================
-   responsive tablet y móvil mediano
-============================================================ */
-@media (max-width: 900px) {
-    .header {
-        padding: 0 20px;
-    }
-
-    .header h1 {
-        font-size: 32px;
-        letter-spacing: 4px;
-    }
-
-    .header a.btn-logout {
-        font-size: 16px;
-        padding: 6px 12px;
-    }
-
-    .header a.btn-logout img {
-        width: 22px;
-        height: 22px;
-    }
-}
-
-/* ============================================================
-   Modal historial clínico
+   modal base
 ============================================================ */
 .modal {
     position: fixed;
@@ -373,10 +347,27 @@ body {
     font-size: 16px;
 }
 
+/* ============================================================
+   formularios
+============================================================ */
 .form-historial {
     display: flex;
     flex-direction: column;
     gap: 14px;
+}
+
+.form-consulta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.form-consulta .form-group-full {
+    grid-column: 1 / -1;
+}
+
+.form-consulta .modal-actions {
+    grid-column: 1 / -1;
 }
 
 .form-group {
@@ -424,6 +415,9 @@ body {
     font-size: 14px;
 }
 
+/* ============================================================
+   botones modal
+============================================================ */
 .modal-actions {
     display: flex;
     justify-content: flex-end;
@@ -461,7 +455,7 @@ body {
 }
 
 /* ============================================================
-   Modal detalle historial clínico
+   modal detalle historial clínico
 ============================================================ */
 .modal-content-detalle {
     max-width: 900px;
@@ -529,10 +523,17 @@ body {
     color: #ffffff;
     font-size: 15px;
     font-weight: 700;
-    cursor: not-allowed;
-    opacity: 0.55;
+    cursor: pointer;
+    opacity: 1;
 }
 
+.btn-editar-historial:hover {
+    background-color: #00568f;
+}
+
+/* ============================================================
+   filtros historial
+============================================================ */
 .filtros-historial {
     display: flex;
     gap: 10px;
@@ -566,6 +567,9 @@ body {
     background-color: #d5d5d5;
 }
 
+/* ============================================================
+   consultas médicas
+============================================================ */
 .lista-consultas {
     display: flex;
     flex-direction: column;
@@ -582,9 +586,20 @@ body {
     border-bottom: 1px solid #eeeeee;
 }
 
+.consulta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.consulta-header h4 {
+    margin-bottom: 0;
+}
+
 .consulta-item h4 {
     font-size: 18px;
-    margin-bottom: 8px;
     color: #111111;
 }
 
@@ -604,9 +619,6 @@ body {
     font-size: 15px;
 }
 
-/* ============================================================
-   Botón agregar consulta médica
-============================================================ */
 .btn-agregar-consulta {
     border: none;
     border-radius: 8px;
@@ -623,90 +635,26 @@ body {
     background-color: #348c3a;
 }
 
-/* ============================================================
-   Formulario consulta médica en grid
-============================================================ */
-.form-consulta {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+.btn-editar-consulta {
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    background-color: #0071bc;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
 }
 
-.form-consulta .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-/* Campos que ocuparán todo el ancho */
-.form-consulta .form-group-full {
-    grid-column: 1 / -1;
-}
-
-.form-consulta .modal-actions {
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 8px;
-}
-
-/* Responsive */
-@media (max-width: 700px) {
-    .detalle-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .filtros-historial {
-        flex-direction: column;
-    }
-
-    .detalle-card-header {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-     .btn-agregar-consulta {
-        width: 100%;
-    }
-    .form-consulta {
-        grid-template-columns: 1fr;
-    }
-
-    .form-consulta .form-group-full,
-    .form-consulta .modal-actions {
-        grid-column: auto;
-    }
-
-    .form-consulta .modal-actions {
-        flex-direction: column;
-    }
-}
-
-@media (max-width: 600px) {
-    .modal-content {
-        padding: 18px;
-        max-height: calc(100vh - 40px);
-        overflow-y: auto;
-    }
-
-    .modal-header h2 {
-        font-size: 24px;
-    }
-
-    .modal-actions {
-        flex-direction: column;
-    }
-
-    .btn-cancelar,
-    .btn-guardar {
-        width: 100%;
-    }
+.btn-editar-consulta:hover {
+    background-color: #00568f;
 }
 
 /* ============================================================
-   tablet: sidebar horizontal
+   tablet y móvil mediano
 ============================================================ */
-@media (max-width: 900px) and (min-width: 601px) {
+@media (max-width: 900px) {
     .layout {
         grid-template-columns: 1fr;
         grid-template-rows: 90px auto 1fr;
@@ -714,6 +662,25 @@ body {
             "header"
             "sidebar"
             "main";
+    }
+
+    .header {
+        padding: 0 20px;
+    }
+
+    .header h1 {
+        font-size: 32px;
+        letter-spacing: 4px;
+    }
+
+    .header a.btn-logout {
+        font-size: 16px;
+        padding: 6px 12px;
+    }
+
+    .header a.btn-logout img {
+        width: 22px;
+        height: 22px;
     }
 
     .sidebar {
@@ -760,7 +727,42 @@ body {
 }
 
 /* ============================================================
-   movil: sidebar off-canvas
+   responsive modal
+============================================================ */
+@media (max-width: 700px) {
+    .detalle-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filtros-historial {
+        flex-direction: column;
+    }
+
+    .detalle-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .btn-agregar-consulta {
+        width: 100%;
+    }
+
+    .form-consulta {
+        grid-template-columns: 1fr;
+    }
+
+    .form-consulta .form-group-full,
+    .form-consulta .modal-actions {
+        grid-column: auto;
+    }
+
+    .form-consulta .modal-actions {
+        flex-direction: column;
+    }
+}
+
+/* ============================================================
+   móvil
 ============================================================ */
 @media (max-width: 600px) {
     .layout {
@@ -813,6 +815,8 @@ body {
         transition: transform 0.25s ease;
         z-index: 1001;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        flex-direction: column;
+        align-items: stretch;
     }
 
     body.menu-open .sidebar {
@@ -847,10 +851,18 @@ body {
         margin-top: 0;
         flex-direction: column;
         gap: 16px;
+        overflow: visible;
+        white-space: normal;
+        padding: 0;
+    }
+
+    .sidebar li {
+        width: 100%;
     }
 
     .sidebar li a {
         width: 100%;
+        font-size: 18px;
     }
 
     .main {
@@ -915,5 +927,33 @@ body {
         margin-top: 10px;
         font-size: 14px;
         flex-shrink: 0;
+    }
+
+    .modal-content {
+        padding: 18px;
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+    }
+
+    .modal-header h2 {
+        font-size: 24px;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .btn-cancelar,
+    .btn-guardar {
+        width: 100%;
+    }
+
+    .consulta-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .btn-editar-consulta {
+        width: 100%;
     }
 }
