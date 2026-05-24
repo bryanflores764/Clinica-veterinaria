@@ -76,6 +76,9 @@ let mascotas = [];
 let consultasHistorialActual = [];
 let vacunasActuales = [];
 let mascotaCartillaActual = null;
+let alertasPorMascota = {};
+let alertasVacunasCompletas = [];
+let notifiedVaccineIds = new Set();
 let historialActualId = null;
 let mascotaActual = null;
 let historialActual = null;
@@ -86,6 +89,38 @@ let consultaActualId = null;
 
 let tipoEliminacion = null;
 let idEliminacion = null;
+
+// ============================================================
+// Notificaciones
+// ============================================================
+
+function mostrarNotificacion(mensaje) {
+    const texto = String(mensaje).toLowerCase();
+    let tipo = "info";
+
+    if (texto.includes("correctamente")) {
+        tipo = "success";
+    } else if (
+        texto.includes("error") ||
+        texto.includes("no se pudo") ||
+        texto.includes("ocurrió") ||
+        texto.includes("ocurrio")
+    ) {
+        tipo = "error";
+    }
+
+    const container = document.getElementById("toast-container");
+    const toast = document.createElement("div");
+    toast.classList.add("toast", tipo);
+    toast.textContent = mensaje;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.transition = "opacity 0.3s ease";
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 320);
+    }, 3500);
+}
 
 // ============================================================
 // Sesión
@@ -125,10 +160,13 @@ function obtenerEncabezados(conJson = false) {
 
 async function cargarMascotas() {
     try {
-        const respuesta = await fetch(`${URL_API}/api/mascotas`, {
-            method: "GET",
-            headers: obtenerEncabezados()
-        });
+        const [respuesta] = await Promise.all([
+            fetch(`${URL_API}/api/mascotas`, {
+                method: "GET",
+                headers: obtenerEncabezados()
+            }),
+            cargarAlertasVacunasTabla()
+        ]);
 
         if (respuesta.status === 401 || respuesta.status === 403) {
             localStorage.removeItem("token");
@@ -186,12 +224,17 @@ function renderizarMascotas(listaMascotas) {
                     Historial clínico
                 </button>
 
-                <button 
-                    type="button" 
-                    class="btn-accion btn-vacunacion" 
-                    data-id="${mascota.Id}" 
+                <button
+                    type="button"
+                    class="btn-accion btn-vacunacion"
+                    data-id="${mascota.Id}"
                     data-nombre="${escapeHtml(mascota.Nombre ?? "")}">
                     Cartilla de vacunación
+                    ${alertasPorMascota[String(mascota.Id)] === "vencida"
+                        ? '<span class="badge-alerta-vacuna vencida" title="Vacuna vencida">!</span>'
+                        : alertasPorMascota[String(mascota.Id)] === "proxima"
+                        ? '<span class="badge-alerta-vacuna" title="Vacuna próxima a vencer">!</span>'
+                        : ""}
                 </button>
             </td>
         `;
@@ -245,7 +288,7 @@ function configurarBotonHistorial() {
         const mascotaSeleccionada = mascotas.find((mascota) => String(mascota.Id) === String(mascotaId));
 
         if (!mascotaSeleccionada) {
-            alert("No se encontró la información de la mascota seleccionada.");
+            mostrarNotificacion("No se encontró la información de la mascota seleccionada.");
             return;
         }
 
@@ -306,7 +349,7 @@ function abrirModalCrearHistorial(mascota) {
 
 function abrirModalEditarHistorial() {
     if (!historialActual || !historialActualId || !mascotaActual) {
-        alert("No se encontró el historial clínico seleccionado.");
+        mostrarNotificacion("No se encontró el historial clínico seleccionado.");
         return;
     }
 
@@ -479,7 +522,7 @@ function renderizarConsultas(consultas) {
 
 function abrirModalConsulta() {
     if (!historialActualId) {
-        alert("No se encontró el historial clínico seleccionado.");
+        mostrarNotificacion("No se encontró el historial clínico seleccionado.");
         return;
     }
 
@@ -505,7 +548,7 @@ function abrirModalConsulta() {
 
 function abrirModalEditarConsulta(consulta) {
     if (!consulta) {
-        alert("No se encontró la consulta seleccionada.");
+        mostrarNotificacion("No se encontró la consulta seleccionada.");
         return;
     }
 
@@ -623,7 +666,7 @@ async function guardarConsultaMedica(e) {
     const veterinarioId = obtenerVeterinarioId();
 
     if (!veterinarioId) {
-        alert("No se encontró el ID del veterinario en la sesión.");
+        mostrarNotificacion("No se encontró el ID del veterinario en la sesión.");
         return;
     }
 
@@ -657,7 +700,7 @@ async function guardarConsultaMedica(e) {
             throw new Error(resultado.message || "No se pudo registrar la consulta médica.");
         }
 
-        alert("Consulta médica registrada correctamente.");
+        mostrarNotificacion("Consulta médica registrada correctamente.");
 
         cerrarModalConsulta();
 
@@ -665,13 +708,13 @@ async function guardarConsultaMedica(e) {
 
     } catch (error) {
         console.error("Error al registrar consulta médica:", error);
-        alert(error.message || "Ocurrió un error al registrar la consulta médica.");
+        mostrarNotificacion(error.message || "Ocurrió un error al registrar la consulta médica.");
     }
 }
 
 async function actualizarConsultaMedica(datos) {
     if (!consultaActualId) {
-        alert("No se encontró la consulta médica a actualizar.");
+        mostrarNotificacion("No se encontró la consulta médica a actualizar.");
         return;
     }
 
@@ -702,7 +745,7 @@ async function actualizarConsultaMedica(datos) {
             throw new Error(resultado.message || "No se pudo actualizar la consulta médica.");
         }
 
-        alert("Consulta médica actualizada correctamente.");
+        mostrarNotificacion("Consulta médica actualizada correctamente.");
 
         cerrarModalConsulta();
 
@@ -712,7 +755,7 @@ async function actualizarConsultaMedica(datos) {
 
     } catch (error) {
         console.error("Error al actualizar consulta médica:", error);
-        alert(error.message || "Ocurrió un error al actualizar la consulta médica.");
+        mostrarNotificacion(error.message || "Ocurrió un error al actualizar la consulta médica.");
     }
 }
 
@@ -734,6 +777,11 @@ function abrirConfirmacionEliminar(tipo, id) {
         mensajeConfirmacion.textContent = "¿Está seguro de eliminar esta consulta médica del historial clínico?";
     }
 
+    if (tipo === "vacuna") {
+        tituloConfirmacion.textContent = "Eliminar vacuna";
+        mensajeConfirmacion.textContent = "¿Está seguro de eliminar este registro de vacuna? Esta acción no se puede deshacer.";
+    }
+
     modalConfirmacion.classList.add("show");
 }
 
@@ -749,7 +797,7 @@ function cerrarConfirmacionEliminar() {
 
 async function confirmarEliminacionRegistro() {
     if (!tipoEliminacion || !idEliminacion) {
-        alert("No se encontró el registro a eliminar.");
+        mostrarNotificacion("No se encontró el registro a eliminar.");
         return;
     }
 
@@ -760,6 +808,11 @@ async function confirmarEliminacionRegistro() {
 
     if (tipoEliminacion === "consulta") {
         await eliminarConsultaMedica(idEliminacion);
+        return;
+    }
+
+    if (tipoEliminacion === "vacuna") {
+        await eliminarVacuna(idEliminacion);
     }
 }
 
@@ -783,14 +836,14 @@ async function eliminarHistorialClinico(historialId) {
             throw new Error(resultado.message || "No se pudo eliminar el historial clínico.");
         }
 
-        alert("Historial clínico eliminado correctamente.");
+        mostrarNotificacion("Historial clínico eliminado correctamente.");
 
         cerrarConfirmacionEliminar();
         cerrarModalDetalleHistorial();
 
     } catch (error) {
         console.error("Error al eliminar historial clínico:", error);
-        alert(error.message || "Ocurrió un error al eliminar el historial clínico.");
+        mostrarNotificacion(error.message || "Ocurrió un error al eliminar el historial clínico.");
     }
 }
 
@@ -814,7 +867,7 @@ async function eliminarConsultaMedica(consultaId) {
             throw new Error(resultado.message || "No se pudo eliminar la consulta médica.");
         }
 
-        alert("Consulta médica eliminada correctamente.");
+        mostrarNotificacion("Consulta médica eliminada correctamente.");
 
         consultasHistorialActual = consultasHistorialActual.filter((consulta) => {
             const id = consulta.id || consulta.Id || consulta.consulta_id || consulta.ConsultaId;
@@ -826,7 +879,40 @@ async function eliminarConsultaMedica(consultaId) {
 
     } catch (error) {
         console.error("Error al eliminar consulta médica:", error);
-        alert(error.message || "Ocurrió un error al eliminar la consulta médica.");
+        mostrarNotificacion(error.message || "Ocurrió un error al eliminar la consulta médica.");
+    }
+}
+
+async function eliminarVacuna(vacunaId) {
+    try {
+        const respuesta = await fetch(`${URL_API}/api/vacunas/${vacunaId}`, {
+            method: "DELETE",
+            headers: obtenerEncabezados()
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(resultado.message || "No se pudo eliminar la vacuna.");
+        }
+
+        mostrarNotificacion("Vacuna eliminada correctamente.");
+        cerrarConfirmacionEliminar();
+
+        if (mascotaCartillaActual) {
+            await cargarVacunas(mascotaCartillaActual.Id);
+        }
+
+    } catch (error) {
+        console.error("Error al eliminar vacuna:", error);
+        mostrarNotificacion(error.message || "Ocurrió un error al eliminar la vacuna.");
     }
 }
 
@@ -906,7 +992,7 @@ function configurarModalHistorial() {
 
     btnEliminarHistorial.addEventListener("click", () => {
         if (!historialActualId) {
-            alert("No se encontró el historial clínico seleccionado.");
+            mostrarNotificacion("No se encontró el historial clínico seleccionado.");
             return;
         }
 
@@ -975,7 +1061,7 @@ async function guardarHistorialClinico(e) {
     const veterinarioId = obtenerVeterinarioId();
 
     if (!veterinarioId) {
-        alert("No se encontró el ID del veterinario en la sesión.");
+        mostrarNotificacion("No se encontró el ID del veterinario en la sesión.");
         return;
     }
 
@@ -1007,18 +1093,18 @@ async function guardarHistorialClinico(e) {
             throw new Error(resultado.message || "No se pudo crear el historial clínico.");
         }
 
-        alert("Historial clínico creado correctamente.");
+        mostrarNotificacion("Historial clínico creado correctamente.");
         cerrarModalCrearHistorial();
 
     } catch (error) {
         console.error("Error al crear historial clínico:", error);
-        alert(error.message || "Ocurrió un error al crear el historial clínico.");
+        mostrarNotificacion(error.message || "Ocurrió un error al crear el historial clínico.");
     }
 }
 
 async function actualizarHistorialClinico(datos) {
     if (!historialActualId) {
-        alert("No se encontró el historial clínico a actualizar.");
+        mostrarNotificacion("No se encontró el historial clínico a actualizar.");
         return;
     }
 
@@ -1048,7 +1134,7 @@ async function actualizarHistorialClinico(datos) {
             throw new Error(resultado.message || "No se pudo actualizar el historial clínico.");
         }
 
-        alert("Historial clínico actualizado correctamente.");
+        mostrarNotificacion("Historial clínico actualizado correctamente.");
 
         modalHistorial.classList.remove("show");
         limpiarFormularioHistorial();
@@ -1063,7 +1149,7 @@ async function actualizarHistorialClinico(datos) {
 
     } catch (error) {
         console.error("Error al actualizar historial clínico:", error);
-        alert(error.message || "Ocurrió un error al actualizar el historial clínico.");
+        mostrarNotificacion(error.message || "Ocurrió un error al actualizar el historial clínico.");
     }
 }
 
@@ -1170,6 +1256,124 @@ function limpiarErroresFormularioConsulta() {
 // Cartilla de vacunación
 // ============================================================
 
+async function cargarAlertasVacunasTabla() {
+    try {
+        const respuesta = await fetch(`${URL_API}/api/vacunas/alertas`, {
+            method: "GET",
+            headers: obtenerEncabezados()
+        });
+
+        if (!respuesta.ok) {
+            console.warn("No se pudieron cargar las alertas de vacunas.");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+        const alertas = Array.isArray(resultado.data) ? resultado.data : [];
+
+        alertasVacunasCompletas = alertas.filter((a) => !notifiedVaccineIds.has(String(a.id)));
+        alertasPorMascota = {};
+        alertas.forEach((a) => {
+            const mid = String(a.mascota_id);
+            const estadoActual = alertasPorMascota[mid];
+            const nuevoEstado = a.estado_alerta || "proxima";
+            if (!estadoActual || nuevoEstado === "vencida") {
+                alertasPorMascota[mid] = nuevoEstado;
+            }
+        });
+
+        renderizarPanelAlertas();
+
+    } catch (error) {
+        console.warn("Error al cargar alertas de vacunas:", error);
+    }
+}
+
+async function refrescarBadgesTabla() {
+    await cargarAlertasVacunasTabla();
+    renderizarMascotas(mascotas);
+}
+
+function renderizarPanelAlertas() {
+    const lista = document.getElementById("alertas-panel-lista");
+    const emptyMsg = document.getElementById("alertas-panel-empty");
+    const countBadge = document.getElementById("alertas-count-badge");
+
+    if (!lista) return;
+
+    lista.innerHTML = "";
+
+    if (alertasVacunasCompletas.length === 0) {
+        emptyMsg.style.display = "block";
+        countBadge.textContent = "";
+        return;
+    }
+
+    emptyMsg.style.display = "none";
+    countBadge.textContent = alertasVacunasCompletas.length;
+
+    const ordenadas = [...alertasVacunasCompletas].sort((a, b) => {
+        if (a.estado_alerta === "vencida" && b.estado_alerta !== "vencida") return -1;
+        if (a.estado_alerta !== "vencida" && b.estado_alerta === "vencida") return 1;
+        return (Number(a.dias_restantes) || 0) - (Number(b.dias_restantes) || 0);
+    });
+
+    ordenadas.forEach((alerta) => {
+        const esVencida = alerta.estado_alerta === "vencida";
+        const dias = Math.abs(Number(alerta.dias_restantes) || 0);
+
+        let textoFecha;
+        if (esVencida) {
+            textoFecha = dias === 0 ? "Venció hoy" : `Venció hace ${dias} día${dias !== 1 ? "s" : ""}`;
+        } else {
+            textoFecha = dias === 0 ? "Vence hoy" : `Vence en ${dias} día${dias !== 1 ? "s" : ""}`;
+        }
+
+        const item = document.createElement("div");
+        item.classList.add("alerta-panel-item");
+        if (esVencida) item.classList.add("vencida");
+        item.dataset.mascotaId = alerta.mascota_id;
+        item.title = "Clic para abrir cartilla de vacunación";
+
+        item.innerHTML = `
+            <div class="alerta-panel-info">
+                <span class="alerta-panel-mascota">${escapeHtml(alerta.mascota_nombre || "-")}</span>
+                <span class="alerta-panel-sep">·</span>
+                <span class="alerta-panel-vacuna">${escapeHtml(alerta.nombre_vacuna || "-")}</span>
+                <span class="alerta-panel-sep">·</span>
+                <span class="alerta-panel-fecha">${textoFecha}</span>
+            </div>
+            <span class="alerta-panel-badge ${esVencida ? "vencida" : "proxima"}">${esVencida ? "Vencida" : "Próxima"}</span>
+        `;
+
+        lista.appendChild(item);
+    });
+}
+
+function configurarPanelAlertas() {
+    const panel = document.getElementById("alertas-panel");
+    const header = document.getElementById("btn-toggle-alertas-panel");
+    const lista = document.getElementById("alertas-panel-lista");
+
+    if (!panel || !header) return;
+
+    if (window.innerWidth <= 600) {
+        panel.classList.add("collapsed");
+    }
+
+    header.addEventListener("click", () => {
+        panel.classList.toggle("collapsed");
+    });
+
+    lista.addEventListener("click", (e) => {
+        const item = e.target.closest(".alerta-panel-item");
+        if (!item) return;
+        const mascotaId = item.dataset.mascotaId;
+        const mascota = mascotas.find((m) => String(m.Id) === String(mascotaId));
+        if (mascota) abrirModalCartilla(mascota);
+    });
+}
+
 function configurarBotonVacunacion() {
     tbody.addEventListener("click", async (e) => {
         const boton = e.target.closest(".btn-vacunacion");
@@ -1179,7 +1383,7 @@ function configurarBotonVacunacion() {
         const mascotaSeleccionada = mascotas.find((m) => String(m.Id) === String(mascotaId));
 
         if (!mascotaSeleccionada) {
-            alert("No se encontró la información de la mascota seleccionada.");
+            mostrarNotificacion("No se encontró la información de la mascota seleccionada.");
             return;
         }
 
@@ -1281,7 +1485,10 @@ function renderizarVacunas(vacunas) {
                 ${vacuna.observaciones ? `<p class="vacuna-detalle"><strong>Observaciones:</strong> ${escapeHtml(vacuna.observaciones)}</p>` : ""}
                 <p class="vacuna-detalle"><strong>Veterinario:</strong> ${escapeHtml(vacuna.veterinario_nombre || "-")}</p>
             </div>
-            <span class="vacuna-badge ${estado}">${etiquetas[estado] || estado}</span>
+            <div class="vacuna-acciones">
+                <span class="vacuna-badge ${estado}">${etiquetas[estado] || estado}</span>
+                <button type="button" class="btn-eliminar-vacuna" data-id="${vacuna.id}">Eliminar</button>
+            </div>
         `;
 
         lista.appendChild(item);
@@ -1294,7 +1501,10 @@ function renderizarAlertas(vacunas) {
 
     lista.innerHTML = "";
 
-    const alertas = vacunas.filter((v) => v.estado_vacuna === "vencida" || v.estado_vacuna === "proxima");
+    const alertas = vacunas.filter((v) =>
+        (v.estado_vacuna === "vencida" || v.estado_vacuna === "proxima") &&
+        !notifiedVaccineIds.has(String(v.id))
+    );
 
     if (alertas.length === 0) {
         emptyAlertas.style.display = "block";
@@ -1312,8 +1522,15 @@ function renderizarAlertas(vacunas) {
         const fechaProxima = vacuna.proxima_dosis ? formatearFecha(vacuna.proxima_dosis) : "Sin fecha programada";
 
         item.innerHTML = `
-            <p><strong>${escapeHtml(vacuna.nombre_vacuna)}</strong> — ${esVencida ? "Vacuna vencida" : "Próxima dosis"}</p>
-            <p>Fecha próxima dosis: <strong>${fechaProxima}</strong></p>
+            <div class="alerta-info">
+                <p><strong>${escapeHtml(vacuna.nombre_vacuna)}</strong> — ${esVencida ? "Vacuna vencida" : "Próxima dosis"}</p>
+                <p>Fecha próxima dosis: <strong>${fechaProxima}</strong></p>
+            </div>
+            <div class="alerta-acciones">
+                <button type="button" class="btn-alerta-notificar" data-id="${vacuna.id}">
+                    Marcar como revisada
+                </button>
+            </div>
         `;
 
         lista.appendChild(item);
@@ -1346,6 +1563,61 @@ function configurarModalCartilla() {
     });
 
     formVacuna.addEventListener("submit", guardarVacuna);
+
+    document.getElementById("cartilla-vacunas-lista").addEventListener("click", (e) => {
+        const boton = e.target.closest(".btn-eliminar-vacuna");
+        if (!boton) return;
+        abrirConfirmacionEliminar("vacuna", boton.dataset.id);
+    });
+
+    document.getElementById("cartilla-alertas-lista").addEventListener("click", (e) => {
+        const boton = e.target.closest(".btn-alerta-notificar");
+        if (!boton) return;
+        const item = boton.closest(".alerta-item");
+        marcarNotificacionVacuna(boton.dataset.id, item);
+    });
+}
+
+async function marcarNotificacionVacuna(vacunaId, itemElement) {
+    const propietarioId = mascotaCartillaActual?.Id_Propietario;
+
+    try {
+        const respuesta = await fetch(`${URL_API}/api/vacunas/${vacunaId}/notificar`, {
+            method: "POST",
+            headers: obtenerEncabezados(true),
+            body: JSON.stringify({ propietario_id: propietarioId })
+        });
+
+        if (respuesta.status === 401 || respuesta.status === 403) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.replace("../../index.html");
+            return;
+        }
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(resultado.message || "No se pudo marcar la notificación.");
+        }
+
+        notifiedVaccineIds.add(String(vacunaId));
+        itemElement?.remove();
+
+        const lista = document.getElementById("cartilla-alertas-lista");
+        const emptyAlertas = document.getElementById("cartilla-alertas-empty");
+        if (lista && lista.children.length === 0) {
+            emptyAlertas.style.display = "block";
+        }
+
+        await refrescarBadgesTabla();
+
+        mostrarNotificacion("Notificación marcada como revisada.");
+
+    } catch (error) {
+        console.error("Error al marcar notificación:", error);
+        mostrarNotificacion(error.message || "Ocurrió un error al marcar la notificación.");
+    }
 }
 
 async function guardarVacuna(e) {
@@ -1389,7 +1661,7 @@ async function guardarVacuna(e) {
 
     const veterinarioId = obtenerVeterinarioId();
     if (!veterinarioId) {
-        alert("No se encontró el ID del veterinario en la sesión.");
+        mostrarNotificacion("No se encontró el ID del veterinario en la sesión.");
         return;
     }
 
@@ -1430,7 +1702,7 @@ async function guardarVacuna(e) {
             throw new Error(resultado.message || "No se pudo registrar la vacuna.");
         }
 
-        alert("Vacuna registrada correctamente.");
+        mostrarNotificacion("Vacuna registrada correctamente.");
         limpiarFormVacuna();
         formVacuna.style.display = "none";
         btnToggleFormVacuna.textContent = "+ Registrar vacuna";
@@ -1439,7 +1711,7 @@ async function guardarVacuna(e) {
 
     } catch (error) {
         console.error("Error al registrar vacuna:", error);
-        alert(error.message || "Ocurrió un error al registrar la vacuna.");
+        mostrarNotificacion(error.message || "Ocurrió un error al registrar la vacuna.");
     }
 }
 
@@ -1704,6 +1976,7 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarModalConsulta();
     configurarModalConfirmacion();
     configurarFiltrosConsultas();
+    configurarPanelAlertas();
     configurarBotonVacunacion();
     configurarModalCartilla();
     cargarMascotas();

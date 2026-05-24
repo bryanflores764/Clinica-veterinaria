@@ -154,6 +154,164 @@ body {
 
 .main-container {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* ============================================================
+   panel de alertas de vacunación
+============================================================ */
+.alertas-panel {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.alertas-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid #eeeeee;
+    transition: background-color 0.15s ease;
+}
+
+.alertas-panel-header:hover {
+    background-color: #fafafa;
+}
+
+.alertas-panel.collapsed .alertas-panel-header {
+    border-bottom: none;
+}
+
+.alertas-panel-titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alertas-panel-titulo h2 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #111111;
+}
+
+.alertas-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    background-color: #d93025;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 0 6px;
+}
+
+.alertas-count-badge:empty {
+    display: none;
+}
+
+.alertas-panel-chevron {
+    font-size: 13px;
+    color: #555555;
+    transition: transform 0.2s ease;
+}
+
+.alertas-panel.collapsed .alertas-panel-chevron {
+    transform: rotate(180deg);
+}
+
+.alertas-panel-body {
+    padding: 12px 20px 16px;
+}
+
+.alertas-panel.collapsed .alertas-panel-body {
+    display: none;
+}
+
+.alertas-panel-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.alerta-panel-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    background-color: #fff8e1;
+    border-left: 4px solid #f5a623;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: filter 0.15s ease;
+}
+
+.alerta-panel-item:hover {
+    filter: brightness(0.96);
+}
+
+.alerta-panel-item.vencida {
+    background-color: #fdecea;
+    border-left-color: #d93025;
+}
+
+.alerta-panel-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.alerta-panel-mascota {
+    font-weight: 700;
+    color: #111111;
+    font-size: 14px;
+}
+
+.alerta-panel-sep {
+    color: #bbbbbb;
+    font-size: 14px;
+}
+
+.alerta-panel-vacuna {
+    color: #444444;
+    font-size: 14px;
+}
+
+.alerta-panel-fecha {
+    color: #666666;
+    font-size: 13px;
+}
+
+.alerta-panel-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.alerta-panel-badge.vencida { background-color: #fdecea; color: #c0392b; }
+.alerta-panel-badge.proxima { background-color: #fff3cd; color: #d46b08; }
+
+.alertas-panel-empty {
+    text-align: center;
+    color: #888888;
+    font-size: 14px;
+    padding: 6px 0;
 }
 
 /* ============================================================
@@ -454,6 +612,22 @@ body {
     background-color: #348c3a;
 }
 
+.btn-eliminar-confirmar {
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    background-color: #fdecea;
+    color: #c0392b;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-eliminar-confirmar:hover {
+    background-color: #f5c0bb;
+}
+
 /* ============================================================
    modal detalle historial clínico
 ============================================================ */
@@ -529,6 +703,45 @@ body {
 
 .btn-editar-historial:hover {
     background-color: #00568f;
+}
+
+.historial-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-eliminar-historial {
+    border: none;
+    border-radius: 8px;
+    padding: 7px 14px;
+    background-color: #fdecea;
+    color: #c0392b;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-eliminar-historial:hover {
+    background-color: #f5c0bb;
+}
+
+.btn-agregar-consulta {
+    border: none;
+    border-radius: 8px;
+    padding: 7px 14px;
+    background-color: #42ab49;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-agregar-consulta:hover {
+    background-color: #348c3a;
 }
 
 /* ============================================================
@@ -795,6 +1008,32 @@ body {
 .vacuna-badge.aplicada  { background-color: #e8f5e9; color: #27ae60; }
 .vacuna-badge.completado{ background-color: #f5f5f5; color: #777777; }
 
+/* Acciones por vacuna */
+.vacuna-acciones {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.btn-eliminar-vacuna {
+    border: none;
+    border-radius: 8px;
+    padding: 5px 12px;
+    background-color: #fdecea;
+    color: #c0392b;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-eliminar-vacuna:hover {
+    background-color: #f5c0bb;
+}
+
 /* Alertas de vacunación */
 .alerta-item {
     background-color: #fff8e1;
@@ -803,6 +1042,10 @@ body {
     padding: 10px 14px;
     margin-bottom: 8px;
     font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .alerta-item:last-child { margin-bottom: 0; }
@@ -812,14 +1055,55 @@ body {
     border-left-color: #d93025;
 }
 
-.alerta-item p {
+.alerta-info { flex: 1; }
+
+.alerta-info p {
     color: #333333;
     margin-bottom: 3px;
 }
 
-.alerta-item p:last-child { margin-bottom: 0; }
+.alerta-info p:last-child { margin-bottom: 0; }
 
-.alerta-item strong { color: #111111; }
+.alerta-info strong { color: #111111; }
+
+.alerta-acciones { flex-shrink: 0; }
+
+.btn-alerta-notificar {
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    background-color: #e8f4fd;
+    color: #0071bc;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-alerta-notificar:hover {
+    background-color: #cce5f6;
+}
+
+.badge-alerta-vacuna {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background-color: #f5a623;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 800;
+    margin-left: 5px;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+.badge-alerta-vacuna.vencida {
+    background-color: #d93025;
+}
 
 .cartilla-empty-msg {
     text-align: center;
@@ -859,6 +1143,50 @@ body {
     .btn-cancelar,
     .btn-guardar {
         width: 100%;
+    }
+}
+
+/* ============================================================
+   Notificaciones toast
+============================================================ */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 380px;
+    width: calc(100% - 40px);
+    pointer-events: none;
+}
+
+.toast {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+    border-left: 5px solid #42ab49;
+    font-size: 15px;
+    font-weight: 600;
+    color: #222222;
+    line-height: 1.4;
+    pointer-events: auto;
+    animation: toastEntrar 0.3s ease;
+}
+
+.toast.error { border-left-color: #d93025; }
+.toast.info  { border-left-color: #0071bc; }
+
+@keyframes toastEntrar {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
     }
 }
 
@@ -1105,10 +1433,19 @@ body {
     .main-container {
         width: 100%;
         height: 100%;
+        gap: 0;
+    }
+
+    .alertas-panel {
+        flex-shrink: 0;
+        border-radius: 8px;
+        margin-bottom: 10px;
     }
 
     .table-container {
-        height: 100%;
+        flex: 1;
+        min-height: 0;
+        height: auto;
         padding: 10px;
         border-radius: 12px;
         box-shadow: none;

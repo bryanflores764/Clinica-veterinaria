@@ -70,6 +70,20 @@
 
             <section class="main-container">
 
+                <div class="alertas-panel" id="alertas-panel">
+                    <div class="alertas-panel-header" id="btn-toggle-alertas-panel">
+                        <div class="alertas-panel-titulo">
+                            <h2>Alertas de Vacunación</h2>
+                            <span class="alertas-count-badge" id="alertas-count-badge"></span>
+                        </div>
+                        <span class="alertas-panel-chevron" id="alertas-panel-chevron">▲</span>
+                    </div>
+                    <div class="alertas-panel-body" id="alertas-panel-body">
+                        <div id="alertas-panel-lista" class="alertas-panel-lista"></div>
+                        <p id="alertas-panel-empty" class="alertas-panel-empty">No hay alertas de vacunación pendientes.</p>
+                    </div>
+                </div>
+
                 <div class="table-container">
 
                     <div class="table-header">
@@ -455,6 +469,8 @@
             </div>
         </div>
     </div>
+
+    <div id="toast-container" class="toast-container"></div>
 
     <script src="../../js/veterinario/logout.js"></script>
     <script src="../../js/veterinario/interfazPacientes.js"></script>

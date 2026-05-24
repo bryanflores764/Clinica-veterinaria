@@ -60,23 +60,24 @@ const VacunasQueries = {
 
   // Obtener alertas de vacunas próximas (próximos 30 días)
   FIND_ALERTAS_VACUNAS: `
-    SELECT 
+    SELECT
       v.*,
       m.Nombre AS mascota_nombre,
+      p.Id AS propietario_id,
       p.Nombre AS propietario_nombre,
       p.Telefono AS propietario_telefono,
       p.Correo AS propietario_correo,
-      DATEDIFF(v.proxima_dosis, CURDATE()) AS dias_restantes
+      DATEDIFF(v.proxima_dosis, CURDATE()) AS dias_restantes,
+      CASE
+        WHEN v.proxima_dosis < CURDATE() THEN 'vencida'
+        ELSE 'proxima'
+      END AS estado_alerta
     FROM vacunas_aplicadas v
     INNER JOIN mascotas m ON m.Id = v.mascota_id
     INNER JOIN propietarios p ON p.Id = m.Id_Propietario
     WHERE v.proxima_dosis IS NOT NULL
-      AND v.proxima_dosis BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)
+      AND v.proxima_dosis <= DATE_ADD(CURDATE(), INTERVAL 30 DAY)
       AND v.estado = 'activo'
-      AND NOT EXISTS (
-        SELECT 1 FROM notificaciones_vacunas n 
-        WHERE n.vacuna_id = v.id AND n.notificado = TRUE
-      )
     ORDER BY v.proxima_dosis ASC
   `,
 
