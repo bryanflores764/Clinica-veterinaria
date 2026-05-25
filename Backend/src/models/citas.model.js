@@ -148,6 +148,47 @@ const CitasQueries = {
     LIMIT 1
   `,
 
+
+  // ============================================================
+//  NUEVAS CONSULTAS PARA VETERINARIO (AGREGAR)
+// ============================================================
+
+// Obtener citas por veterinario
+FIND_BY_VETERINARIO: `
+  SELECT 
+    c.IdCita,
+    c.FechaHora,
+    m.Nombre AS Mascota,
+    m.Id AS Id_Mascota,
+    tc.Tipo_Consulta,
+    ec.Estado,
+    c.Id_Veterinario,
+    c.IdTipoConsulta,
+    c.IdEstadoCita,
+    p.Nombre AS Propietario
+  FROM citas c
+  INNER JOIN mascotas m ON m.Id = c.Id_Mascota
+  INNER JOIN propietarios p ON p.Id = m.Id_Propietario
+  INNER JOIN tipoconsulta tc ON tc.Id = c.IdTipoConsulta
+  INNER JOIN estadocita ec ON ec.Id = c.IdEstadoCita
+  WHERE c.Id_Veterinario = ?
+  ORDER BY c.FechaHora DESC
+`,
+
+// Obtener citas por mascota (para ver historial)
+FIND_BY_MASCOTA_ID: `
+  SELECT 
+    c.IdCita,
+    c.FechaHora,
+    tc.Tipo_Consulta,
+    ec.Estado
+  FROM citas c
+  INNER JOIN tipoconsulta tc ON tc.Id = c.IdTipoConsulta
+  INNER JOIN estadocita ec ON ec.Id = c.IdEstadoCita
+  WHERE c.Id_Mascota = ?
+  ORDER BY c.FechaHora DESC
+`,
+
 };
 
 module.exports = CitasQueries;

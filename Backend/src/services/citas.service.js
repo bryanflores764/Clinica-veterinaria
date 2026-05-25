@@ -148,6 +148,45 @@ const deleteCita = async (id) => {
   return { id, mensaje: `Cita del ${cita.FechaHora} eliminada exitosamente.` };
 };
 
+
+// ============================================================
+//  NUEVAS FUNCIONES (AGREGAR)
+// ============================================================
+
+// Obtener citas por veterinario
+const getCitasByVeterinario = async (idVeterinario) => {
+  if (!idVeterinario) {
+    throw { status: 400, message: 'El ID del veterinario es obligatorio' };
+  }
+  const citas = await citasRepository.findByVeterinario(idVeterinario);
+  return citas;
+};
+
+// Obtener citas por mascota (historial)
+const getCitasByMascotaId = async (idMascota) => {
+  if (!idMascota) {
+    throw { status: 400, message: 'El ID de la mascota es obligatorio' };
+  }
+  const citas = await citasRepository.findByMascotaId(idMascota);
+  return citas;
+};
+
+// Completar cita (cambiar estado a Completada = 4)
+const completarCita = async (idCita) => {
+  const cita = await citasRepository.findById(idCita);
+  if (!cita) {
+    throw { status: 404, message: `No existe una cita con IdCita ${idCita}` };
+  }
+  
+  if (cita.IdEstadoCita === 4) {
+    throw { status: 409, message: 'La cita ya está completada' };
+  }
+  
+  await citasRepository.updateEstado(idCita, { IdEstadoCita: 4 });
+  return { id: idCita, estado: 'completada', message: 'Cita completada exitosamente' };
+};
+
+
 module.exports = {
   createCita,
   getAllCitas,
@@ -156,4 +195,7 @@ module.exports = {
   updateCita,
   updateEstadoCita,
   deleteCita,
+  getCitasByVeterinario,  // ← NUEVA
+  getCitasByMascotaId,    // ← NUEVA
+  completarCita,          // ← NUEVA
 };

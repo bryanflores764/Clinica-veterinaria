@@ -4,15 +4,20 @@
 // ============================================================
 
 const { Router } = require('express');
-const usuariosController = require('../controllers/usuarios.controller');
-const { verifyAdmin } = require('../middlewares/usarios.middleware');
-
 const router = Router();
-router.get('/veterinarios', usuariosController.getVeterinarios);
-router.get('/',             verifyAdmin, usuariosController.getAllUsuarios);
-router.post('/',            verifyAdmin, usuariosController.createUsuario);
-router.put('/:id',          verifyAdmin, usuariosController.updateUsuario);
+const usuariosController = require('../controllers/usuarios.controller');
+const { verifyToken, verifyAdmin } = require('../middlewares/roles.middleware');
+const { registrarAuditoria } = require('../middlewares/auditoria.middleware');
+
+// ✅ ORDEN CORRECTO
+router.use(verifyToken);
+router.use(registrarAuditoria('usuarios'));
+
+router.get('/veterinarios',      usuariosController.getVeterinarios);
+router.get('/',         verifyAdmin, usuariosController.getAllUsuarios);
+router.post('/',        verifyAdmin, usuariosController.createUsuario);
+router.put('/:id',      verifyAdmin, usuariosController.updateUsuario);
 router.patch('/:id/toggle', verifyAdmin, usuariosController.toggleActivo);
-router.delete('/:id',       verifyAdmin, usuariosController.deleteUsuario);
+router.delete('/:id',   verifyAdmin, usuariosController.deleteUsuario);
 
 module.exports = router;

@@ -503,3 +503,89 @@ CREATE TABLE IF NOT EXISTS movimientosstock (
 );
 
 
+-- 1. Tabla historial_clinico
+CREATE TABLE IF NOT EXISTS historial_clinico (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  mascota_id INT NOT NULL,
+  fecha_apertura DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  motivo VARCHAR(300) NOT NULL,
+  diagnostico_inicial VARCHAR(500),
+  observaciones TEXT,
+  veterinario_id INT NOT NULL,
+  estado ENUM('activo', 'inactivo') NOT NULL DEFAULT 'activo',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (mascota_id) REFERENCES mascotas(Id) ON DELETE CASCADE,
+  FOREIGN KEY (veterinario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+  INDEX idx_mascota (mascota_id),
+  INDEX idx_estado (estado)
+);
+
+-- 2. Tabla consultas_medicas
+CREATE TABLE IF NOT EXISTS consultas_medicas (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  historial_id INT NOT NULL,
+  fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  sintomas VARCHAR(500),
+  diagnostico VARCHAR(500) NOT NULL,
+  tratamiento TEXT,
+  observaciones TEXT,
+  veterinario_id INT NOT NULL,
+  estado ENUM('activo', 'inactivo') NOT NULL DEFAULT 'activo',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (historial_id) REFERENCES historial_clinico(id) ON DELETE CASCADE,
+  FOREIGN KEY (veterinario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+  INDEX idx_historial (historial_id),
+  INDEX idx_fecha (fecha)
+);
+
+-- 3. Tabla vacunas_aplicadas
+CREATE TABLE IF NOT EXISTS vacunas_aplicadas (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  mascota_id INT NOT NULL,
+  nombre_vacuna VARCHAR(150) NOT NULL,
+  fecha_aplicacion DATE NOT NULL,
+  proxima_dosis DATE,
+  lote VARCHAR(50),
+  observaciones TEXT,
+  veterinario_id INT NOT NULL,
+  estado ENUM('activo', 'inactivo') NOT NULL DEFAULT 'activo',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (mascota_id) REFERENCES mascotas(Id) ON DELETE CASCADE,
+  FOREIGN KEY (veterinario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+  INDEX idx_mascota (mascota_id),
+  INDEX idx_proxima_dosis (proxima_dosis)
+);
+
+-- 4. Tabla auditoria_acciones
+CREATE TABLE IF NOT EXISTS auditoria_acciones (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NOT NULL,
+  modulo VARCHAR(50) NOT NULL,
+  accion VARCHAR(50) NOT NULL,
+  descripcion TEXT,
+  ip VARCHAR(45),
+  referencia_id INT NULL,
+  fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+  INDEX idx_usuario (usuario_id),
+  INDEX idx_modulo (modulo),
+  INDEX idx_fecha (fecha)
+);
+
+-- 5. Tabla notificaciones_vacunas (opcional)
+CREATE TABLE IF NOT EXISTS notificaciones_vacunas (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  vacuna_id INT NOT NULL,
+  propietario_id INT NOT NULL,
+  notificado BOOLEAN DEFAULT FALSE,
+  fecha_notificacion DATETIME,
+  FOREIGN KEY (vacuna_id) REFERENCES vacunas_aplicadas(id) ON DELETE CASCADE,
+  FOREIGN KEY (propietario_id) REFERENCES propietarios(Id) ON DELETE CASCADE,
+  INDEX idx_vacuna (vacuna_id),
+  INDEX idx_notificado (notificado)
+);
+
+
