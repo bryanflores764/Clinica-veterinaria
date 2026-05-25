@@ -19,13 +19,14 @@ const createMascota = async (propietarioId, razaId, nombre, fecha_nacimiento, pe
 // 🔹 Obtener todas
 const findAll = async () => {
   const [rows] = await connection.execute(`
-    SELECT 
+    SELECT
       m.Id,
       m.Nombre,
       m.Fecha_Nacimiento,
       m.Peso,
       m.Color,
       p.Nombre AS Propietario,
+      p.Telefono AS Telefono_Propietario,
       r.Nombre_Raza,
       e.Nombre_Especie
     FROM mascotas m
