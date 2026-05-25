@@ -4,23 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VetCare - Administrador</title>
+    <title>VetCare - Historial de acciones</title>
 
-    <link rel="icon" type="image/x-icon" href="../assets/icons/Logo-de-clínica-Veterinaria-azul.ico">
+    <link rel="icon" type="image/x-icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="../../css/administrador/interfazAdmin.css">
+    <link rel="stylesheet" href="../../css/administrador/historial-acciones.css">
 </head>
 
 <body>
 
-    <!-- Botón hamburguesa para móvil -->
     <button class="menu-toggle" id="menuToggle">☰</button>
-
-    <!-- Fondo oscuro para móvil -->
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
     <main class="layout">
@@ -73,7 +71,7 @@
                     </div>
                 </div>
 
-                                <div class="menu-grupo">
+                <div class="menu-grupo">
                     <a href="historial-acciones.html" class="item">
                         <img src="../../assets/icons/icon-user.svg" alt="" class="menu-icon">
                         <span>Historial de acciones</span>
@@ -88,9 +86,9 @@
 
             <header class="topbar">
                 <div>
-                    <h1 id="saludo">Bienvenido Administrador</h1>
+                    <h1>Historial de acciones</h1>
                     <p class="descripcion-panel">
-                        Panel de administración de VetCare
+                        Consulta las acciones realizadas dentro del sistema.
                     </p>
                 </div>
 
@@ -101,10 +99,55 @@
             </header>
 
             <section class="dashboard-card">
-                <h2>Panel administrativo</h2>
+                <h2>Registro de acciones del sistema</h2>
                 <p>
-                    Desde este módulo puedes gestionar usuarios, clientes, mascotas y opciones generales del sistema.
+                    En este apartado puedes visualizar el usuario, módulo, acción, descripción y fecha de cada registro.
                 </p>
+            </section>
+
+            <section class="contenedor-historial">
+
+                <div class="filtros-historial">
+                    <input type="text" id="filtroUsuario" placeholder="Buscar por usuario">
+
+                    <select id="filtroModulo">
+                        <option value="">Todos los módulos</option>
+                        <option value="Usuarios">Usuarios</option>
+                        <option value="Clientes">Clientes</option>
+                        <option value="Mascotas">Mascotas</option>
+                        <option value="Productos">Productos</option>
+                        <option value="Ventas">Ventas</option>
+                    </select>
+
+                    <select id="filtroAccion">
+                        <option value="">Todas las acciones</option>
+                        <option value="Crear">Crear</option>
+                        <option value="Editar">Editar</option>
+                        <option value="Eliminar">Eliminar</option>
+                        <option value="Login">Login</option>
+                    </select>
+
+                    <input type="date" id="filtroFecha">
+
+                    <button type="button" id="btnBuscarHistorial">Buscar</button>
+                    <button type="button" id="btnLimpiarHistorial" class="btn-secundario">Limpiar</button>
+                </div>
+
+                <div class="tabla-contenedor">
+                    <table class="tabla-historial">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Acción</th>
+                                <th>Módulo</th>
+                                <th>Descripción</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaHistorialAcciones"></tbody>
+                    </table>
+                </div>
+
             </section>
 
         </section>
@@ -112,6 +155,7 @@
     </main>
 
     <script src="../../js/administrador/interfazAdmin.js"></script>
+    <script src="../../js/administrador/historial-acciones.js"></script>
 </body>
 
 </html>

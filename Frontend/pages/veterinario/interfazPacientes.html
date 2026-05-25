@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../../css/veterinario/interfazPacientes.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
+    <title>Veterinario - Pacientes</title>
+</head>
+
+<body>
+    <div class="layout">
+
+        <aside class="sidebar">
+            <div class="logo">
+                <img id="logo" src="../../assets/img/Logo de clínica Veterinaria azul.png" alt="logo">
+            </div>
+
+            <ul>
+                <li>
+                    <a href="#">
+                        <img src="../../assets/icons/icon-citas.svg" alt="citas">
+                        Citas
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <img src="../../assets/icons/icon-pacientes.svg" alt="pacientes">
+                        Pacientes
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <img src="../../assets/icons/icon-historial.svg" alt="historial">
+                        Historial Citas
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <img src="../../assets/icons/icon-medicina.svg" alt="tratamiento">
+                        Tratamientos
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <header class="header">
+            <h1>Pacientes</h1>
+
+            <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">
+                ☰
+            </button>
+
+            <div class="header-actions">
+                <a href="" class="btn-logout" id="cerrar-sesion">
+                    <img src="../../assets/icons/icon-sesion.svg" alt="CerrarSession">
+                    Cerrar Sesion
+                </a>
+            </div>
+        </header>
+
+        <main class="main">
+
+            <section class="main-container">
+
+                <div class="table-container">
+
+                    <div class="table-header">
+                        <input id="search" class="search" type="text" placeholder="Buscar por nombre o propietario">
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Especie</th>
+                                    <th>Raza</th>
+                                    <th>Peso (lbs)</th>
+                                    <th>Fecha de nacimiento</th>
+                                    <th>Propietario</th>
+                                    <th class="actions-col">Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="users-tbody">
+                                <!-- JS inyecta filas -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p id="empty-msg" class="empty-msg" style="display:none;">
+                        No hay pacientes para mostrar
+                    </p>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- Modal crear historial clínico -->
+    <div class="modal" id="modal-historial">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="titulo-modal-historial">Crear historial clínico</h2>
+                <button type="button" class="btn-cerrar-modal" id="cerrar-modal-historial">×</button>
+            </div>
+
+            <p class="modal-subtitle">
+                Complete la información médica inicial de la mascota.
+            </p>
+
+            <form id="form-historial" class="form-historial">
+                <input type="hidden" id="historial-mascota-id">
+
+                <div class="form-group">
+                    <label for="historial-mascota-nombre">Mascota</label>
+                    <input type="text" id="historial-mascota-nombre" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="motivo">Motivo</label>
+                    <input type="text" id="motivo" placeholder="Ej: Revisión general">
+                    <small class="error-msg"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="diagnostico-inicial">Diagnóstico inicial</label>
+                    <input type="text" id="diagnostico-inicial" placeholder="Ej: Paciente sano">
+                    <small class="error-msg"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="observaciones">Observaciones</label>
+                    <textarea id="observaciones" rows="4" placeholder="Ej: Sin novedades"></textarea>
+                    <small class="error-msg"></small>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancelar" id="cancelar-historial">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn-guardar" id="btn-submit-historial">
+                        Guardar historial
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal visualizar historial clínico completo -->
+    <div class="modal" id="modal-detalle-historial">
+        <div class="modal-content modal-content-detalle">
+            <div class="modal-header">
+                <h2>Historial clínico completo</h2>
+                <button type="button" class="btn-cerrar-modal" id="cerrar-modal-detalle-historial">×</button>
+            </div>
+
+            <p class="modal-subtitle">
+                Información médica registrada de la mascota seleccionada.
+            </p>
+
+            <div class="detalle-historial">
+
+                <section class="detalle-card">
+                    <div class="detalle-card-header">
+                        <h3>Información de la mascota</h3>
+                    </div>
+
+                    <div class="detalle-grid">
+                        <div>
+                            <span>Mascota</span>
+                            <p id="detalle-mascota-nombre">-</p>
+                        </div>
+
+                        <div>
+                            <span>Especie</span>
+                            <p id="detalle-mascota-especie">-</p>
+                        </div>
+
+                        <div>
+                            <span>Raza</span>
+                            <p id="detalle-mascota-raza">-</p>
+                        </div>
+
+                        <div>
+                            <span>Propietario</span>
+                            <p id="detalle-mascota-propietario">-</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="detalle-card">
+                    <div class="detalle-card-header">
+                        <h3>Información inicial del historial</h3>
+
+                        <div class="historial-actions">
+                            <button type="button" class="btn-editar-historial" id="btn-editar-historial">
+                                Editar
+                            </button>
+
+                            <button type="button" class="btn-eliminar-historial" id="btn-eliminar-historial">
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="detalle-grid">
+                        <div>
+                            <span>Motivo</span>
+                            <p id="detalle-motivo">-</p>
+                        </div>
+
+                        <div>
+                            <span>Diagnóstico inicial</span>
+                            <p id="detalle-diagnostico-inicial">-</p>
+                        </div>
+
+                        <div class="detalle-full">
+                            <span>Observaciones</span>
+                            <p id="detalle-observaciones">-</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="detalle-card">
+                    <div class="detalle-card-header">
+                        <h3>Consultas médicas</h3>
+
+                        <button type="button" class="btn-agregar-consulta" id="btn-agregar-consulta">
+                            Agregar consulta
+                        </button>
+                    </div>
+
+                    <div class="filtros-historial">
+                        <input type="date" id="filtro-fecha-consulta">
+
+                        <button type="button" class="btn-limpiar-filtro" id="limpiar-filtro-consultas">
+                            Limpiar filtro
+                        </button>
+                    </div>
+
+                    <div id="lista-consultas" class="lista-consultas">
+                        <!-- JS inyecta consultas -->
+                    </div>
+
+                    <p id="consultas-empty-msg" class="consultas-empty-msg">
+                        Esta mascota aún no tiene consultas médicas registradas.
+                    </p>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal agregar consulta médica -->
+    <div class="modal" id="modal-consulta">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="titulo-modal-consulta">Agregar consulta médica</h2>
+                <button type="button" class="btn-cerrar-modal" id="cerrar-modal-consulta">×</button>
+            </div>
+
+            <p class="modal-subtitle">
+                Registre la información médica de la atención realizada.
+            </p>
+
+            <form id="form-consulta" class="form-consulta">
+                <input type="hidden" id="consulta-historial-id">
+
+                <!-- 
+                    La fecha ya no se muestra ni se selecciona manualmente.
+                    El JS asigna automáticamente la fecha y hora actual al guardar.
+                -->
+                <input type="hidden" id="consulta-fecha">
+
+                <div class="form-group">
+                    <label for="consulta-sintomas">Síntomas</label>
+                    <textarea id="consulta-sintomas" rows="3" placeholder="Ej: Tos seca, fiebre"></textarea>
+                    <small class="error-msg"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="consulta-diagnostico">Diagnóstico</label>
+                    <textarea id="consulta-diagnostico" rows="3" placeholder="Ej: Infección respiratoria"></textarea>
+                    <small class="error-msg"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="consulta-tratamiento">Tratamiento</label>
+                    <textarea id="consulta-tratamiento" rows="3" placeholder="Ej: Medicamento cada 12 horas"></textarea>
+                    <small class="error-msg"></small>
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label for="consulta-observaciones">Observaciones</label>
+                    <textarea id="consulta-observaciones" rows="3"
+                        placeholder="Ej: Reposo y control en 3 días"></textarea>
+                    <small class="error-msg"></small>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancelar" id="cancelar-consulta">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn-guardar" id="btn-submit-consulta">
+                        Guardar consulta
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal confirmación eliminar -->
+    <div class="modal" id="modal-confirmacion">
+        <div class="modal-content modal-confirmacion-content">
+            <div class="modal-header">
+                <h2 id="titulo-confirmacion">Confirmar eliminación</h2>
+                <button type="button" class="btn-cerrar-modal" id="cerrar-modal-confirmacion">×</button>
+            </div>
+
+            <p class="modal-subtitle" id="mensaje-confirmacion">
+                ¿Está seguro de eliminar este registro?
+            </p>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancelar" id="cancelar-confirmacion">
+                    Cancelar
+                </button>
+
+                <button type="button" class="btn-eliminar-confirmar" id="confirmar-eliminacion">
+                    Sí, eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/veterinario/logout.js"></script>
+    <script src="../../js/veterinario/interfazPacientes.js"></script>
+</body>
+
+</html>
