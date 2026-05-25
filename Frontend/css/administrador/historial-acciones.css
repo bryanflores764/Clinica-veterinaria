@@ -1,0 +1,214 @@
+/* =========================
+   HISTORIAL DE ACCIONES
+========================= */
+
+.contenedor-historial {
+    width: 100%;
+    margin-top: 24px;
+}
+
+/* =========================
+   FILTROS
+========================= */
+.filtros-historial {
+    width: 100%;
+    background-color: #ffffff;
+    padding: 22px;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+
+    margin-bottom: 24px;
+}
+
+.filtros-historial input,
+.filtros-historial select {
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 12px;
+
+    border: 1.5px solid #d6d6d6;
+    border-radius: 10px;
+    outline: none;
+
+    background-color: #ffffff;
+    color: #111;
+
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.filtros-historial input:focus,
+.filtros-historial select:focus {
+    border-color: #42AB49;
+    box-shadow: 0 0 0 3px rgba(66, 171, 73, 0.15);
+}
+
+.filtros-historial button {
+    min-height: 44px;
+    padding: 8px 18px;
+
+    border: 1.5px solid #42AB49;
+    border-radius: 10px;
+    background-color: #42AB49;
+
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 800;
+
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.filtros-historial button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.filtros-historial .btn-secundario {
+    background-color: #ffffff;
+    color: #111;
+    border-color: #a8a8a8;
+}
+
+.filtros-historial .btn-secundario:hover {
+    background-color: #f1fff2;
+    border-color: #42AB49;
+    color: #42AB49;
+}
+
+/* =========================
+   TABLA
+========================= */
+.tabla-contenedor {
+    width: 100%;
+    background-color: #ffffff;
+    padding: 26px;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    overflow-x: auto;
+}
+
+.tabla-historial {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tabla-historial thead th {
+    text-align: left;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 14px 12px;
+    background-color: #f1fff2;
+    color: #111;
+    border-bottom: 1px solid #d9efd9;
+    white-space: nowrap;
+}
+
+.tabla-historial tbody td {
+    padding: 14px 12px;
+    font-size: 15px;
+    font-weight: 500;
+    border-bottom: 1px solid #eeeeee;
+    vertical-align: middle;
+}
+
+.tabla-historial tbody tr:hover {
+    background-color: #f7fbf7;
+}
+
+/* =========================
+   BADGES DE ACCIÓN
+========================= */
+.badge-accion {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.badge-accion.crear {
+    background: rgba(66, 171, 73, 0.15);
+    color: #2e7d32;
+}
+
+.badge-accion.editar {
+    background: rgba(255, 193, 7, 0.18);
+    color: #9a6b00;
+}
+
+.badge-accion.eliminar {
+    background: rgba(229, 57, 53, 0.12);
+    color: #c62828;
+}
+
+.badge-accion.login {
+    background: rgba(33, 150, 243, 0.12);
+    color: #1565c0;
+}
+
+.sin-registros {
+    text-align: center;
+    padding: 24px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #666;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 1024px) {
+    .filtros-historial {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .contenedor-historial {
+        margin-top: 18px;
+    }
+
+    .filtros-historial {
+        grid-template-columns: 1fr;
+        padding: 18px;
+    }
+
+    .tabla-contenedor {
+        padding: 18px;
+    }
+
+    .tabla-historial thead th,
+    .tabla-historial tbody td {
+        font-size: 14px;
+        padding: 12px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .filtros-historial {
+        padding: 14px;
+    }
+
+    .tabla-contenedor {
+        padding: 14px;
+    }
+
+    .tabla-historial {
+        min-width: 760px;
+    }
+}

@@ -68,9 +68,14 @@ function resetMenu() {
 
 menuGroups.forEach((group) => {
     const parentLink = group.querySelector(".item");
+    const submenu = group.querySelector(".submenu");
 
     if (parentLink) {
         parentLink.addEventListener("click", (e) => {
+            if (!submenu) {
+                return;
+            }
+
             e.preventDefault();
 
             const openBefore = group.classList.contains("open");
