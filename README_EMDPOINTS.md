@@ -1887,3 +1887,317 @@ PATCH /api/citas/10/completar
 | `PATCH` | `/api/citas/:id/estado` | Actualizar solo el estado |
 | `PATCH` | `/api/citas/:id/completar` | Completar cita |
 | `DELETE` | `/api/citas/:id` | Eliminar cita |
+
+
+# 📋 API de Reportes
+
+> Módulo de reportes para administradores del sistema. Permite consultar ventas, productos más vendidos, exportar y descargar reportes en formato JSON.
+
+---
+
+## 🔐 Autenticación
+
+Todas las rutas de este módulo requieren:
+
+- **Rol**: Administrador (`RolId = 1`)
+- **Header requerido**:
+
+```http
+Authorization: Bearer <token>
+```
+
+---
+
+## 📌 Base URL
+
+```
+http://localhost:3000/api/reportes
+```
+
+---
+
+## 📦 Dependencias
+
+Este módulo utiliza **PDFKit** para la generación de reportes en formato PDF.
+
+### Instalación
+
+```bash
+npm install pdfkit
+```
+
+### Uso básico con PDFKit
+
+```javascript
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+
+const doc = new PDFDocument();
+doc.pipe(fs.createWriteStream('reporte.pdf'));
+
+doc.fontSize(18).text('Reporte de Ventas', { align: 'center' });
+doc.moveDown();
+doc.fontSize(12).text(`Total ingresos: $4460.00`);
+
+doc.end();
+```
+
+> **Nota:** PDFKit requiere Node.js. Consulta la [documentación oficial](https://pdfkit.org/) para opciones avanzadas de formato, tablas e imágenes.
+
+---
+
+## 📚 Endpoints
+
+### 1. Reporte de ventas por fechas
+
+```http
+GET /api/reportes/ventas
+```
+
+**Query Params:**
+
+| Parámetro      | Tipo     | Requerido | Descripción              |
+|----------------|----------|-----------|--------------------------|
+| `fecha_inicio` | `string` | ✅ Sí     | Fecha de inicio (`YYYY-MM-DD`) |
+| `fecha_fin`    | `string` | ✅ Sí     | Fecha de fin (`YYYY-MM-DD`)    |
+
+**Ejemplo:**
+```
+GET /api/reportes/ventas?fecha_inicio=2026-01-01&fecha_fin=2026-05-31
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "fecha": "2026-05-25T06:00:00.000Z",
+      "num_ventas": 1,
+      "total_ingresos": "170.00",
+      "promedio_venta": "170.000000",
+      "confirmadas": "1",
+      "anuladas": "0"
+    }
+  ],
+  "resumen": {
+    "total_ingresos": "4460.00",
+    "total_ventas": 12,
+    "ticket_promedio": "371.666667",
+    "ventas_anuladas": 10
+  },
+  "periodo": {
+    "fecha_inicio": "2026-01-01",
+    "fecha_fin": "2026-05-31"
+  }
+}
+```
+
+---
+
+### 2. Productos más vendidos
+
+```http
+GET /api/reportes/productos-mas-vendidos
+```
+
+**Query Params:**
+
+| Parámetro      | Tipo      | Requerido | Descripción                        |
+|----------------|-----------|-----------|------------------------------------|
+| `fecha_inicio` | `string`  | ✅ Sí     | Fecha de inicio (`YYYY-MM-DD`)     |
+| `fecha_fin`    | `string`  | ✅ Sí     | Fecha de fin (`YYYY-MM-DD`)        |
+| `limit`        | `integer` | ❌ No     | Número máximo de resultados (default: 10) |
+
+**Ejemplo:**
+```
+GET /api/reportes/productos-mas-vendidos?fecha_inicio=2026-01-01&fecha_fin=2026-05-31&limit=10
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "producto_id": 1,
+      "producto": "Amoxicilina 250mg",
+      "categoria": "Medicamentos",
+      "total_vendido": 10,
+      "total_ingresos": 850.00,
+      "num_ventas": 5
+    }
+  ],
+  "periodo": {
+    "fecha_inicio": "2026-01-01",
+    "fecha_fin": "2026-05-31"
+  },
+  "total_productos": 5
+}
+```
+
+---
+
+### 3. Listar reportes generados
+
+```http
+GET /api/reportes/listar
+```
+
+**Query Params (opcionales):**
+
+| Parámetro | Tipo      | Requerido | Descripción                     |
+|-----------|-----------|-----------|---------------------------------|
+| `page`    | `integer` | ❌ No     | Página actual (default: `1`)    |
+| `limit`   | `integer` | ❌ No     | Resultados por página (default: `20`) |
+
+**Ejemplo:**
+```
+GET /api/reportes/listar?page=1&limit=20
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "tipo_reporte": "ventas",
+      "parametros": "{\"fecha_inicio\":\"2026-01-01\",\"fecha_fin\":\"2026-05-31\"}",
+      "fecha_inicio": "2026-01-01",
+      "fecha_fin": "2026-05-31",
+      "total_registros": 7,
+      "archivo_nombre": "reporte_ventas_2026-01-01_2026-05-31_2026-05-27T10-30-00.json",
+      "fecha_generacion": "2026-05-27T10:30:00.000Z",
+      "generado_por": "Administrador"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 1,
+    "totalPages": 1
+  }
+}
+```
+
+---
+
+### 4. Exportar reporte de ventas
+
+Genera y guarda un archivo JSON con el reporte de ventas.
+
+```http
+GET /api/reportes/ventas/export
+```
+
+**Query Params:**
+
+| Parámetro      | Tipo     | Requerido | Descripción              |
+|----------------|----------|-----------|--------------------------|
+| `fecha_inicio` | `string` | ✅ Sí     | Fecha de inicio (`YYYY-MM-DD`) |
+| `fecha_fin`    | `string` | ✅ Sí     | Fecha de fin (`YYYY-MM-DD`)    |
+
+**Ejemplo:**
+```
+GET /api/reportes/ventas/export?fecha_inicio=2026-01-01&fecha_fin=2026-05-31
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "message": "Reporte generado exitosamente",
+  "data": { "..." : "..." },
+  "archivo": "reporte_ventas_2026-01-01_2026-05-31_2026-05-27T10-30-00.json"
+}
+```
+
+---
+
+### 5. Exportar productos más vendidos
+
+Genera y guarda un archivo JSON con el top de productos vendidos.
+
+```http
+GET /api/reportes/productos-mas-vendidos/export
+```
+
+**Query Params:**
+
+| Parámetro      | Tipo      | Requerido | Descripción                        |
+|----------------|-----------|-----------|------------------------------------|
+| `fecha_inicio` | `string`  | ✅ Sí     | Fecha de inicio (`YYYY-MM-DD`)     |
+| `fecha_fin`    | `string`  | ✅ Sí     | Fecha de fin (`YYYY-MM-DD`)        |
+| `limit`        | `integer` | ❌ No     | Número máximo de resultados        |
+
+**Ejemplo:**
+```
+GET /api/reportes/productos-mas-vendidos/export?fecha_inicio=2026-01-01&fecha_fin=2026-05-31&limit=10
+```
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "message": "Reporte generado exitosamente",
+  "data": { "..." : "..." },
+  "archivo": "reporte_productos_2026-01-01_2026-05-31_2026-05-27T10-30-00.json"
+}
+```
+
+---
+
+### 6. Descargar reporte por ID
+
+Descarga el archivo JSON de un reporte previamente generado.
+
+```http
+GET /api/reportes/download/:id
+```
+
+**Path Params:**
+
+| Parámetro | Tipo      | Requerido | Descripción         |
+|-----------|-----------|-----------|---------------------|
+| `id`      | `integer` | ✅ Sí     | ID del reporte      |
+
+**Ejemplo:**
+```
+GET /api/reportes/download/1
+```
+
+**Respuesta:** Descarga directa del archivo JSON del reporte.
+
+---
+
+## ❌ Códigos de error
+
+| Código | Mensaje | Descripción |
+|--------|---------|-------------|
+| `400` | `Las fechas de inicio y fin son obligatorias` | No se enviaron las fechas requeridas |
+| `401` | `No autorizado: token no proporcionado` | Falta el token de autenticación |
+| `403` | `Acceso denegado. Solo administradores pueden generar reportes` | El usuario no tiene rol de administrador |
+| `404` | `No existe un reporte con ese ID` | El ID del reporte no existe en el sistema |
+
+**Ejemplo de respuesta de error:**
+```json
+{
+  "success": false,
+  "message": "Las fechas de inicio y fin son obligatorias"
+}
+```
+
+---
+
+## 🗂️ Resumen de endpoints
+
+| # | Endpoint | Método | Descripción |
+|---|----------|--------|-------------|
+| 1 | `/api/reportes/ventas` | `GET` | Reporte de ventas por fechas |
+| 2 | `/api/reportes/productos-mas-vendidos` | `GET` | Top productos más vendidos |
+| 3 | `/api/reportes/listar` | `GET` | Listar reportes generados |
+| 4 | `/api/reportes/ventas/export` | `GET` | Exportar reporte de ventas (JSON) |
+| 5 | `/api/reportes/productos-mas-vendidos/export` | `GET` | Exportar top productos (JSON) |
+| 6 | `/api/reportes/download/:id` | `GET` | Descargar reporte por ID |
