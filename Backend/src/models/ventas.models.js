@@ -94,6 +94,40 @@ const VentasQueries = {
   SET Total = ?
   WHERE Id = ?
 `,
+
+// Agregar al final del archivo ventas.model.js
+
+// ============================================================
+//  QUERIES DE FACTURACIÓN
+// ============================================================
+
+// Crear factura electrónica
+CREATE_FACTURA: `
+  INSERT INTO facturaelectronica 
+  (Id_Venta, Id_Cliente, Id_TipoDocumento, Id_EstadoFactura, 
+   NumeroControl, CodigoGeneracion, FechaEmision, 
+   RutaComprobante, IdentificadorComprobante, EstadoEnvio, CorreoDestino)
+  VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)
+`,
+
+// Actualizar estado de envío de factura
+UPDATE_FACTURA_ENVIO: `
+  UPDATE facturaelectronica 
+  SET EstadoEnvio = ?, FechaEnvio = ?, MensajeError = ?
+  WHERE Id_Venta = ?
+`,
+
+// Obtener factura por ID de venta
+GET_FACTURA_BY_VENTA: `
+  SELECT f.*, 
+         c.NombreFiscal, c.NIT, c.NRC, c.DUI, c.DireccionFiscal,
+         td.Tipo_Documento, ef.Estado as EstadoFactura
+  FROM facturaelectronica f
+  INNER JOIN clientesfacturacion c ON c.Id = f.Id_Cliente
+  INNER JOIN tiposdocumento td ON td.Id = f.Id_TipoDocumento
+  INNER JOIN estadosfactura ef ON ef.Id = f.Id_EstadoFactura
+  WHERE f.Id_Venta = ?
+`,
 };
 
 module.exports = VentasQueries;
