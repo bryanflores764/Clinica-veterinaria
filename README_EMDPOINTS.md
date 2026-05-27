@@ -2201,3 +2201,320 @@ GET /api/reportes/download/1
 | 4 | `/api/reportes/ventas/export` | `GET` | Exportar reporte de ventas (JSON) |
 | 5 | `/api/reportes/productos-mas-vendidos/export` | `GET` | Exportar top productos (JSON) |
 | 6 | `/api/reportes/download/:id` | `GET` | Descargar reporte por ID |
+
+
+# 🧾 Módulo de Facturación Electrónica — VetCare
+
+## 📋 Descripción
+
+Módulo para generar y enviar facturas electrónicas (consumidor final) para ventas confirmadas.
+Solo accesible para **Recepcionistas** y **Administradores**.
+
+---
+
+## 🔐 Permisos
+
+| Rol            | Puede facturar |
+|----------------|----------------|
+| Administrador  | ❌ No           |
+| Recepcionista  | ✅ Sí          |
+| Veterinario    | ❌ No          |
+
+**Header requerido:**
+
+```http
+Authorization: Bearer <token>
+```
+
+---
+
+## 📦 Instalación de dependencias
+
+```bash
+npm install nodemailer
+```
+
+---
+
+## 🗄️ Base de Datos
+
+### Tablas involucradas
+
+| Tabla                | Propósito                                               |
+|----------------------|---------------------------------------------------------|
+| `ventas`             | Cabecera de venta (`requiere_factura`, `correo_factura`) |
+| `facturaelectronica` | Registro de factura generada                            |
+| `propietarios`       | Datos del cliente (Nombre, Correo)                      |
+| `tiposdocumento`     | Solo `id = 1` (Factura Electrónica)                     |
+
+---
+
+## 📌 Base URL
+
+```
+http://localhost:3000/api/ventas
+```
+
+---
+
+## 📦 Endpoints
+
+### 1. Generar factura
+
+```http
+POST /api/ventas/:id/factura/generar
+```
+
+**Headers:**
+
+```http
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**Opciones de body:**
+
+| Opción                      | Body                                                               |
+|-----------------------------|--------------------------------------------------------------------|
+| Usar correo del propietario | `{"idPropietario": 1, "requiereFactura": true}`                    |
+| Enviar a otro correo        | `{"idPropietario": 1, "correoEnvio": "cliente@email.com", "requiereFactura": true}` |
+| No facturar                 | `{"idPropietario": 1, "requiereFactura": false}`                   |
+
+**Parámetros del body:**
+
+| Campo             | Tipo      | Requerido | Descripción                            |
+|-------------------|-----------|-----------|----------------------------------------|
+| `idPropietario`   | `number`  | ✅ Sí     | ID del propietario/cliente             |
+| `requiereFactura` | `boolean` | ❌ No     | Indica si se genera factura            |
+| `correoEnvio`     | `string`  | ❌ No     | Correo alternativo para enviar factura |
+
+**Respuesta exitosa `201`:**
+
+```json
+{
+  "success": true,
+  "message": "Factura generada exitosamente",
+  "data": {
+    "factura": { "id": 2 },
+    "numeroControl": "FAC-20260527-9431",
+    "codigoGeneracion": "CG-1779899838450-RKC70HC4"
+  }
+}
+```
+
+**Errores posibles:**
+
+| Código | Mensaje |
+|--------|---------|
+| `400`  | Solo se pueden facturar ventas confirmadas |
+| `400`  | Esta venta no requiere factura |
+| `404`  | No existe una venta con id X |
+| `409`  | Esta venta ya tiene una factura generada |
+
+---
+
+### 2. Enviar factura por correo
+
+```http
+POST /api/ventas/:id/factura/enviar
+```
+
+**Headers:**
+
+```http
+Authorization: Bearer <token>
+```
+
+**Body:** `{}`
+
+**Respuesta exitosa `200`:**
+
+```json
+{
+  "success": true,
+  "message": "Factura enviada a cliente@email.com",
+  "data": {
+    "estadoEnvio": "enviado",
+    "fechaEnvio": "2026-05-27T16:38:58.311Z"
+  }
+}
+```
+
+**Errores posibles:**
+
+| Código | Mensaje |
+|--------|---------|
+| `400`  | No hay correo destino para enviar la factura |
+| `404`  | Esta venta no tiene factura asociada |
+
+---
+
+### 3. Obtener factura de una venta
+
+```http
+GET /api/ventas/:id/factura
+```
+
+**Headers:**
+
+```http
+Authorization: Bearer <token>
+```
+
+**Respuesta exitosa `200`:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "Id": 2,
+    "NumeroControl": "FAC-20260527-9431",
+    "CodigoGeneracion": "CG-1779899838450-RKC70HC4",
+    "EstadoEnvio": "enviado",
+    "CorreoDestino": "cliente@email.com",
+    "NombreFiscal": "Cliente de Prueba"
+  }
+}
+```
+
+**Error `404`:**
+
+```json
+{
+  "success": false,
+  "message": "Esta venta no tiene factura asociada"
+}
+```
+
+---
+
+## 🔄 Flujo completo
+
+```
+1. Recepcionista inicia sesión
+   ↓
+2. POST /api/ventas                       → Crear venta
+   ↓
+3. POST /api/ventas/:id/detalle           → Agregar productos
+   ↓
+4. PATCH /api/ventas/:id/confirmar        → Confirmar venta
+   ↓
+5. POST /api/ventas/:id/factura/generar   → Generar factura
+   ↓
+6. POST /api/ventas/:id/factura/enviar    → Enviar por correo
+   ↓
+7. Cliente recibe el correo ✅
+```
+
+---
+
+## 📋 Ejemplo completo en Postman
+
+**Paso 1 — Login (Recepcionista):**
+
+```http
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "correo": "recepcionista@vetcare.com",
+  "contrasena": "123456"
+}
+```
+
+**Paso 2 — Crear venta:**
+
+```http
+POST http://localhost:3000/api/ventas
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "idPropietario": 1
+}
+```
+
+**Paso 3 — Agregar producto:**
+
+```http
+POST http://localhost:3000/api/ventas/19/detalle
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "idProducto": 1,
+  "cantidad": 2
+}
+```
+
+**Paso 4 — Confirmar venta:**
+
+```http
+PATCH http://localhost:3000/api/ventas/19/confirmar
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{}
+```
+
+**Paso 5 — Generar factura:**
+
+```http
+POST http://localhost:3000/api/ventas/19/factura/generar
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "idPropietario": 1,
+  "requiereFactura": true
+}
+```
+
+**Paso 6 — Enviar factura:**
+
+```http
+POST http://localhost:3000/api/ventas/19/factura/enviar
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{}
+```
+
+---
+
+## ❌ Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| `401 Unauthorized` | Token inválido o expirado | Volver a hacer login |
+| `403 Forbidden` | Usuario sin permisos | Usar cuenta de Recepcionista o Admin |
+| Solo se pueden facturar ventas confirmadas | Venta no confirmada | Ejecutar Paso 4 primero |
+| Esta venta ya tiene una factura generada | Factura ya existe | Solo se permite una factura por venta |
+| Esta venta no requiere factura | `requiereFactura: false` | Generar con `requiereFactura: true` |
+| No hay correo destino | Sin correo registrado | Agregar `correoEnvio` en el body |
+
+---
+
+## 📁 Archivos del módulo
+
+| Archivo                  | Ruta                                  |
+|--------------------------|---------------------------------------|
+| `emailSender.js`         | `utils/emailSender.js`                |
+| `ventas.service.js`      | `services/ventas.service.js`          |
+| `ventas.controller.js`   | `controllers/ventas.controller.js`    |
+| `ventas.repository.js`   | `repository/ventas.repository.js`     |
+| `ventas.routes.js`       | `routes/ventas.routes.js`             |
+
+---
+
+## 🗂️ Resumen de endpoints
+
+| # | Método  | Endpoint                              | Body |
+|---|---------|---------------------------------------|------|
+| 1 | `POST`  | `/api/auth/login`                     | `{correo, contrasena}` |
+| 2 | `POST`  | `/api/ventas`                         | `{idPropietario}` |
+| 3 | `POST`  | `/api/ventas/:id/detalle`             | `{idProducto, cantidad}` |
+| 4 | `PATCH` | `/api/ventas/:id/confirmar`           | `{}` |
+| 5 | `POST`  | `/api/ventas/:id/factura/generar`     | `{idPropietario, requiereFactura, ?correoEnvio}` |
+| 6 | `POST`  | `/api/ventas/:id/factura/enviar`      | `{}` |
+| 7 | `GET`   | `/api/ventas/:id/factura`             | — |

@@ -884,3 +884,60 @@ SHOW INDEX FROM productos;
 --  FIN DEL SCRIPT
 -- ============================================================
 
+--- ============================================================
+--  SCRIPT FINAL - FACTURACIÓN (VERSIÓN SIMPLIFICADA)
+-- ============================================================
+
+USE vetcare;
+
+-- ============================================================
+--  1. AGREGAR COLUMNAS A ventas
+-- ============================================================
+ALTER TABLE ventas
+  ADD COLUMN IF NOT EXISTS requiere_factura BOOLEAN DEFAULT FALSE,
+  ADD COLUMN IF NOT EXISTS correo_factura VARCHAR(150) NULL;
+
+-- ============================================================
+--  2. AGREGAR COLUMNAS A facturaelectronica
+-- ============================================================
+ALTER TABLE facturaelectronica
+  ADD COLUMN IF NOT EXISTS RutaComprobante VARCHAR(500) NULL,
+  ADD COLUMN IF NOT EXISTS IdentificadorComprobante VARCHAR(100) NULL,
+  ADD COLUMN IF NOT EXISTS EstadoEnvio ENUM('pendiente', 'enviado', 'fallido') NOT NULL DEFAULT 'pendiente',
+  ADD COLUMN IF NOT EXISTS FechaEnvio DATETIME NULL,
+  ADD COLUMN IF NOT EXISTS MensajeError TEXT NULL,
+  ADD COLUMN IF NOT EXISTS CorreoDestino VARCHAR(150) NULL;
+
+-- ============================================================
+--  3. ACTUALIZAR FOREIGN KEY (Id_Cliente → propietarios)
+-- ============================================================
+-- Eliminar foreign key vieja si existe
+ALTER TABLE facturaelectronica DROP FOREIGN KEY IF EXISTS facturaelectronica_ibfk_2;
+
+-- Agregar foreign key apuntando a propietarios
+ALTER TABLE facturaelectronica
+  ADD CONSTRAINT fk_factura_cliente
+  FOREIGN KEY (Id_Cliente) REFERENCES propietarios(Id) ON DELETE CASCADE;
+
+-- ============================================================
+--  4. TIPOS DE DOCUMENTO (solo Factura Electrónica)
+-- ============================================================
+-- Eliminar registros que no sean útiles
+DELETE FROM tiposdocumento WHERE Tipo_Documento = 'Credito Fiscal';
+
+-- Asegurar que existe Factura Electronica
+INSERT INTO tiposdocumento (Id, Tipo_Documento) VALUES (1, 'Factura Electronica')
+ON DUPLICATE KEY UPDATE Tipo_Documento = VALUES(Tipo_Documento);
+
+-- ============================================================
+--  5. ELIMINAR TABLAS QUE YA NO SE USAN
+-- ============================================================
+DROP TABLE IF EXISTS clientesfacturacion;
+DROP TABLE IF EXISTS estadosfactura;
+
+-- ============================================================
+--  6. VERIFICAR ESTRUCTURA FINAL
+-- ============================================================
+DESCRIBE ventas;
+DESCRIBE facturaelectronica;
+SELECT * FROM tiposdocumento;
