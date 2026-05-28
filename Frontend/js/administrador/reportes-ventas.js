@@ -1,6 +1,9 @@
 const API_REPORTES_VENTAS = 'http://localhost:3000/api/reportes/ventas';
+const API_PRODUCTOS_MAS_VENDIDOS = 'http://localhost:3000/api/reportes/productos-mas-vendidos';
 
 const tablaReportesVentas = document.getElementById('tablaReportesVentas');
+const tablaProductosMasVendidos = document.getElementById('tablaProductosMasVendidos');
+
 const fechaInicio = document.getElementById('fechaInicio');
 const fechaFin = document.getElementById('fechaFin');
 const btnBuscarReporte = document.getElementById('btnBuscarReporte');
@@ -33,30 +36,6 @@ function cargarFechasPorDefecto() {
     }
 }
 
-function mostrarCarga() {
-    tablaReportesVentas.innerHTML = `
-        <tr>
-            <td colspan="6" class="sin-datos">
-                Cargando reportes de ventas...
-            </td>
-        </tr>
-    `;
-}
-
-function mostrarMensaje(mensaje) {
-    tablaReportesVentas.innerHTML = `
-        <tr>
-            <td colspan="6" class="sin-datos">
-                ${mensaje}
-            </td>
-        </tr>
-    `;
-
-    totalIngresos.textContent = '$0.00';
-    totalVentas.textContent = '0';
-    totalProductos.textContent = '0';
-}
-
 function formatearFecha(fecha) {
     if (!fecha) return 'Sin fecha';
 
@@ -71,6 +50,34 @@ function formatearFecha(fecha) {
 function formatearDinero(valor) {
     const numero = Number(valor) || 0;
     return `$${numero.toFixed(2)}`;
+}
+
+/* =========================
+   REPORTES DE VENTAS
+========================= */
+
+function mostrarCargaReportes() {
+    tablaReportesVentas.innerHTML = `
+        <tr>
+            <td colspan="6" class="sin-datos">
+                Cargando reportes de ventas...
+            </td>
+        </tr>
+    `;
+}
+
+function mostrarMensajeReportes(mensaje) {
+    tablaReportesVentas.innerHTML = `
+        <tr>
+            <td colspan="6" class="sin-datos">
+                ${mensaje}
+            </td>
+        </tr>
+    `;
+
+    totalIngresos.textContent = '$0.00';
+    totalVentas.textContent = '0';
+    totalProductos.textContent = '0';
 }
 
 function normalizarReporte(reporte) {
@@ -152,14 +159,14 @@ function actualizarResumen(resumen, reportes) {
 }
 
 async function cargarReportesVentas() {
-    mostrarCarga();
+    mostrarCargaReportes();
     cargarFechasPorDefecto();
 
     try {
         const token = localStorage.getItem('token');
 
         if (!token) {
-            mostrarMensaje('No hay sesión activa. Inicia sesión nuevamente.');
+            mostrarMensajeReportes('No hay sesión activa. Inicia sesión nuevamente.');
             return;
         }
 
@@ -169,7 +176,7 @@ async function cargarReportesVentas() {
 
         const url = `${API_REPORTES_VENTAS}?${params.toString()}`;
 
-        console.log('URL enviada:', url);
+        console.log('URL reportes enviada:', url);
 
         const respuesta = await fetch(url, {
             method: 'GET',
@@ -185,7 +192,7 @@ async function cargarReportesVentas() {
 
         if (!respuesta.ok || data.success === false) {
             const mensaje = data.message || data.error || 'Error al obtener reportes de ventas.';
-            mostrarMensaje(mensaje);
+            mostrarMensajeReportes(mensaje);
             return;
         }
 
@@ -195,18 +202,188 @@ async function cargarReportesVentas() {
         actualizarResumen(data.resumen, reportes);
     } catch (error) {
         console.error('Error cargando reportes de ventas:', error);
-        mostrarMensaje('No se pudo cargar la información de reportes desde el servidor.');
+        mostrarMensajeReportes('No se pudo cargar la información de reportes desde el servidor.');
     }
+}
+
+/* =========================
+   PRODUCTOS MÁS VENDIDOS
+========================= */
+
+function mostrarCargaProductos() {
+    if (!tablaProductosMasVendidos) return;
+
+    tablaProductosMasVendidos.innerHTML = `
+        <tr>
+            <td colspan="3" class="sin-datos">
+                Cargando productos más vendidos...
+            </td>
+        </tr>
+    `;
+}
+
+function mostrarMensajeProductos(mensaje) {
+    if (!tablaProductosMasVendidos) return;
+
+    tablaProductosMasVendidos.innerHTML = `
+        <tr>
+            <td colspan="3" class="sin-datos">
+                ${mensaje}
+            </td>
+        </tr>
+    `;
+}
+
+function normalizarProducto(producto) {
+    return {
+        nombre:
+            producto.producto ||
+            producto.nombreProducto ||
+            producto.nombre_producto ||
+            producto.NombreProducto ||
+            producto.nombre ||
+            producto.Nombre ||
+            'Sin nombre',
+
+        cantidad:
+            Number(
+                producto.cantidad_vendida ||
+                producto.cantidadVendida ||
+                producto.total_vendido ||
+                producto.totalVendido ||
+                producto.cantidad ||
+                producto.Cantidad ||
+                0
+            ),
+
+        total:
+            Number(
+                producto.total_generado ||
+                producto.totalGenerado ||
+                producto.total_ingresos ||
+                producto.total ||
+                producto.Total ||
+                producto.monto ||
+                0
+            )
+    };
+}
+
+function obtenerProductosDesdeRespuesta(data) {
+    if (Array.isArray(data)) {
+        return data;
+    }
+
+    if (Array.isArray(data.data)) {
+        return data.data;
+    }
+
+    if (Array.isArray(data.productos)) {
+        return data.productos;
+    }
+
+    if (Array.isArray(data.resultado)) {
+        return data.resultado;
+    }
+
+    return [];
+}
+
+function renderizarProductosMasVendidos(productos) {
+    if (!tablaProductosMasVendidos) return;
+
+    tablaProductosMasVendidos.innerHTML = '';
+
+    if (!productos || productos.length === 0) {
+        tablaProductosMasVendidos.innerHTML = `
+            <tr>
+                <td colspan="3" class="sin-datos">
+                    No hay productos vendidos para el rango de fechas seleccionado.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    productos.forEach((producto) => {
+        const fila = document.createElement('tr');
+
+        fila.innerHTML = `
+            <td>${producto.nombre}</td>
+            <td>${producto.cantidad}</td>
+            <td>${formatearDinero(producto.total)}</td>
+        `;
+
+        tablaProductosMasVendidos.appendChild(fila);
+    });
+}
+
+async function cargarProductosMasVendidos() {
+    mostrarCargaProductos();
+    cargarFechasPorDefecto();
+
+    try {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            mostrarMensajeProductos('No hay sesión activa. Inicia sesión nuevamente.');
+            return;
+        }
+
+        const params = new URLSearchParams();
+        params.append('fecha_inicio', fechaInicio.value);
+        params.append('fecha_fin', fechaFin.value);
+
+        const url = `${API_PRODUCTOS_MAS_VENDIDOS}?${params.toString()}`;
+
+        console.log('URL productos más vendidos:', url);
+
+        const respuesta = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const data = await respuesta.json();
+
+        console.log('Respuesta productos más vendidos:', data);
+
+        if (!respuesta.ok || data.success === false) {
+            const mensaje = data.message || data.error || 'Error al obtener productos más vendidos.';
+            mostrarMensajeProductos(mensaje);
+            return;
+        }
+
+        const productos = obtenerProductosDesdeRespuesta(data)
+            .map(normalizarProducto)
+            .sort((a, b) => b.cantidad - a.cantidad);
+
+        renderizarProductosMasVendidos(productos);
+    } catch (error) {
+        console.error('Error cargando productos más vendidos:', error);
+        mostrarMensajeProductos('No se pudo cargar la información de productos más vendidos.');
+    }
+}
+
+/* =========================
+   ACCIONES
+========================= */
+
+function cargarTodo() {
+    cargarReportesVentas();
+    cargarProductosMasVendidos();
 }
 
 function limpiarFiltros() {
     fechaInicio.value = obtenerPrimerDiaMes();
     fechaFin.value = obtenerFechaActual();
 
-    cargarReportesVentas();
+    cargarTodo();
 }
 
-btnBuscarReporte.addEventListener('click', cargarReportesVentas);
+btnBuscarReporte.addEventListener('click', cargarTodo);
 btnLimpiarReporte.addEventListener('click', limpiarFiltros);
 
-cargarReportesVentas();
+cargarTodo();

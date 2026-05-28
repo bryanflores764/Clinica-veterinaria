@@ -276,3 +276,11 @@
     padding: 12px 14px;
     font-size: 14px;
 }
+
+.productos-mas-vendidos {
+    margin-top: 28px;
+}
+
+.productos-mas-vendidos .encabezado-tabla-reportes {
+    padding-top: 4px;
+}

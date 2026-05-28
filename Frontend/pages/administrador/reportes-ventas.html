@@ -146,12 +146,12 @@
 
                     <div class="filtros-reportes">
                         <div class="campo-filtro">
-                            <label for="fechaInicio">Fecha inicio</label>
+                            <label for="fechaInicio">Fecha de inicio</label>
                             <input type="date" id="fechaInicio">
                         </div>
 
                         <div class="campo-filtro">
-                            <label for="fechaFin">Fecha fin</label>
+                            <label for="fechaFin">Fecha de fin</label>
                             <input type="date" id="fechaFin">
                         </div>
 
@@ -183,6 +183,32 @@
                         <tbody id="tablaReportesVentas">
                             <tr>
                                 <td colspan="6" class="sin-datos">Cargando reportes de ventas...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!--Producto Mas vendidos tabla-->
+                <div class="tabla-contenedor productos-mas-vendidos">
+                    <div class="encabezado-tabla-reportes">
+                        <div>
+                            <h3>Productos más vendidos</h3>
+                            <p>Listado de productos con mayor cantidad vendida según el rango de fechas seleccionado.</p>
+                        </div>
+                    </div>
+
+                    <table class="tabla-reportes">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad vendida</th>
+                                <th>Total generado</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tablaProductosMasVendidos">
+                            <tr>
+                                <td colspan="3" class="sin-datos">Cargando productos más vendidos...</td>
                             </tr>
                         </tbody>
                     </table>
