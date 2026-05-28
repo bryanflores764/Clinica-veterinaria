@@ -108,7 +108,7 @@
             <section class="dashboard-card">
                 <h2>Resumen de reportes de ventas</h2>
                 <p>
-                    En este apartado puedes visualizar los ingresos, ventas realizadas, promedio de venta y ventas anuladas según el rango de fechas seleccionado.
+                    Visualiza los ingresos, ventas realizadas, promedio de venta y ventas anuladas según el rango de fechas seleccionado.
                 </p>
             </section>
 
@@ -117,31 +117,57 @@
                 <div class="tarjetas-resumen">
 
                     <article class="tarjeta-reporte">
+                        <span class="etiqueta-tarjeta">Ingresos generados</span>
                         <p>Total de ingresos</p>
                         <h3 id="totalIngresos">$0.00</h3>
                     </article>
 
                     <article class="tarjeta-reporte">
+                        <span class="etiqueta-tarjeta">Cantidad total</span>
                         <p>Ventas realizadas</p>
                         <h3 id="totalVentas">0</h3>
                     </article>
 
                     <article class="tarjeta-reporte">
+                        <span class="etiqueta-tarjeta">Control de ventas</span>
                         <p>Ventas anuladas</p>
                         <h3 id="totalProductos">0</h3>
                     </article>
 
                 </div>
 
-                <div class="filtros-reportes">
-                    <input type="date" id="fechaInicio">
-                    <input type="date" id="fechaFin">
+                <div class="bloque-reportes">
+                    <div class="encabezado-bloque">
+                        <div>
+                            <h3>Filtrar reporte</h3>
+                            <p>Selecciona un rango de fechas para consultar la información.</p>
+                        </div>
+                    </div>
 
-                    <button type="button" id="btnBuscarReporte">Buscar</button>
-                    <button type="button" id="btnLimpiarReporte" class="btn-secundario">Limpiar</button>
+                    <div class="filtros-reportes">
+                        <div class="campo-filtro">
+                            <label for="fechaInicio">Fecha inicio</label>
+                            <input type="date" id="fechaInicio">
+                        </div>
+
+                        <div class="campo-filtro">
+                            <label for="fechaFin">Fecha fin</label>
+                            <input type="date" id="fechaFin">
+                        </div>
+
+                        <button type="button" id="btnBuscarReporte">Buscar</button>
+                        <button type="button" id="btnLimpiarReporte" class="btn-secundario">Limpiar</button>
+                    </div>
                 </div>
 
                 <div class="tabla-contenedor">
+                    <div class="encabezado-tabla-reportes">
+                        <div>
+                            <h3>Detalle del reporte</h3>
+                            <p>Información agrupada por fecha según las ventas registradas.</p>
+                        </div>
+                    </div>
+
                     <table class="tabla-reportes">
                         <thead>
                             <tr>
@@ -156,7 +182,7 @@
 
                         <tbody id="tablaReportesVentas">
                             <tr>
-                                <td colspan="6" class="sin-datos">Cargando reportes...</td>
+                                <td colspan="6" class="sin-datos">Cargando reportes de ventas...</td>
                             </tr>
                         </tbody>
                     </table>
