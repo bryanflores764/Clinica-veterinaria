@@ -306,17 +306,16 @@ const generarFactura = async (idVenta, datosFactura, idUsuario, ip) => {
   const codigoGeneracion = generarCodigoGeneracion();
   
   const factura = await ventasRepository.createFactura({
-    idVenta,
-    idCliente: idPropietario,
-    idTipoDocumento: 1,
-    idEstadoFactura: 1,
-    numeroControl,
-    codigoGeneracion,
-    rutaComprobante: null,
-    identificadorComprobante: numeroControl,
-    estadoEnvio: 'pendiente',
-    correoDestino: correoDestino
-  });
+  idVenta,
+  idCliente: idPropietario,
+  idTipoDocumento: 1,
+  numeroControl,
+  codigoGeneracion,
+  rutaComprobante: null,
+  identificadorComprobante: numeroControl,
+  estadoEnvio: 'pendiente',
+  correoDestino: correoDestino
+});
   
   await ventasRepository.updateVentaFactura(idVenta, {
     requiere_factura: requiereFactura,
