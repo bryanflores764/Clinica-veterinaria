@@ -8,6 +8,7 @@ const fechaInicio = document.getElementById('fechaInicio');
 const fechaFin = document.getElementById('fechaFin');
 const btnBuscarReporte = document.getElementById('btnBuscarReporte');
 const btnLimpiarReporte = document.getElementById('btnLimpiarReporte');
+const btnExportarPDF = document.getElementById('btnExportarPDF');
 
 const totalIngresos = document.getElementById('totalIngresos');
 const totalVentas = document.getElementById('totalVentas');
@@ -50,6 +51,159 @@ function formatearFecha(fecha) {
 function formatearDinero(valor) {
     const numero = Number(valor) || 0;
     return `$${numero.toFixed(2)}`;
+}
+
+/* =========================
+   TOAST
+========================= */
+
+function mostrarToastReporte(mensaje, esError = false) {
+    const container = document.getElementById('toast-container-reportes');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.classList.add('toast-reporte');
+    if (esError) toast.classList.add('error');
+    toast.textContent = mensaje;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.transition = 'opacity 0.3s';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
+/* =========================
+   EXPORTAR PDF
+========================= */
+
+function leerFilasTabla(tbodyId, colSpan) {
+    const filas = [];
+    document.querySelectorAll(`#${tbodyId} tr`).forEach((tr) => {
+        const celdas = [...tr.querySelectorAll('td')];
+        if (celdas.length > 0 && !celdas[0].classList.contains('sin-datos')) {
+            filas.push(celdas.map((td) => td.textContent.trim()));
+        }
+    });
+    return filas;
+}
+
+function exportarPDF() {
+    if (!window.jspdf) {
+        mostrarToastReporte('La librería de PDF no está disponible. Recarga la página.', true);
+        return;
+    }
+
+    const inicio = fechaInicio.value || obtenerPrimerDiaMes();
+    const fin = fechaFin.value || obtenerFechaActual();
+    const ahora = new Date();
+    const generadoEn = ahora.toLocaleDateString('es-SV') + ' ' + ahora.toLocaleTimeString('es-SV', { hour: '2-digit', minute: '2-digit' });
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const VERDE = [47, 168, 79];
+    const NEGRO = [30, 30, 30];
+    const GRIS = [100, 100, 100];
+    const VERDE_CLARO = [237, 255, 240];
+
+    // --- Encabezado ---
+    doc.setFontSize(22);
+    doc.setTextColor(...VERDE);
+    doc.setFont(undefined, 'bold');
+    doc.text('VetCare', 14, 20);
+
+    doc.setFontSize(15);
+    doc.setTextColor(...NEGRO);
+    doc.text('Reporte de Ventas', 14, 29);
+
+    doc.setFontSize(10);
+    doc.setTextColor(...GRIS);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Período: ${formatearFecha(inicio)} al ${formatearFecha(fin)}`, 14, 37);
+    doc.text(`Generado: ${generadoEn}`, 14, 43);
+
+    // Línea separadora
+    doc.setDrawColor(220);
+    doc.line(14, 47, 283, 47);
+
+    // --- Resumen ---
+    doc.setFontSize(11);
+    doc.setTextColor(...NEGRO);
+    doc.setFont(undefined, 'bold');
+    doc.text('Resumen', 14, 56);
+    doc.setFont(undefined, 'normal');
+    doc.setFontSize(10);
+
+    const resumen = [
+        { label: 'Total ingresos', valor: totalIngresos.textContent },
+        { label: 'Ventas realizadas', valor: totalVentas.textContent },
+        { label: 'Ventas anuladas', valor: totalProductos.textContent },
+    ];
+
+    resumen.forEach((item, i) => {
+        const x = 14 + i * 92;
+        doc.setTextColor(...GRIS);
+        doc.text(item.label, x, 63);
+        doc.setFontSize(13);
+        doc.setTextColor(...NEGRO);
+        doc.setFont(undefined, 'bold');
+        doc.text(item.valor, x, 70);
+        doc.setFont(undefined, 'normal');
+        doc.setFontSize(10);
+    });
+
+    // --- Tabla detalle del reporte ---
+    doc.setFontSize(11);
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(...NEGRO);
+    doc.text('Detalle del reporte', 14, 82);
+
+    const filasReporte = leerFilasTabla('tablaReportesVentas');
+    doc.autoTable({
+        startY: 86,
+        head: [['Fecha', 'Ventas', 'Total ingresos', 'Promedio venta', 'Confirmadas', 'Anuladas']],
+        body: filasReporte.length > 0 ? filasReporte : [['Sin datos para el período seleccionado', '', '', '', '', '']],
+        headStyles: { fillColor: VERDE, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 10 },
+        bodyStyles: { fontSize: 10, textColor: NEGRO },
+        alternateRowStyles: { fillColor: VERDE_CLARO },
+        styles: { cellPadding: 4 },
+    });
+
+    // --- Tabla productos más vendidos ---
+    const y2 = doc.lastAutoTable.finalY + 12;
+    doc.setFontSize(11);
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(...NEGRO);
+    doc.text('Productos más vendidos', 14, y2);
+
+    const filasProductos = leerFilasTabla('tablaProductosMasVendidos');
+    doc.autoTable({
+        startY: y2 + 4,
+        head: [['Producto', 'Cantidad vendida', 'Total generado']],
+        body: filasProductos.length > 0 ? filasProductos : [['Sin datos para el período seleccionado', '', '']],
+        headStyles: { fillColor: VERDE, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 10 },
+        bodyStyles: { fontSize: 10, textColor: NEGRO },
+        alternateRowStyles: { fillColor: VERDE_CLARO },
+        styles: { cellPadding: 4 },
+    });
+
+    // --- Pie de página ---
+    const totalPaginas = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPaginas; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.setTextColor(...GRIS);
+        doc.text(
+            `Pág. ${i} de ${totalPaginas} — VetCare`,
+            doc.internal.pageSize.getWidth() / 2,
+            doc.internal.pageSize.getHeight() - 8,
+            { align: 'center' }
+        );
+    }
+
+    doc.save(`reporte_ventas_${inicio}_al_${fin}.pdf`);
+    mostrarToastReporte('PDF exportado y descargado correctamente.');
 }
 
 /* =========================
@@ -385,5 +539,6 @@ function limpiarFiltros() {
 
 btnBuscarReporte.addEventListener('click', cargarTodo);
 btnLimpiarReporte.addEventListener('click', limpiarFiltros);
+btnExportarPDF.addEventListener('click', exportarPDF);
 
 cargarTodo();

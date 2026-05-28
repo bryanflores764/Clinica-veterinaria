@@ -250,10 +250,10 @@
 }
 
 .filtros-reportes {
-    grid-template-columns: 1fr 1fr 0.7fr 0.7fr;
+    grid-template-columns: 1fr 1fr 0.65fr 0.65fr auto;
     gap: 10px;
     align-items: end;
-    padding: 0;
+    padding: 10;
     margin-bottom: 0;
     box-shadow: none;
 }
@@ -283,4 +283,81 @@
 
 .productos-mas-vendidos .encabezado-tabla-reportes {
     padding-top: 4px;
+}
+
+/* ========================
+   Botón Exportar PDF
+======================== */
+.btn-exportar-pdf {
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 8px;
+    border: none;
+    background: #0071bc;
+    color: #ffffff;
+    font-family: "Baloo Da 2", sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+
+.btn-exportar-pdf:hover {
+    background: #005fa3;
+}
+
+.btn-exportar-pdf:disabled {
+    background: #8ab8d8;
+    cursor: not-allowed;
+}
+
+/* ========================
+   Toast de confirmación
+======================== */
+.toast-container-reportes {
+    position: fixed;
+    top: 22px;
+    right: 22px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast-reporte {
+    background: #ffffff;
+    border-left: 5px solid #35a846;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: "Baloo Da 2", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111111;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.13);
+    min-width: 260px;
+    max-width: 360px;
+    animation: toastEntrarReporte 0.25s ease;
+    pointer-events: auto;
+}
+
+.toast-reporte.error {
+    border-left-color: #d93025;
+}
+
+@keyframes toastEntrarReporte {
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@media (max-width: 768px) {
+    .filtros-reportes {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .btn-exportar-pdf {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
 }
