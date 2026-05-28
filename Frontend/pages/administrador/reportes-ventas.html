@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VetCare - Historial de acciones</title>
+    <title>VetCare - Reportes de ventas</title>
 
     <link rel="icon" type="image/x-icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico">
 
@@ -13,12 +13,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="../../css/administrador/interfazAdmin.css">
-    <link rel="stylesheet" href="../../css/administrador/historial-acciones.css">
+    <link rel="stylesheet" href="../../css/administrador/reportes-ventas.css">
 </head>
 
 <body>
 
-    <button class="menu-toggle" id="menuToggle">☰</button>
+    <button class="menu-toggle" id="menuToggle" type="button">☰</button>
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
     <main class="layout">
@@ -79,7 +79,7 @@
                 </div>
 
                 <div class="menu-grupo">
-                    <a href="reportes-ventas.html" class="item">
+                    <a href="reportes-ventas.html" class="item active">
                         <img src="../../assets/icons/icon-user.svg" alt="" class="menu-icon">
                         <span>Reportes de ventas</span>
                     </a>
@@ -93,9 +93,9 @@
 
             <header class="topbar">
                 <div>
-                    <h1>Historial de acciones</h1>
+                    <h1>Reportes de ventas</h1>
                     <p class="descripcion-panel">
-                        Consulta las acciones realizadas dentro del sistema.
+                        Consulta el resumen de ventas realizadas dentro del sistema.
                     </p>
                 </div>
 
@@ -106,52 +106,59 @@
             </header>
 
             <section class="dashboard-card">
-                <h2>Registro de acciones del sistema</h2>
+                <h2>Resumen de reportes de ventas</h2>
                 <p>
-                    En este apartado puedes visualizar el usuario, módulo, acción, descripción y fecha de cada registro.
+                    En este apartado puedes visualizar los ingresos, ventas realizadas, promedio de venta y ventas anuladas según el rango de fechas seleccionado.
                 </p>
             </section>
 
-            <section class="contenedor-historial">
+            <section class="contenedor-reportes">
 
-                <div class="filtros-historial">
-                    <input type="text" id="filtroUsuario" placeholder="Buscar por usuario">
+                <div class="tarjetas-resumen">
 
-                    <select id="filtroModulo">
-                        <option value="">Todos los módulos</option>
-                        <option value="Usuarios">Usuarios</option>
-                        <option value="Clientes">Clientes</option>
-                        <option value="Mascotas">Mascotas</option>
-                        <option value="Productos">Productos</option>
-                        <option value="Ventas">Ventas</option>
-                    </select>
+                    <article class="tarjeta-reporte">
+                        <p>Total de ingresos</p>
+                        <h3 id="totalIngresos">$0.00</h3>
+                    </article>
 
-                    <select id="filtroAccion">
-                        <option value="">Todas las acciones</option>
-                        <option value="Crear">Crear</option>
-                        <option value="Editar">Editar</option>
-                        <option value="Eliminar">Eliminar</option>
-                        <option value="Login">Login</option>
-                    </select>
+                    <article class="tarjeta-reporte">
+                        <p>Ventas realizadas</p>
+                        <h3 id="totalVentas">0</h3>
+                    </article>
 
-                    <input type="date" id="filtroFecha">
+                    <article class="tarjeta-reporte">
+                        <p>Ventas anuladas</p>
+                        <h3 id="totalProductos">0</h3>
+                    </article>
 
-                    <button type="button" id="btnBuscarHistorial">Buscar</button>
-                    <button type="button" id="btnLimpiarHistorial" class="btn-secundario">Limpiar</button>
+                </div>
+
+                <div class="filtros-reportes">
+                    <input type="date" id="fechaInicio">
+                    <input type="date" id="fechaFin">
+
+                    <button type="button" id="btnBuscarReporte">Buscar</button>
+                    <button type="button" id="btnLimpiarReporte" class="btn-secundario">Limpiar</button>
                 </div>
 
                 <div class="tabla-contenedor">
-                    <table class="tabla-historial">
+                    <table class="tabla-reportes">
                         <thead>
                             <tr>
-                                <th>Usuario</th>
-                                <th>Acción</th>
-                                <th>Módulo</th>
-                                <th>Descripción</th>
                                 <th>Fecha</th>
+                                <th>Ventas</th>
+                                <th>Total ingresos</th>
+                                <th>Promedio venta</th>
+                                <th>Confirmadas</th>
+                                <th>Anuladas</th>
                             </tr>
                         </thead>
-                        <tbody id="tablaHistorialAcciones"></tbody>
+
+                        <tbody id="tablaReportesVentas">
+                            <tr>
+                                <td colspan="6" class="sin-datos">Cargando reportes...</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
 
@@ -162,7 +169,7 @@
     </main>
 
     <script src="../../js/administrador/interfazAdmin.js"></script>
-    <script src="../../js/administrador/historial-acciones.js"></script>
+    <script src="../../js/administrador/reportes-ventas.js"></script>
 </body>
 
 </html>
