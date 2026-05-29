@@ -386,6 +386,25 @@
     color: #ffffff;
 }
 
+.btn-factura-venta {
+    border: none;
+    background: #42AB49;
+    color: #ffffff;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.btn-factura-venta:hover {
+    background: #2f8f36;
+}
+
+.btn-factura-venta:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .btn-anular-venta {
     background: #dc3545;
     color: #ffffff;
@@ -474,13 +493,121 @@
     transform: none;
 }
 
+/* =======================
+   MODAL FACTURA
+======================= */
+
+.modal-factura {
+    max-width: 900px;
+}
+
+.factura-preview {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 18px;
+    margin-top: 16px;
+}
+
+.factura-encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.factura-encabezado h3 {
+    font-size: 26px;
+    color: #0071BC;
+    margin: 0;
+}
+
+.factura-encabezado p {
+    color: #666;
+    font-size: 15px;
+}
+
+.factura-info {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.factura-info span {
+    font-weight: 800;
+    color: #222;
+}
+
+.factura-info small {
+    color: #666;
+    font-size: 12px;
+}
+
+.btn-enviar-factura {
+    border: none;
+    background: #0071BC;
+    color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.btn-enviar-factura:hover {
+    background: #005a96;
+}
+
+.btn-enviar-factura:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* =======================
+   MODAL MENSAJE GLOBAL
+   Siempre encima de otros modales
+======================= */
+
+.modal-mensaje-global {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 99999 !important;
+    background: rgba(0, 0, 0, 0.35) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-mensaje-global.hidden {
+    display: none !important;
+}
+
+.modal-mensaje-global .modal-content {
+    position: relative !important;
+    z-index: 100000 !important;
+}
+
+/* =======================
+   MODAL DE MENSAJES SOBRE OTROS MODALES
+======================= */
+
+#modalExito {
+    z-index: 3000;
+}
+
+#modalExito .modal-content {
+    z-index: 3001;
+}
+
 /* ============================================================
    UTILIDADES
    ============================================================ */
 .hidden {
     display: none !important;
 }
-
 /* ============================================================
    RESPONSIVE TABLET
    ============================================================ */
@@ -663,6 +790,14 @@
 
     .venta-total-value {
         font-size: 18px;
+    }
+
+    .factura-encabezado {
+        flex-direction: column;
+    }
+
+    .factura-info {
+        text-align: left;
     }
 }
 

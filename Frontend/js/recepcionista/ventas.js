@@ -151,6 +151,32 @@ document.getElementById("btnConfirmarAnularVenta")?.addEventListener("click", as
 });
 
 // ─────────────────────────────────────────────
+// EVENTO PARA BOTÓN FACTURA
+// ─────────────────────────────────────────────
+let idVentaSeleccionadaParaFactura = null;
+
+document.getElementById("tbodyVentas")?.addEventListener("click", (e) => {
+    const btnFactura = e.target.closest(".btn-factura-venta");
+
+    if (!btnFactura) return;
+
+    const idVenta = btnFactura.dataset.id;
+    const estado = btnFactura.dataset.estado?.toLowerCase();
+
+    if (!idVenta) {
+        mostrarAlerta("No se encontró el ID de la venta.");
+        return;
+    }
+
+    if (estado === "anulada") {
+        mostrarAlerta("No se puede generar factura de una venta anulada.");
+        return;
+    }
+
+    abrirModalFacturaVenta(idVenta);
+});
+
+// ─────────────────────────────────────────────
 // anular venta
 // ─────────────────────────────────────────────
 async function anularVenta(idVenta) {
@@ -302,6 +328,16 @@ async function cargarVentas() {
                             data-id="${idVenta}"
                         >
                             Detalle
+                        </button>
+
+                        <button 
+                            type="button" 
+                            class="btn-factura-venta"
+                            data-id="${idVenta}"
+                            data-estado="${estado}"
+                            ${estado?.toLowerCase() === "anulada" ? "disabled" : ""}
+                        >
+                            Factura
                         </button>
 
                         <button 
@@ -886,6 +922,313 @@ function mostrarAlerta(mensaje) {
 document.getElementById("cerrarExito")?.addEventListener("click", () => {
     document.getElementById("modalExito").classList.add("hidden");
 });
+
+// ─────────────────────────────────────────────
+// MODAL FACTURA DE VENTA
+// ─────────────────────────────────────────────
+async function abrirModalFacturaVenta(idVenta) {
+    const token = obtenerToken();
+
+    if (!token) {
+        mostrarAlerta("No hay sesión activa. Inicia sesión nuevamente.");
+        return;
+    }
+
+    if (!idVenta) {
+        mostrarAlerta("No se encontró el ID de la venta.");
+        return;
+    }
+
+    idVentaSeleccionadaParaFactura = idVenta;
+
+    try {
+        const res = await fetch(`${API_VENTAS}/${idVenta}`, {
+            method: "GET",
+            headers: obtenerHeadersAuth()
+        });
+
+        const json = await res.json();
+
+        console.log("Respuesta venta para factura:", json);
+
+        if (!res.ok || json.success === false) {
+            throw new Error(json.message || "No se pudo obtener la información de la venta.");
+        }
+
+        const venta = json.data;
+
+        pintarVistaPreviaFactura(venta);
+        await consultarFacturaExistente(idVenta);
+
+        document.getElementById("modalFacturaVenta")?.classList.remove("hidden");
+
+    } catch (error) {
+        console.error("Error al abrir factura:", error);
+        mostrarAlerta(error.message || "Ocurrió un error al cargar la factura.");
+    }
+}
+
+function pintarVistaPreviaFactura(venta) {
+    const facturaFecha = document.getElementById("facturaFecha");
+    const facturaCliente = document.getElementById("facturaCliente");
+    const facturaEstadoVenta = document.getElementById("facturaEstadoVenta");
+    const facturaTotal = document.getElementById("facturaTotal");
+
+    const tbodyProductos = document.getElementById("tbodyFacturaProductos");
+    const tbodyServicios = document.getElementById("tbodyFacturaServicios");
+
+    const productosEmpty = document.getElementById("facturaProductosEmpty");
+    const serviciosEmpty = document.getElementById("facturaServiciosEmpty");
+
+    const facturaNumeroControl = document.getElementById("facturaNumeroControl");
+    const facturaCodigoGeneracion = document.getElementById("facturaCodigoGeneracion");
+
+    const btnGenerarFactura = document.getElementById("btnGenerarFactura");
+
+    const fechaVenta =
+        venta.Fecha_Venta ??
+        venta.fecha_venta ??
+        venta.fechaVenta ??
+        venta.fecha;
+
+    const cliente =
+        venta.Propietario ??
+        venta.Nombre_Propietario ??
+        venta.Nombre ??
+        venta.nombre ??
+        "Sin cliente";
+
+    const estado =
+        venta.Estado ??
+        venta.estado ??
+        "activa";
+
+    const total =
+        venta.Total ??
+        venta.total ??
+        0;
+
+    const productos =
+        venta.detalle ??
+        venta.Detalle ??
+        venta.productos ??
+        [];
+
+    const servicios =
+        venta.servicios ??
+        venta.Servicios ??
+        [];
+
+    facturaFecha.textContent = formatearFecha(fechaVenta);
+    facturaCliente.textContent = cliente;
+    facturaEstadoVenta.textContent = estado;
+    facturaTotal.textContent = `$${parseFloat(total ?? 0).toFixed(2)}`;
+
+    facturaNumeroControl.textContent = "Sin generar";
+    facturaCodigoGeneracion.textContent = "Factura pendiente de generación";
+
+    if (btnGenerarFactura) {
+        btnGenerarFactura.disabled = false;
+        btnGenerarFactura.textContent = "Generar factura";
+    }
+
+    tbodyProductos.innerHTML = "";
+    tbodyServicios.innerHTML = "";
+
+    if (!Array.isArray(productos) || productos.length === 0) {
+        productosEmpty?.classList.remove("hidden");
+    } else {
+        productosEmpty?.classList.add("hidden");
+
+        productos.forEach((item) => {
+            const tr = document.createElement("tr");
+
+            const nombre =
+                item.Nombre_Producto ??
+                item.Producto ??
+                item.nombreProducto ??
+                item.nombre ??
+                "Producto sin nombre";
+
+            const cantidad =
+                item.Cantidad ??
+                item.cantidad ??
+                0;
+
+            const precio =
+                item.Precio_Unitario ??
+                item.precioUnitario ??
+                item.precio ??
+                0;
+
+            const subtotal =
+                item.Subtotal ??
+                item.subtotal ??
+                cantidad * precio;
+
+            tr.innerHTML = `
+                <td>${nombre}</td>
+                <td>${cantidad}</td>
+                <td>$${parseFloat(precio).toFixed(2)}</td>
+                <td>$${parseFloat(subtotal).toFixed(2)}</td>
+            `;
+
+            tbodyProductos.appendChild(tr);
+        });
+    }
+
+    if (!Array.isArray(servicios) || servicios.length === 0) {
+        serviciosEmpty?.classList.remove("hidden");
+    } else {
+        serviciosEmpty?.classList.add("hidden");
+
+        servicios.forEach((item) => {
+            const tr = document.createElement("tr");
+
+            const nombre =
+                item.Nombre_Servicio ??
+                item.Servicio ??
+                item.nombreServicio ??
+                item.nombre ??
+                "Servicio sin nombre";
+
+            const cantidad =
+                item.Cantidad ??
+                item.cantidad ??
+                1;
+
+            const precio =
+                item.Precio_Unitario ??
+                item.precioUnitario ??
+                item.precio ??
+                0;
+
+            const subtotal =
+                item.Subtotal ??
+                item.subtotal ??
+                cantidad * precio;
+
+            tr.innerHTML = `
+                <td>${nombre}</td>
+                <td>${cantidad}</td>
+                <td>$${parseFloat(precio).toFixed(2)}</td>
+                <td>$${parseFloat(subtotal).toFixed(2)}</td>
+            `;
+
+            tbodyServicios.appendChild(tr);
+        });
+    }
+}
+
+async function consultarFacturaExistente(idVenta) {
+    const btnGenerarFactura = document.getElementById("btnGenerarFactura");
+    const facturaNumeroControl = document.getElementById("facturaNumeroControl");
+    const facturaCodigoGeneracion = document.getElementById("facturaCodigoGeneracion");
+
+    try {
+        const res = await fetch(`${API_VENTAS}/${idVenta}/factura`, {
+            method: "GET",
+            headers: obtenerHeadersAuth()
+        });
+
+        const json = await res.json();
+
+        console.log("Factura existente:", json);
+
+        if (!res.ok || json.success === false) {
+            return;
+        }
+
+        const factura = json.data;
+
+        facturaNumeroControl.textContent =
+            factura.NumeroControl ??
+            factura.numeroControl ??
+            "Factura generada";
+
+        facturaCodigoGeneracion.textContent =
+            factura.CodigoGeneracion ??
+            factura.codigoGeneracion ??
+            "Código no disponible";
+
+        if (btnGenerarFactura) {
+            btnGenerarFactura.disabled = true;
+            btnGenerarFactura.textContent = "Factura generada";
+        }
+
+    } catch (error) {
+        console.log("La venta aún no tiene factura generada.");
+    }
+}
+
+function cerrarModalFacturaVenta() {
+    idVentaSeleccionadaParaFactura = null;
+    document.getElementById("modalFacturaVenta")?.classList.add("hidden");
+}
+
+document.getElementById("btnGenerarFactura")?.addEventListener("click", async () => {
+    if (!idVentaSeleccionadaParaFactura) {
+        mostrarAlerta("No se encontró la venta seleccionada.");
+        return;
+    }
+
+    const btnGenerarFactura = document.getElementById("btnGenerarFactura");
+
+    try {
+        if (btnGenerarFactura) {
+            btnGenerarFactura.disabled = true;
+            btnGenerarFactura.textContent = "Generando...";
+        }
+
+        const res = await fetch(`${API_VENTAS}/${idVentaSeleccionadaParaFactura}/factura/generar`, {
+            method: "POST",
+            headers: obtenerHeadersAuth(),
+            body: JSON.stringify({
+                requiereFactura: true
+            })
+        });
+
+        const json = await res.json();
+
+        console.log("Respuesta generar factura:", json);
+
+        if (!res.ok || json.success === false) {
+            throw new Error(json.message || "No se pudo generar la factura.");
+        }
+
+        const data = json.data;
+
+        document.getElementById("facturaNumeroControl").textContent =
+            data.numeroControl ??
+            data.NumeroControl ??
+            "Factura generada";
+
+        document.getElementById("facturaCodigoGeneracion").textContent =
+            data.codigoGeneracion ??
+            data.CodigoGeneracion ??
+            "Código no disponible";
+
+        if (btnGenerarFactura) {
+            btnGenerarFactura.disabled = true;
+            btnGenerarFactura.textContent = "Factura generada";
+        }
+
+        mostrarExito(json.message || "Factura generada correctamente.");
+
+    } catch (error) {
+        console.error("Error al generar factura:", error);
+
+        if (btnGenerarFactura) {
+            btnGenerarFactura.disabled = false;
+            btnGenerarFactura.textContent = "Generar factura";
+        }
+
+        mostrarAlerta(error.message || "Ocurrió un error al generar la factura.");
+    }
+});
+document.getElementById("cerrarModalFacturaVenta")?.addEventListener("click", cerrarModalFacturaVenta);
+
+document.getElementById("cerrarModalFacturaVentaBtn")?.addEventListener("click", cerrarModalFacturaVenta);
 
 // ─────────────────────────────────────────────
 // CARGA INICIAL
