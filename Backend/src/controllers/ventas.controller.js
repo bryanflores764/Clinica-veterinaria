@@ -158,36 +158,28 @@ const anularVenta = async (req, res) => {
 const generarFactura = async (req, res) => {
   try {
     const { id } = req.params;
-    const { idPropietario, correoEnvio, requiereFactura } = req.body;
+    const { correoEnvio, requiereFactura } = req.body; // ✅ Quitamos idPropietario
     const idUsuario = req.usuario?.id || req.usuario?.Id;
     const ip = req.ip || req.connection?.remoteAddress;
-    
-    if (!idPropietario) {
-      return res.status(400).json({
-        success: false,
-        message: 'El ID del propietario es obligatorio'
-      });
-    }
-    
+
     if (requiereFactura === undefined) {
       return res.status(400).json({
         success: false,
         message: 'Debe indicar si la venta requiere factura (requiereFactura: true/false)'
       });
     }
-    
+
     const result = await ventasService.generarFactura(id, {
-      idPropietario,
-      correoEnvio,
+      correoEnvio,      // ✅ opcional, si quieren enviar a otro correo
       requiereFactura
     }, idUsuario, ip);
-    
+
     res.status(201).json({
       success: true,
       message: 'Factura generada exitosamente',
       data: result
     });
-    
+
   } catch (error) {
     res.status(error.status || 500).json({
       success: false,

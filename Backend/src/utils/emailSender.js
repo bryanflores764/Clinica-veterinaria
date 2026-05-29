@@ -18,6 +18,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// ── Enviar factura por correo ─────────────────────────────────
 const enviarFacturaPorCorreo = async (destino, facturaData) => {
   const {
     numeroFactura,
@@ -57,7 +58,7 @@ const enviarFacturaPorCorreo = async (destino, facturaData) => {
             <td style="font-size:12px; color:#64748b; padding:2px 0;">Subtotal:</td>
             <td style="font-size:13px; color:#42AB49; font-weight:800; text-align:right; padding:2px 0;">$${(p.subtotal || 0).toFixed(2)}</td>
           </tr>
-        </table>
+        <table>
       </div>
     `).join('');
   } else {
@@ -175,4 +176,83 @@ const enviarFacturaPorCorreo = async (destino, facturaData) => {
   }
 };
 
-module.exports = { enviarFacturaPorCorreo };
+// ── Enviar notificación de vacuna ─────────────────────────────
+const enviarNotificacionVacuna = async (destino, vacunaData) => {
+  const { mascota, vacuna, proximaDosis, diasRestantes } = vacunaData;
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Recordatorio de Vacuna - VetCare</title>
+      <style>
+        body { margin: 0; padding: 20px; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f8f7; }
+        .container { max-width: 500px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .header { background: #0071BC; padding: 20px; text-align: center; }
+        .header h1 { color: white; margin: 0; font-size: 22px; }
+        .content { padding: 24px; }
+        .mensaje { background: #e8f5e9; padding: 16px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
+        .mensaje p { margin: 0; color: #2e7d32; font-size: 14px; font-weight: 600; }
+        .datos { background: #f8fafc; padding: 16px; border-radius: 12px; margin-bottom: 20px; }
+        .datos p { margin: 8px 0; font-size: 14px; }
+        .datos strong { color: #334155; }
+        .alerta { background: #fff3e0; padding: 12px; border-radius: 10px; text-align: center; margin-bottom: 20px; }
+        .alerta p { margin: 0; color: #e65100; font-weight: 600; }
+        .footer { background: #f1f5f9; padding: 16px; text-align: center; font-size: 12px; color: #64748b; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🐾 VetCare</h1>
+          <p>Clínica Veterinaria</p>
+        </div>
+        <div class="content">
+          <div class="mensaje">
+            <p>🐾 ¡Recordatorio importante para tu mascota! 🐾</p>
+          </div>
+          <div class="alerta">
+            <p>⚠️ La siguiente vacuna está próxima a vencer</p>
+          </div>
+          <div class="datos">
+            <p><strong>🐕 Mascota:</strong> ${mascota}</p>
+            <p><strong>💉 Vacuna:</strong> ${vacuna}</p>
+            <p><strong>📅 Próxima dosis:</strong> ${new Date(proximaDosis).toLocaleDateString()}</p>
+            <p><strong>⏰ Días restantes:</strong> ${diasRestantes} días</p>
+          </div>
+          <p style="text-align: center;">Por favor, agende una cita para aplicar la vacuna a tiempo.</p>
+          <p style="text-align: center;">¡Gracias por cuidar la salud de tu mascota!</p>
+        </div>
+        <div class="footer">
+          <p>© 2026 VetCare Clínica Veterinaria</p>
+          <p>Este es un correo automático, por favor no responder.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+  
+  const mailOptions = {
+    from: `"VetCare" <${EMAIL_USER}>`,
+    to: destino,
+    subject: `⚠️ Recordatorio: Vacuna próxima para ${mascota}`,
+    html: htmlContent
+  };
+  
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`✅ Notificación enviada a ${destino}`);
+    return { success: true, message: `Notificación enviada a ${destino}` };
+  } catch (error) {
+    console.error(`❌ Error:`, error.message);
+    return { success: false, message: `Error: ${error.message}` };
+  }
+};
+
+// ── EXPORTAR ─────────────────────────────────────────────────
+module.exports = { 
+  enviarFacturaPorCorreo,
+  enviarNotificacionVacuna
+};
