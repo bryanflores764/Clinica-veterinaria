@@ -1579,13 +1579,13 @@ function configurarModalCartilla() {
 }
 
 async function marcarNotificacionVacuna(vacunaId, itemElement) {
-    const propietarioId = mascotaCartillaActual?.Id_Propietario;
 
     try {
         const respuesta = await fetch(`${URL_API}/api/vacunas/${vacunaId}/notificar`, {
             method: "POST",
             headers: obtenerEncabezados(true),
-            body: JSON.stringify({ propietario_id: propietarioId })
+            // ✅ Body vacío — el backend ya no necesita propietario_id
+            body: JSON.stringify({})
         });
 
         if (respuesta.status === 401 || respuesta.status === 403) {

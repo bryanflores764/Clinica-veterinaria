@@ -156,19 +156,19 @@ const getFacturaByVenta = async (idVenta) => {
 // Crear factura
 const createFactura = async (data) => {
   const { 
-    idVenta, idCliente, idTipoDocumento, idEstadoFactura, 
+    idVenta, idCliente, idTipoDocumento,  // ← quita idEstadoFactura
     numeroControl, codigoGeneracion, rutaComprobante, 
     identificadorComprobante, estadoEnvio, correoDestino 
   } = data;
   
   const [result] = await connection.execute(`
     INSERT INTO facturaelectronica 
-    (Id_Venta, Id_Cliente, Id_TipoDocumento, Id_EstadoFactura, 
+    (Id_Venta, Id_Cliente, Id_TipoDocumento, 
      NumeroControl, CodigoGeneracion, FechaEmision, 
      RutaComprobante, IdentificadorComprobante, EstadoEnvio, CorreoDestino)
-    VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)
   `, [
-    idVenta, idCliente, idTipoDocumento, idEstadoFactura,
+    idVenta, idCliente, idTipoDocumento,
     numeroControl, codigoGeneracion, rutaComprobante || null,
     identificadorComprobante || null, estadoEnvio, correoDestino || null
   ]);

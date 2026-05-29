@@ -127,33 +127,28 @@ const VacunasController = {
   },
 
   // POST /api/vacunas/:id/notificar
-  async marcarNotificacion(req, res) {
-    try {
-      const { id } = req.params;
-      const { propietario_id } = req.body;
-      const usuario_id = req.usuario?.id || req.usuario?.Id;
-      const ip = req.ip || req.connection.remoteAddress;
+  // POST /api/vacunas/:id/notificar
+async marcarNotificacion(req, res) {
+  try {
+    const { id } = req.params;
+    const usuario_id = req.usuario?.id || req.usuario?.Id;
+    const ip = req.ip || req.connection.remoteAddress;
 
-      if (!propietario_id) {
-        return res.status(400).json({
-          success: false,
-          message: 'El ID del propietario es obligatorio'
-        });
-      }
+    // ✅ Solo llama al service — nada más
+    const result = await vacunasService.marcarNotificacion(id, usuario_id, ip);
 
-      const result = await vacunasService.marcarNotificacion(id, propietario_id, usuario_id, ip);
-      res.status(200).json({
-        success: true,
-        message: result.message,
-        data: result
-      });
-    } catch (error) {
-      res.status(error.status || 500).json({
-        success: false,
-        message: error.message || 'Error interno del servidor'
-      });
-    }
+    res.status(200).json({
+      success: true,
+      message: result.message,
+      data: result
+    });
+  } catch (error) {
+    res.status(error.status || 500).json({
+      success: false,
+      message: error.message || 'Error interno del servidor'
+    });
   }
+}
 };
 
 module.exports = VacunasController;

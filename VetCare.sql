@@ -911,21 +911,18 @@ ALTER TABLE facturaelectronica
 -- ============================================================
 --  3. ACTUALIZAR FOREIGN KEY (Id_Cliente → propietarios)
 -- ============================================================
--- Eliminar foreign key vieja si existe
 ALTER TABLE facturaelectronica DROP FOREIGN KEY IF EXISTS facturaelectronica_ibfk_2;
+ALTER TABLE facturaelectronica DROP FOREIGN KEY IF EXISTS fk_factura_cliente;
 
--- Agregar foreign key apuntando a propietarios
 ALTER TABLE facturaelectronica
   ADD CONSTRAINT fk_factura_cliente
   FOREIGN KEY (Id_Cliente) REFERENCES propietarios(Id) ON DELETE CASCADE;
 
 -- ============================================================
---  4. TIPOS DE DOCUMENTO (solo Factura Electrónica)
+--  4. TIPOS DE DOCUMENTO
 -- ============================================================
--- Eliminar registros que no sean útiles
 DELETE FROM tiposdocumento WHERE Tipo_Documento = 'Credito Fiscal';
 
--- Asegurar que existe Factura Electronica
 INSERT INTO tiposdocumento (Id, Tipo_Documento) VALUES (1, 'Factura Electronica')
 ON DUPLICATE KEY UPDATE Tipo_Documento = VALUES(Tipo_Documento);
 
