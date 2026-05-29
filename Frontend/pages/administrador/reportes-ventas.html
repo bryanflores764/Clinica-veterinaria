@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VetCare - Reportes de ventas</title>
+
+    <link rel="icon" type="image/x-icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../../css/administrador/interfazAdmin.css">
+    <link rel="stylesheet" href="../../css/administrador/reportes-ventas.css">
+</head>
+
+<body>
+
+    <button class="menu-toggle" id="menuToggle" type="button">☰</button>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <main class="layout">
+
+        <aside class="sidebar">
+
+            <a href="interfazAdmin.html" class="logo-container">
+                <img 
+                    src="../../assets/img/Logo de clínica Veterinaria azul.png" 
+                    alt="Logo de VetCare" 
+                    class="logo-img"
+                >
+            </a>
+
+            <nav class="menu-lateral">
+
+                <div class="menu-grupo">
+                    <a href="#" class="item">
+                        <img src="../../assets/icons/icon-user.svg" alt="" class="menu-icon">
+                        <span>Gestión de usuarios</span>
+                    </a>
+
+                    <div class="submenu">
+                        <a href="ver-usuario.html" class="sub-item">Ver usuarios</a>
+                        <a href="crear-usuario.html" class="sub-item">Crear usuario</a>
+                    </div>
+                </div>
+
+                <div class="menu-grupo">
+                    <a href="#" class="item">
+                        <img src="../../assets/icons/icon-user.svg" alt="" class="menu-icon">
+                        <span>Gestión de clientes</span>
+                    </a>
+
+                    <div class="submenu">
+                        <a href="#" class="sub-item">Ver clientes</a>
+                        <a href="#" class="sub-item">Crear cliente</a>
+                    </div>
+                </div>
+
+                <div class="menu-grupo">
+                    <a href="#" class="item">
+                        <img src="../../assets/icons/icon-pacientes.svg" alt="" class="menu-icon">
+                        <span>Gestión de mascotas</span>
+                    </a>
+
+                    <div class="submenu">
+                        <a href="#" class="sub-item">Ver mascotas</a>
+                        <a href="#" class="sub-item">Crear mascota</a>
+                    </div>
+                </div>
+
+                <div class="menu-grupo">
+                    <a href="historial-acciones.html" class="item">
+                        <img src="../../assets/icons/icon-user.svg" alt="" class="menu-icon">
+                        <span>Historial de acciones</span>
+                    </a>
+                </div>
+
+                <div class="menu-grupo">
+                    <a href="reportes-ventas.html" class="item active">
+                        <img src="../../assets/icons/icon-user.svg" alt="" class="menu-icon">
+                        <span>Reportes de ventas</span>
+                    </a>
+                </div>
+
+            </nav>
+
+        </aside>
+
+        <section class="contenido-principal">
+
+            <header class="topbar">
+                <div>
+                    <h1>Reportes de ventas</h1>
+                    <p class="descripcion-panel">
+                        Consulta el resumen de ventas realizadas dentro del sistema.
+                    </p>
+                </div>
+
+                <a href="../../index.html" class="btn-cerrar-sesion">
+                    <img src="../../assets/icons/icon-sesion.svg" alt="" class="btn-icon">
+                    <span>Cerrar sesión</span>
+                </a>
+            </header>
+
+            <section class="dashboard-card">
+                <h2>Resumen de reportes de ventas</h2>
+                <p>
+                    Visualiza los ingresos, ventas realizadas, promedio de venta y ventas anuladas según el rango de fechas seleccionado.
+                </p>
+            </section>
+
+            <section class="contenedor-reportes">
+
+                <div class="tarjetas-resumen">
+
+                    <article class="tarjeta-reporte">
+                        <span class="etiqueta-tarjeta">Ingresos generados</span>
+                        <p>Total de ingresos</p>
+                        <h3 id="totalIngresos">$0.00</h3>
+                    </article>
+
+                    <article class="tarjeta-reporte">
+                        <span class="etiqueta-tarjeta">Cantidad total</span>
+                        <p>Ventas realizadas</p>
+                        <h3 id="totalVentas">0</h3>
+                    </article>
+
+                    <article class="tarjeta-reporte">
+                        <span class="etiqueta-tarjeta">Control de ventas</span>
+                        <p>Ventas anuladas</p>
+                        <h3 id="totalProductos">0</h3>
+                    </article>
+
+                </div>
+
+                <div class="bloque-reportes">
+                    <div class="encabezado-bloque">
+                        <div>
+                            <h3>Filtrar reporte</h3>
+                            <p>Selecciona un rango de fechas para consultar la información.</p>
+                        </div>
+                    </div>
+
+                    <div class="filtros-reportes">
+                        <div class="campo-filtro">
+                            <label for="fechaInicio">Fecha de inicio</label>
+                            <input type="date" id="fechaInicio">
+                        </div>
+
+                        <div class="campo-filtro">
+                            <label for="fechaFin">Fecha de fin</label>
+                            <input type="date" id="fechaFin">
+                        </div>
+
+                        <button type="button" id="btnBuscarReporte">Buscar</button>
+                        <button type="button" id="btnLimpiarReporte" class="btn-secundario">Limpiar</button>
+                        <button type="button" id="btnExportarPDF" class="btn-exportar-pdf">Exportar PDF</button>
+                    </div>
+                </div>
+
+                <div class="tabla-contenedor">
+                    <div class="encabezado-tabla-reportes">
+                        <div>
+                            <h3>Detalle del reporte</h3>
+                            <p>Información agrupada por fecha según las ventas registradas.</p>
+                        </div>
+                    </div>
+
+                    <table class="tabla-reportes">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Ventas</th>
+                                <th>Total ingresos</th>
+                                <th>Promedio venta</th>
+                                <th>Confirmadas</th>
+                                <th>Anuladas</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tablaReportesVentas">
+                            <tr>
+                                <td colspan="6" class="sin-datos">Cargando reportes de ventas...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!--Producto Mas vendidos tabla-->
+                <div class="tabla-contenedor productos-mas-vendidos">
+                    <div class="encabezado-tabla-reportes">
+                        <div>
+                            <h3>Productos más vendidos</h3>
+                            <p>Listado de productos con mayor cantidad vendida según el rango de fechas seleccionado.</p>
+                        </div>
+                    </div>
+
+                    <table class="tabla-reportes">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad vendida</th>
+                                <th>Total generado</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tablaProductosMasVendidos">
+                            <tr>
+                                <td colspan="3" class="sin-datos">Cargando productos más vendidos...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+    <div id="toast-container-reportes" class="toast-container-reportes"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="../../js/administrador/interfazAdmin.js"></script>
+    <script src="../../js/administrador/reportes-ventas.js"></script>
+</body>
+
+</html>

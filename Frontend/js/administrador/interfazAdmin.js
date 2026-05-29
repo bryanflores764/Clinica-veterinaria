@@ -149,3 +149,33 @@ document.querySelectorAll(".sub-item").forEach((item) => {
         }
     });
 });
+
+
+
+
+
+
+
+
+
+/*FUNCIONAMIENTO DE REPORTES*/
+const btnReportesVentas = document.getElementById('btnReportesVentas');
+const modalReportesVentas = document.getElementById('modalReportesVentas');
+const cerrarModalReportes = document.getElementById('cerrarModalReportes');
+
+if (btnReportesVentas && modalReportesVentas && cerrarModalReportes) {
+    btnReportesVentas.addEventListener('click', function (event) {
+        event.preventDefault();
+        modalReportesVentas.classList.add('activo');
+    });
+
+    cerrarModalReportes.addEventListener('click', function () {
+        modalReportesVentas.classList.remove('activo');
+    });
+
+    modalReportesVentas.addEventListener('click', function (event) {
+        if (event.target === modalReportesVentas) {
+            modalReportesVentas.classList.remove('activo');
+        }
+    });
+}
