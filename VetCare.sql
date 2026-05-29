@@ -589,3 +589,352 @@ CREATE TABLE IF NOT EXISTS notificaciones_vacunas (
 );
 
 
+-- ============================================================
+--  NUEVAS TABLAS Y MODIFICACIONES PARA REPORTES
+--  Agregar al final del script de base de datos
+-- ============================================================
+
+USE vetcare;
+
+-- ============================================================
+--  TABLA: reportes_generados (#516)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS reportes_generados (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    tipo_reporte VARCHAR(50) NOT NULL,
+    parametros TEXT,
+    fecha_inicio DATE,
+    fecha_fin DATE,
+    total_registros INT,
+    archivo_nombre VARCHAR(255),
+    fecha_generacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    INDEX idx_fecha_generacion (fecha_generacion),
+    INDEX idx_tipo_reporte (tipo_reporte),
+    INDEX idx_usuario_reporte (usuario_id, fecha_generacion)
+);
+
+-- ============================================================
+--  VISTAS PARA REPORTES (#465, #474, #495, #496)
+-- ============================================================
+
+-- Vista de ingresos diarios (#465)
+CREATE OR REPLACE VIEW vista_ingresos_diarios AS
+SELECT 
+    DATE(v.Fecha_Venta) AS fecha,
+    COUNT(DISTINCT v.Id) AS total_ventas,
+    SUM(v.Total) AS ingresos_totales,
+    COUNT(DISTINCT v.Id_Propietario) AS clientes_atendidos
+FROM ventas v
+WHERE v.Estado = 'confirmada'
+GROUP BY DATE(v.Fecha_Venta)
+ORDER BY fecha DESC;
+
+-- Vista de ingresos mensuales (#465)
+CREATE OR REPLACE VIEW vista_ingresos_mensuales AS
+SELECT 
+    YEAR(v.Fecha_Venta) AS año,
+    MONTH(v.Fecha_Venta) AS mes,
+    COUNT(DISTINCT v.Id) AS total_ventas,
+    SUM(v.Total) AS ingresos_totales
+FROM ventas v
+WHERE v.Estado = 'confirmada'
+GROUP BY YEAR(v.Fecha_Venta), MONTH(v.Fecha_Venta)
+ORDER BY año DESC, mes DESC;
+
+-- Vista de transacciones (#474)
+CREATE OR REPLACE VIEW vista_transacciones AS
+SELECT 
+    v.Id AS venta_id,
+    v.Fecha_Venta AS fecha,
+    v.Total AS monto,
+    v.Estado AS estado_venta,
+    p.Nombre AS propietario,
+    p.Telefono,
+    p.Correo,
+    COUNT(d.Id) AS total_productos,
+    GROUP_CONCAT(DISTINCT pr.Nombre_Producto SEPARATOR ', ') AS productos
+FROM ventas v
+INNER JOIN propietarios p ON p.Id = v.Id_Propietario
+INNER JOIN detalleventa d ON d.Id_Venta = v.Id
+INNER JOIN productos pr ON pr.Id = d.Id_Producto
+WHERE v.Estado = 'confirmada'
+GROUP BY v.Id
+ORDER BY v.Fecha_Venta DESC;
+
+-- Vista de productos más vendidos (#495, #496)
+CREATE OR REPLACE VIEW vista_productos_mas_vendidos AS
+SELECT 
+    pr.Id AS producto_id,
+    pr.Nombre_Producto AS producto,
+    c.Nombre_Categoria AS categoria,
+    SUM(d.Cantidad) AS total_unidades_vendidas,
+    SUM(d.Cantidad * d.Precio_Unitario) AS total_ingresos,
+    COUNT(DISTINCT v.Id) AS num_ventas
+FROM productos pr
+INNER JOIN detalleventa d ON d.Id_Producto = pr.Id
+INNER JOIN ventas v ON v.Id = d.Id_Venta
+INNER JOIN categorias c ON c.Id = pr.Id_Categoria
+WHERE v.Estado = 'confirmada'
+GROUP BY pr.Id, pr.Nombre_Producto, c.Nombre_Categoria
+ORDER BY total_unidades_vendidas DESC;
+
+-- Vista de ventas con detalle completo (#496)
+CREATE OR REPLACE VIEW vista_ventas_detalle AS
+SELECT 
+    v.Id AS venta_id,
+    v.Fecha_Venta,
+    v.Total AS venta_total,
+    p.Nombre AS propietario,
+    pr.Id AS producto_id,
+    pr.Nombre_Producto AS producto,
+    d.Cantidad,
+    d.Precio_Unitario,
+    (d.Cantidad * d.Precio_Unitario) AS subtotal
+FROM ventas v
+INNER JOIN propietarios p ON p.Id = v.Id_Propietario
+INNER JOIN detalleventa d ON d.Id_Venta = v.Id
+INNER JOIN productos pr ON pr.Id = d.Id_Producto
+WHERE v.Estado = 'confirmada';
+
+-- Vista de reportes por usuario (#517)
+CREATE OR REPLACE VIEW vista_reportes_usuario AS
+SELECT 
+    rg.id,
+    rg.tipo_reporte,
+    rg.parametros,
+    rg.fecha_inicio,
+    rg.fecha_fin,
+    rg.total_registros,
+    rg.archivo_nombre,
+    rg.fecha_generacion,
+    u.Nombre_Usuario AS generado_por
+FROM reportes_generados rg
+INNER JOIN usuarios u ON u.id = rg.usuario_id
+ORDER BY rg.fecha_generacion DESC;
+
+-- ============================================================
+--  ÍNDICES PARA OPTIMIZAR REPORTES (#466, #486)
+-- ============================================================
+
+-- Índices para ventas
+CREATE INDEX IF NOT EXISTS idx_ventas_fecha_estado ON ventas(Fecha_Venta, Estado);
+CREATE INDEX IF NOT EXISTS idx_ventas_fecha ON ventas(Fecha_Venta);
+CREATE INDEX IF NOT EXISTS idx_ventas_fecha_estado_total ON ventas(Fecha_Venta, Estado, Total);
+CREATE INDEX IF NOT EXISTS idx_ventas_propietario ON ventas(Id_Propietario, Estado);
+CREATE INDEX IF NOT EXISTS idx_ventas_fecha_propietario ON ventas(Fecha_Venta, Id_Propietario);
+
+-- Índices para detalleventa
+CREATE INDEX IF NOT EXISTS idx_detalle_venta ON detalleventa(Id_Venta, Id_Producto);
+CREATE INDEX IF NOT EXISTS idx_detalle_producto ON detalleventa(Id_Producto, Id_Venta);
+CREATE INDEX IF NOT EXISTS idx_detalle_venta_producto_cantidad ON detalleventa(Id_Venta, Id_Producto, Cantidad);
+
+-- Índices para productos
+CREATE INDEX IF NOT EXISTS idx_productos_categoria ON productos(Id_Categoria, Estado);
+CREATE INDEX IF NOT EXISTS idx_productos_estado ON productos(Estado);
+CREATE INDEX IF NOT EXISTS idx_productos_nombre ON productos(Nombre_Producto);
+
+-- Índices para reportes_generados
+CREATE INDEX IF NOT EXISTS idx_reportes_fecha ON reportes_generados(fecha_generacion);
+CREATE INDEX IF NOT EXISTS idx_reportes_tipo ON reportes_generados(tipo_reporte);
+CREATE INDEX IF NOT EXISTS idx_reportes_usuario_fecha ON reportes_generados(usuario_id, fecha_generacion);
+
+-- ============================================================
+--  PROCEDIMIENTOS ALMACENADOS PARA REPORTES (#484)
+-- ============================================================
+
+DELIMITER //
+
+-- Procedimiento para reporte de ventas por fechas
+CREATE OR REPLACE PROCEDURE sp_reporte_ventas_fechas(
+    IN p_fecha_inicio DATE,
+    IN p_fecha_fin DATE
+)
+BEGIN
+    SELECT 
+        DATE(v.Fecha_Venta) AS fecha,
+        COUNT(v.Id) AS num_ventas,
+        SUM(v.Total) AS total_ingresos,
+        AVG(v.Total) AS promedio_venta,
+        SUM(CASE WHEN v.Estado = 'confirmada' THEN 1 ELSE 0 END) AS confirmadas,
+        SUM(CASE WHEN v.Estado = 'anulada' THEN 1 ELSE 0 END) AS anuladas
+    FROM ventas v
+    WHERE DATE(v.Fecha_Venta) BETWEEN p_fecha_inicio AND p_fecha_fin
+    AND v.Estado IN ('confirmada', 'anulada')
+    GROUP BY DATE(v.Fecha_Venta)
+    ORDER BY fecha;
+END //
+
+-- Procedimiento para top productos por período
+CREATE OR REPLACE PROCEDURE sp_top_productos(
+    IN p_fecha_inicio DATE,
+    IN p_fecha_fin DATE,
+    IN p_limit INT
+)
+BEGIN
+    SELECT 
+        pr.Nombre_Producto,
+        SUM(d.Cantidad) AS total_vendido,
+        SUM(d.Cantidad * d.Precio_Unitario) AS ingresos
+    FROM productos pr
+    INNER JOIN detalleventa d ON d.Id_Producto = pr.Id
+    INNER JOIN ventas v ON v.Id = d.Id_Venta
+    WHERE v.Estado = 'confirmada'
+    AND DATE(v.Fecha_Venta) BETWEEN p_fecha_inicio AND p_fecha_fin
+    GROUP BY pr.Id, pr.Nombre_Producto
+    ORDER BY total_vendido DESC
+    LIMIT p_limit;
+END //
+
+DELIMITER ;
+
+-- ============================================================
+--  FUNCIONES PARA REPORTES (#485, #506)
+-- ============================================================
+
+DELIMITER //
+
+-- Función para validar formato de fecha (#485)
+CREATE OR REPLACE FUNCTION fn_validar_fecha(fecha_str VARCHAR(20))
+RETURNS BOOLEAN
+DETERMINISTIC
+BEGIN
+    RETURN fecha_str REGEXP '^[0-9]{4}-[0-9]{2}-[0-9]{2}$';
+END //
+
+-- Función para calcular ingresos por período (#506)
+CREATE OR REPLACE FUNCTION fn_ingresos_periodo(
+    p_fecha_inicio DATE,
+    p_fecha_fin DATE
+)
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE total DECIMAL(10,2);
+    SELECT COALESCE(SUM(Total), 0) INTO total
+    FROM ventas
+    WHERE Estado = 'confirmada'
+    AND DATE(Fecha_Venta) BETWEEN p_fecha_inicio AND p_fecha_fin;
+    RETURN total;
+END //
+
+DELIMITER ;
+
+-- ============================================================
+--  VERIFICACIÓN DE INTEGRIDAD (#475, #507)
+-- ============================================================
+
+-- Verificar ventas sin detalle
+SELECT v.Id, v.Fecha_Venta, v.Total, v.Estado
+FROM ventas v
+LEFT JOIN detalleventa d ON d.Id_Venta = v.Id
+WHERE d.Id IS NULL AND v.Estado = 'confirmada';
+
+-- Verificar productos sin categoría
+SELECT Id, Nombre_Producto, Id_Categoria
+FROM productos
+WHERE Id_Categoria IS NULL OR Id_Categoria NOT IN (SELECT Id FROM categorias);
+
+-- Verificar ventas con total incorrecto
+SELECT v.Id, v.Total AS total_guardado, SUM(d.Cantidad * d.Precio_Unitario) AS total_calculado
+FROM ventas v
+INNER JOIN detalleventa d ON d.Id_Venta = v.Id
+WHERE v.Estado = 'confirmada'
+GROUP BY v.Id
+HAVING ABS(v.Total - total_calculado) > 0.01;
+
+-- ============================================================
+--  CONSULTA DE VALIDACIÓN DE DATOS EXPORTADOS (#507)
+-- ============================================================
+
+SELECT 
+    'ventas' AS tabla,
+    COUNT(*) AS total_registros,
+    SUM(CASE WHEN Estado = 'confirmada' THEN 1 ELSE 0 END) AS confirmadas,
+    SUM(CASE WHEN Estado = 'anulada' THEN 1 ELSE 0 END) AS anuladas,
+    COALESCE(SUM(Total), 0) AS ingresos_totales
+FROM ventas
+UNION ALL
+SELECT 
+    'productos' AS tabla,
+    COUNT(*) AS total_registros,
+    SUM(CASE WHEN Estado = 'activo' THEN 1 ELSE 0 END) AS activos,
+    SUM(CASE WHEN Estado = 'inactivo' THEN 1 ELSE 0 END) AS inactivos,
+    COUNT(DISTINCT Id_Categoria) AS categorias_utilizadas
+FROM productos;
+
+-- ============================================================
+--  VERIFICACIÓN FINAL
+-- ============================================================
+
+-- Mostrar todas las tablas nuevas
+SHOW TABLES LIKE 'reportes_generados';
+
+-- Mostrar todas las vistas creadas
+SHOW FULL TABLES WHERE Table_type = 'VIEW';
+
+-- Mostrar los índices creados en ventas
+SHOW INDEX FROM ventas;
+SHOW INDEX FROM detalleventa;
+SHOW INDEX FROM productos;
+
+-- ============================================================
+--  FIN DEL SCRIPT
+-- ============================================================
+
+--- ============================================================
+--  SCRIPT FINAL - FACTURACIÓN (VERSIÓN SIMPLIFICADA)
+-- ============================================================
+
+USE vetcare;
+
+-- ============================================================
+--  1. AGREGAR COLUMNAS A ventas
+-- ============================================================
+ALTER TABLE ventas
+  ADD COLUMN IF NOT EXISTS requiere_factura BOOLEAN DEFAULT FALSE,
+  ADD COLUMN IF NOT EXISTS correo_factura VARCHAR(150) NULL;
+
+-- ============================================================
+--  2. AGREGAR COLUMNAS A facturaelectronica
+-- ============================================================
+ALTER TABLE facturaelectronica
+  ADD COLUMN IF NOT EXISTS RutaComprobante VARCHAR(500) NULL,
+  ADD COLUMN IF NOT EXISTS IdentificadorComprobante VARCHAR(100) NULL,
+  ADD COLUMN IF NOT EXISTS EstadoEnvio ENUM('pendiente', 'enviado', 'fallido') NOT NULL DEFAULT 'pendiente',
+  ADD COLUMN IF NOT EXISTS FechaEnvio DATETIME NULL,
+  ADD COLUMN IF NOT EXISTS MensajeError TEXT NULL,
+  ADD COLUMN IF NOT EXISTS CorreoDestino VARCHAR(150) NULL;
+
+-- ============================================================
+--  3. ACTUALIZAR FOREIGN KEY (Id_Cliente → propietarios)
+-- ============================================================
+ALTER TABLE facturaelectronica DROP FOREIGN KEY IF EXISTS facturaelectronica_ibfk_2;
+ALTER TABLE facturaelectronica DROP FOREIGN KEY IF EXISTS fk_factura_cliente;
+
+ALTER TABLE facturaelectronica
+  ADD CONSTRAINT fk_factura_cliente
+  FOREIGN KEY (Id_Cliente) REFERENCES propietarios(Id) ON DELETE CASCADE;
+
+-- ============================================================
+--  4. TIPOS DE DOCUMENTO
+-- ============================================================
+DELETE FROM tiposdocumento WHERE Tipo_Documento = 'Credito Fiscal';
+
+INSERT INTO tiposdocumento (Id, Tipo_Documento) VALUES (1, 'Factura Electronica')
+ON DUPLICATE KEY UPDATE Tipo_Documento = VALUES(Tipo_Documento);
+
+-- ============================================================
+--  5. ELIMINAR TABLAS QUE YA NO SE USAN
+-- ============================================================
+DROP TABLE IF EXISTS clientesfacturacion;
+DROP TABLE IF EXISTS estadosfactura;
+
+-- ============================================================
+--  6. VERIFICAR ESTRUCTURA FINAL
+-- ============================================================
+DESCRIBE ventas;
+DESCRIBE facturaelectronica;
+SELECT * FROM tiposdocumento;

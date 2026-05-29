@@ -135,6 +135,93 @@ const anularVentaConDatos = async (idVenta, idUsuario) => {
   return result.affectedRows;
 };
 
+// ============================================================
+//  FACTURACIÓN (SIN DEPENDENCIA DE VentasQueries)
+// ============================================================
+
+// Obtener factura por ID de venta
+const getFacturaByVenta = async (idVenta) => {
+  const [rows] = await connection.execute(`
+    SELECT f.*, 
+           p.Nombre as NombreFiscal,
+           p.Correo,
+           td.Tipo_Documento
+    FROM facturaelectronica f
+    INNER JOIN propietarios p ON p.Id = f.Id_Cliente
+    INNER JOIN tiposdocumento td ON td.Id = f.Id_TipoDocumento
+    WHERE f.Id_Venta = ?
+  `, [idVenta]);
+  return rows[0] || null;
+};
+// Crear factura
+const createFactura = async (data) => {
+  const { 
+    idVenta, idCliente, idTipoDocumento,  // ← quita idEstadoFactura
+    numeroControl, codigoGeneracion, rutaComprobante, 
+    identificadorComprobante, estadoEnvio, correoDestino 
+  } = data;
+  
+  const [result] = await connection.execute(`
+    INSERT INTO facturaelectronica 
+    (Id_Venta, Id_Cliente, Id_TipoDocumento, 
+     NumeroControl, CodigoGeneracion, FechaEmision, 
+     RutaComprobante, IdentificadorComprobante, EstadoEnvio, CorreoDestino)
+    VALUES (?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)
+  `, [
+    idVenta, idCliente, idTipoDocumento,
+    numeroControl, codigoGeneracion, rutaComprobante || null,
+    identificadorComprobante || null, estadoEnvio, correoDestino || null
+  ]);
+  
+  return { id: result.insertId };
+};
+
+// Actualizar estado de envío de factura
+const updateFacturaEnvio = async (idVenta, estadoEnvio, fechaEnvio, mensajeError) => {
+  const [result] = await connection.execute(`
+    UPDATE facturaelectronica 
+    SET EstadoEnvio = ?, FechaEnvio = ?, MensajeError = ?
+    WHERE Id_Venta = ?
+  `, [estadoEnvio, fechaEnvio, mensajeError || null, idVenta]);
+  return result.affectedRows;
+};
+
+// Actualizar venta con datos de facturación
+const updateVentaFactura = async (idVenta, data) => {
+  const { requiere_factura, correo_factura } = data;
+  const [result] = await connection.execute(
+    "UPDATE ventas SET requiere_factura = ?, correo_factura = ? WHERE Id = ?",
+    [requiere_factura, correo_factura, idVenta]
+  );
+  return result.affectedRows;
+};
+
+// Buscar cliente de facturación por propietario
+const findClienteFacturacionByPropietario = async (idPropietario) => {
+  const [rows] = await connection.execute(
+    "SELECT * FROM clientesfacturacion WHERE Id_Propietario = ? LIMIT 1",
+    [idPropietario]
+  );
+  return rows[0] || null;
+};
+
+// Buscar cliente de facturación por ID
+const findClienteFacturacionById = async (id) => {
+  const [rows] = await connection.execute(
+    `SELECT * FROM clientesfacturacion WHERE Id = ?`,
+    [id]
+  );
+  return rows[0] || null;
+};
+
+// Obtener propietario por ID
+const findPropietarioById = async (id) => {
+  const [rows] = await connection.execute(
+    "SELECT Id, Nombre, Correo, Telefono FROM propietarios WHERE Id = ?",
+    [id]
+  );
+  return rows[0] || null;
+};
 // ── EXPORTAR TODAS LAS FUNCIONES ──────────────────────────────
 
 module.exports = {
@@ -151,4 +238,12 @@ module.exports = {
   confirmarVenta,
   confirmarVentaConTotal,
   anularVentaConDatos,
+  // ✅ Facturación
+  getFacturaByVenta,
+  createFactura,
+  updateFacturaEnvio,
+  updateVentaFactura,
+  findClienteFacturacionByPropietario,
+  findClienteFacturacionById,
+  findPropietarioById
 };

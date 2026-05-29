@@ -6,6 +6,7 @@
 
 const vacunasRepository = require('../repository/vacunas.repository');
 const auditoriaService = require('./auditoria.service');
+const { enviarNotificacionVacuna } = require('../middlewares/notificacionVacuna.middleware');
 
 const VacunasService = {
 
@@ -160,33 +161,55 @@ const VacunasService = {
     return alertas;
   },
 
-  // Marcar notificación como enviada
-  async marcarNotificacion(vacuna_id, propietario_id, usuario_id, ip) {
-    const vacuna = await vacunasRepository.findVacunaById(vacuna_id);
-    if (!vacuna) {
-      throw { status: 404, message: `No existe una vacuna con ID ${vacuna_id}` };
-    }
+  // Marcar notificación como enviada y enviar correo
+  async marcarNotificacion(vacuna_id, usuario_id, ip) {
 
-    // Verificar si ya fue notificada
-    const notificacionExistente = await vacunasRepository.checkNotificacion(vacuna_id);
-    if (notificacionExistente) {
-      throw { status: 409, message: 'Esta vacuna ya fue notificada anteriormente' };
-    }
-
-    await vacunasRepository.marcarNotificacion(vacuna_id, propietario_id);
-
-    // Registrar en auditoría
-    await auditoriaService.registrarAccion({
-      usuario_id,
-      modulo: 'vacunas',
-      accion: 'NOTIFICACION',
-      descripcion: `Envió notificación de vacuna próxima "${vacuna.nombre_vacuna}" a propietario ID ${propietario_id}`,
-      ip,
-      referencia_id: vacuna_id
-    });
-
-    return { message: 'Notificación registrada exitosamente' };
+  const vacuna = await vacunasRepository.findVacunaById(vacuna_id);
+  if (!vacuna) {
+    throw { status: 404, message: `No existe una vacuna con ID ${vacuna_id}` };
   }
+
+  // ✅ Todo viene directo de la vacuna
+  if (!vacuna.propietario_correo) {
+    throw { status: 400, message: 'El propietario no tiene correo registrado' };
+  }
+
+  const notificacionExistente = await vacunasRepository.checkNotificacion(vacuna_id);
+  if (notificacionExistente) {
+    throw { status: 409, message: 'Esta vacuna ya fue notificada anteriormente' };
+  }
+
+  const diasRestantes = Math.ceil(
+    (new Date(vacuna.proxima_dosis) - new Date()) / (1000 * 60 * 60 * 24)
+  );
+
+  const resultadoEmail = await enviarNotificacionVacuna({
+    propietarioCorreo: vacuna.propietario_correo,
+    mascotaNombre: vacuna.mascota_nombre,
+    vacunaNombre: vacuna.nombre_vacuna,
+    proximaDosis: vacuna.proxima_dosis,
+    diasRestantes
+  });
+
+  // ✅ Necesitamos el Id del propietario para marcarNotificacion en BD
+  // Agregá mascota_id al repository para obtenerlo, o ajustá la query
+  const mascota = await vacunasRepository.findMascotaById(vacuna.mascota_id);
+  await vacunasRepository.marcarNotificacion(vacuna_id, mascota.Id_Propietario);
+
+  await auditoriaService.registrarAccion({
+    usuario_id,
+    modulo: 'vacunas',
+    accion: 'NOTIFICACION',
+    descripcion: `Envió notificación de vacuna "${vacuna.nombre_vacuna}" a ${vacuna.propietario_correo}`,
+    ip,
+    referencia_id: vacuna_id
+  }).catch(err => console.error('Error en auditoría:', err.message));
+
+  return {
+    message: `Notificación enviada a ${vacuna.propietario_correo}`,
+    email: resultadoEmail
+  };
+}
 };
 
 module.exports = VacunasService;

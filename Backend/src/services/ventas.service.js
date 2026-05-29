@@ -5,14 +5,12 @@
 
 const ventasRepository = require('../repository/ventas.repository');
 const auditoriaService = require('./auditoria.service');
+const emailSender = require('../utils/emailSender');
 
-// ── Función auxiliar para obtener IP (si no viene, usar valor por defecto)
 const getIp = (reqIp) => reqIp || '0.0.0.0';
 
-// ── Crear venta ──────────────────────────────────────────────
 const createVenta = async (idPropietario, idUsuario, ip) => {
   console.log("🚀 [Service] Creando venta para propietario:", idPropietario);
-  console.log("👤 Usuario ID:", idUsuario);
   
   if (!idPropietario) {
     throw { status: 400, message: 'El Id del propietario es obligatorio' };
@@ -20,7 +18,6 @@ const createVenta = async (idPropietario, idUsuario, ip) => {
   
   const venta = await ventasRepository.createVenta(idPropietario);
   
-  // ✅ Registrar en auditoría
   try {
     await auditoriaService.registrarAccion({
       usuario_id: idUsuario,
@@ -37,7 +34,6 @@ const createVenta = async (idPropietario, idUsuario, ip) => {
   return venta;
 };
 
-// ── Agregar producto al detalle ──────────────────────────────
 const addDetalle = async (idVenta, idProducto, cantidad, idUsuario, ip) => {
   console.log(`📝 [Service] Agregando producto ${idProducto} a venta ${idVenta}, cantidad: ${cantidad}`);
   
@@ -80,7 +76,6 @@ const addDetalle = async (idVenta, idProducto, cantidad, idUsuario, ip) => {
     producto.Precio
   );
   
-  // ✅ Registrar en auditoría (opcional, para trazabilidad de productos agregados)
   try {
     await auditoriaService.registrarAccion({
       usuario_id: idUsuario,
@@ -97,7 +92,6 @@ const addDetalle = async (idVenta, idProducto, cantidad, idUsuario, ip) => {
   return detalle;
 };
 
-// ── Calcular total ───────────────────────────────────────────
 const getTotalVenta = async (idVenta) => {
   const venta = await ventasRepository.findVentaById(idVenta);
   if (!venta) {
@@ -107,13 +101,11 @@ const getTotalVenta = async (idVenta) => {
   return { idVenta, total };
 };
 
-// ── Obtener todas las ventas ─────────────────────────────────
 const getAllVentas = async () => {
   const ventas = await ventasRepository.findAllVentas();
   return ventas;
 };
 
-// ── Obtener venta por ID ─────────────────────────────────────
 const getVentaById = async (id) => {
   const venta = await ventasRepository.findVentaById(id);
   if (!venta) {
@@ -123,18 +115,13 @@ const getVentaById = async (id) => {
   return { ...venta, detalle };
 };
 
-// ── Confirmar venta (descuenta stock) ────────────────────────
 const confirmarVenta = async (idVenta, idUsuario, ip) => {
   console.log("=== [Service] CONFIRMANDO VENTA ===");
-  console.log("idVenta:", idVenta);
-  console.log("idUsuario:", idUsuario);
   
   const venta = await ventasRepository.findVentaById(idVenta);
   if (!venta) {
     throw { status: 404, message: `No existe una venta con id ${idVenta}` };
   }
-
-  console.log("Estado actual de la venta:", venta.Estado);
 
   if (venta.Estado === 'anulada') {
     throw { status: 409, message: `No se puede confirmar una venta anulada` };
@@ -145,16 +132,13 @@ const confirmarVenta = async (idVenta, idUsuario, ip) => {
   }
 
   const detalle = await ventasRepository.findDetalleByVenta(idVenta);
-  console.log("Productos en detalle:", detalle.length);
   
   if (!detalle.length) {
     throw { status: 400, message: 'No se puede confirmar una venta sin productos' };
   }
 
-  // Validar stock
   for (const item of detalle) {
     const producto = await ventasRepository.getStockProducto(item.Id_Producto);
-    console.log(`Validando stock para ${producto?.Nombre_Producto}: stock=${producto?.Stock}, requerido=${item.Cantidad}`);
     if (!producto || producto.Stock < item.Cantidad) {
       throw {
         status: 409,
@@ -163,13 +147,10 @@ const confirmarVenta = async (idVenta, idUsuario, ip) => {
     }
   }
 
-  // Descontar stock y registrar movimiento
   for (const item of detalle) {
     const producto = await ventasRepository.getStockProducto(item.Id_Producto);
     const stockAntes = producto.Stock;
     const stockDespues = stockAntes - item.Cantidad;
-    
-    console.log(`Descontando stock: ${producto.Nombre_Producto} ${stockAntes} → ${stockDespues}`);
     
     await ventasRepository.descontarStock(item.Id_Producto, item.Cantidad);
     
@@ -179,15 +160,9 @@ const confirmarVenta = async (idVenta, idUsuario, ip) => {
     );
   }
 
-  // ✅ CALCULAR TOTAL
   const total = await ventasRepository.calcularTotal(idVenta);
-  console.log("💰 Total calculado:", total);
-  
-  // ✅ ACTUALIZAR VENTA
   await ventasRepository.confirmarVentaConTotal(idVenta, total);
-  console.log("✅ Venta confirmada en BD");
   
-  // ✅ Registrar en auditoría
   try {
     await auditoriaService.registrarAccion({
       usuario_id: idUsuario,
@@ -209,18 +184,13 @@ const confirmarVenta = async (idVenta, idUsuario, ip) => {
   };
 };
 
-// ── Anular venta (devuelve stock) ────────────────────────────
 const anularVenta = async (idVenta, idUsuario, ip) => {
   console.log("=== [Service] ANULANDO VENTA ===");
-  console.log("idVenta:", idVenta);
-  console.log("idUsuario:", idUsuario);
   
   const venta = await ventasRepository.findVentaById(idVenta);
   if (!venta) {
     throw { status: 404, message: `No existe una venta con id ${idVenta}` };
   }
-
-  console.log("Estado actual de la venta:", venta.Estado);
 
   if (venta.Estado === 'anulada') {
     throw { status: 409, message: `La venta con id ${idVenta} ya está anulada` };
@@ -228,17 +198,13 @@ const anularVenta = async (idVenta, idUsuario, ip) => {
 
   let mensajeStock = '';
   
-  // Si estaba confirmada, devolver el stock
   if (venta.Estado === 'confirmada') {
-    console.log("🔄 Venta confirmada, devolviendo stock...");
     const detalle = await ventasRepository.findDetalleByVenta(idVenta);
     
     for (const item of detalle) {
       const producto = await ventasRepository.getStockProducto(item.Id_Producto);
       const stockAntes = producto.Stock;
       const stockDespues = stockAntes + item.Cantidad;
-      
-      console.log(`Devolviendo stock: ${producto.Nombre_Producto} ${stockAntes} → ${stockDespues}`);
       
       await ventasRepository.actualizarStock(item.Id_Producto, stockDespues);
       
@@ -252,7 +218,6 @@ const anularVenta = async (idVenta, idUsuario, ip) => {
 
   await ventasRepository.anularVentaConDatos(idVenta, idUsuario);
   
-  // ✅ Registrar en auditoría
   try {
     await auditoriaService.registrarAccion({
       usuario_id: idUsuario,
@@ -273,6 +238,156 @@ const anularVenta = async (idVenta, idUsuario, ip) => {
   };
 };
 
+// ============================================================
+//  FACTURACIÓN
+// ============================================================
+
+const generarNumeroControl = () => {
+  const fecha = new Date();
+  const anio = fecha.getFullYear();
+  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+  const dia = String(fecha.getDate()).padStart(2, '0');
+  const aleatorio = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  return `FAC-${anio}${mes}${dia}-${aleatorio}`;
+};
+
+const generarCodigoGeneracion = () => {
+  return `CG-${Date.now()}-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
+};
+
+const generarFactura = async (idVenta, datosFactura, idUsuario, ip) => {
+  const { correoEnvio, requiereFactura } = datosFactura;
+  
+  if (!requiereFactura) {
+    throw { status: 400, message: 'Esta venta no requiere factura' };
+  }
+  
+  const venta = await ventasRepository.findVentaById(idVenta);
+  if (!venta) {
+    throw { status: 404, message: `No existe una venta con id ${idVenta}` };
+  }
+  
+  if (venta.Estado !== 'confirmada') {
+    throw { status: 400, message: 'Solo se pueden facturar ventas confirmadas' };
+  }
+  
+  const facturaExistente = await ventasRepository.getFacturaByVenta(idVenta);
+  if (facturaExistente) {
+    throw { status: 409, message: 'Esta venta ya tiene una factura generada' };
+  }
+
+  // ✅ Se obtiene automáticamente de la venta
+  const idPropietario = venta.Id_Propietario;
+
+  const propietario = await ventasRepository.findPropietarioById(idPropietario);
+  if (!propietario) {
+    throw { status: 404, message: 'No existe un propietario con ese ID' };
+  }
+
+  const correoDestino = correoEnvio || propietario.Correo;
+
+  if (!propietario.Nombre) {
+    throw { status: 400, message: 'El propietario debe tener nombre' };
+  }
+  if (!correoDestino) {
+    throw { status: 400, message: 'Se requiere un correo para enviar la factura' };
+  }
+  
+  const numeroControl = generarNumeroControl();
+  const codigoGeneracion = generarCodigoGeneracion();
+  
+  const factura = await ventasRepository.createFactura({
+    idVenta,
+    idCliente: idPropietario, // ✅ directo a propietarios
+    idTipoDocumento: 1,
+    numeroControl,
+    codigoGeneracion,
+    rutaComprobante: null,
+    identificadorComprobante: numeroControl,
+    estadoEnvio: 'pendiente',
+    correoDestino
+  });
+  
+  await ventasRepository.updateVentaFactura(idVenta, {
+    requiere_factura: requiereFactura,
+    correo_factura: correoDestino
+  });
+  
+  await auditoriaService.registrarAccion({
+    usuario_id: idUsuario,
+    modulo: 'ventas',
+    accion: 'GENERAR_FACTURA',
+    descripcion: `Generó factura para venta #${idVenta} - ${numeroControl}`,
+    ip: ip,
+    referencia_id: idVenta
+  }).catch(err => console.error('Error en auditoría:', err.message));
+  
+  return { factura, numeroControl, codigoGeneracion };
+};
+
+const enviarFactura = async (idVenta, idUsuario, ip) => {
+  const venta = await ventasRepository.findVentaById(idVenta);
+  if (!venta) {
+    throw { status: 404, message: `No existe una venta con id ${idVenta}` };
+  }
+
+  // ✅ Quitamos validación de requiere_factura — si tiene factura es suficiente
+  
+  const factura = await ventasRepository.getFacturaByVenta(idVenta);
+  if (!factura) {
+    throw { status: 404, message: 'Esta venta no tiene factura asociada' };
+  }
+  
+  const detalle = await ventasRepository.findDetalleByVenta(idVenta);
+  const productos = detalle.map(item => ({
+    nombre: item.Nombre_Producto,
+    cantidad: item.Cantidad,
+    precio_unitario: parseFloat(item.Precio_Unitario),
+    subtotal: item.Cantidad * parseFloat(item.Precio_Unitario)
+  }));
+  
+  const propietario = await ventasRepository.findPropietarioById(venta.Id_Propietario);
+  const correoDestino = venta.correo_factura || propietario?.Correo;
+  
+  if (!correoDestino) {
+    throw { status: 400, message: 'No hay correo destino para enviar la factura' };
+  }
+  
+  const facturaData = {
+    numeroFactura: factura.NumeroControl,
+    fechaEmision: factura.FechaEmision,
+    total: parseFloat(venta.Total),
+    cliente: propietario?.Nombre || 'Cliente',
+    productos: productos
+  };
+  
+  const resultado = await emailSender.enviarFacturaPorCorreo(correoDestino, facturaData);
+  
+  const estadoEnvio = resultado.success ? 'enviado' : 'fallido';
+  await ventasRepository.updateFacturaEnvio(idVenta, estadoEnvio, new Date(), resultado.error || null);
+  
+  await auditoriaService.registrarAccion({
+    usuario_id: idUsuario,
+    modulo: 'ventas',
+    accion: 'ENVIAR_FACTURA',
+    descripcion: `Envió factura de venta #${idVenta} a ${correoDestino} - Estado: ${estadoEnvio}`,
+    ip: ip,
+    referencia_id: idVenta
+  }).catch(err => console.error('Error en auditoría:', err.message));
+  
+  return {
+    success: resultado.success,
+    message: resultado.message,
+    estadoEnvio,
+    fechaEnvio: new Date()
+  };
+};
+
+const getFacturaByVenta = async (idVenta) => {
+  const factura = await ventasRepository.getFacturaByVenta(idVenta);
+  return factura;
+};
+
 module.exports = {
   createVenta,
   addDetalle,
@@ -281,4 +396,7 @@ module.exports = {
   getVentaById,
   confirmarVenta,
   anularVenta,
+  generarFactura,
+  enviarFactura,
+  getFacturaByVenta
 };

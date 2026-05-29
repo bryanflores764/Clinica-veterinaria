@@ -1,0 +1,71 @@
+{
+  "success": true,
+  "data": [
+    {
+      "fecha": "2026-05-25T06:00:00.000Z",
+      "num_ventas": 1,
+      "total_ingresos": "170.00",
+      "promedio_venta": "170.000000",
+      "confirmadas": "1",
+      "anuladas": "0"
+    },
+    {
+      "fecha": "2026-05-21T06:00:00.000Z",
+      "num_ventas": 3,
+      "total_ingresos": "735.00",
+      "promedio_venta": "245.000000",
+      "confirmadas": "2",
+      "anuladas": "1"
+    },
+    {
+      "fecha": "2026-05-20T06:00:00.000Z",
+      "num_ventas": 2,
+      "total_ingresos": "640.00",
+      "promedio_venta": "320.000000",
+      "confirmadas": "2",
+      "anuladas": "0"
+    },
+    {
+      "fecha": "2026-05-07T06:00:00.000Z",
+      "num_ventas": 6,
+      "total_ingresos": "11735.00",
+      "promedio_venta": "1955.833333",
+      "confirmadas": "1",
+      "anuladas": "5"
+    },
+    {
+      "fecha": "2026-05-06T06:00:00.000Z",
+      "num_ventas": 8,
+      "total_ingresos": "7020.00",
+      "promedio_venta": "877.500000",
+      "confirmadas": "5",
+      "anuladas": "3"
+    },
+    {
+      "fecha": "2026-05-05T06:00:00.000Z",
+      "num_ventas": 1,
+      "total_ingresos": "0.00",
+      "promedio_venta": "0.000000",
+      "confirmadas": "1",
+      "anuladas": "0"
+    },
+    {
+      "fecha": "2026-05-04T06:00:00.000Z",
+      "num_ventas": 1,
+      "total_ingresos": "0.00",
+      "promedio_venta": "0.000000",
+      "confirmadas": "0",
+      "anuladas": "1"
+    }
+  ],
+  "resumen": {
+    "total_ingresos": "4460.00",
+    "total_ventas": 12,
+    "ticket_promedio": "371.666667",
+    "ventas_anuladas": 10
+  },
+  "periodo": {
+    "fecha_inicio": "2026-01-01",
+    "fecha_fin": "2026-05-31"
+  }
+}

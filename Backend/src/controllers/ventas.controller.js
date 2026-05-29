@@ -105,28 +105,14 @@ const getVentaById = async (req, res) => {
   }
 };
 
-// ── CONFIRMAR VENTA (con usuario del token) ──────────────────
+// ── CONFIRMAR VENTA ──────────────────────────────────────────
 const confirmarVenta = async (req, res) => {
   try {
     const { id } = req.params;
-    
-    console.log("📝 [Controller] Confirmar venta:", id);
-    console.log("📝 [Controller] req.usuario:", req.usuario);
-    
-    const idUsuario = req.usuario?.id || req.usuario?.Id || req.usuario?.usuarioId;
-    const ip = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
-    
-    console.log("📝 [Controller] ID Usuario obtenido:", idUsuario);
-    
-    if (!idUsuario) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Usuario no autenticado' 
-      });
-    }
+    const idUsuario = req.usuario?.id || req.usuario?.Id;
+    const ip = req.ip || req.connection?.remoteAddress;
     
     const result = await ventasService.confirmarVenta(id, idUsuario, ip);
-    console.log("✅ [Controller] Venta confirmada:", result);
     
     return res.status(200).json({
       success: true,
@@ -142,19 +128,12 @@ const confirmarVenta = async (req, res) => {
   }
 };
 
-// ── ANULAR VENTA (con usuario del token) ─────────────────────
+// ── ANULAR VENTA ─────────────────────────────────────────────
 const anularVenta = async (req, res) => {
   try {
     const { id } = req.params;
     const idUsuario = req.usuario?.id || req.usuario?.Id;
-    const ip = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
-    
-    if (!idUsuario) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Usuario no autenticado' 
-      });
-    }
+    const ip = req.ip || req.connection?.remoteAddress;
     
     const result = await ventasService.anularVenta(id, idUsuario, ip);
     
@@ -171,6 +150,97 @@ const anularVenta = async (req, res) => {
   }
 };
 
+// ============================================================
+//  FACTURACIÓN
+// ============================================================
+
+// POST /api/ventas/:id/factura/generar
+const generarFactura = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { correoEnvio, requiereFactura } = req.body; // ✅ Quitamos idPropietario
+    const idUsuario = req.usuario?.id || req.usuario?.Id;
+    const ip = req.ip || req.connection?.remoteAddress;
+
+    if (requiereFactura === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: 'Debe indicar si la venta requiere factura (requiereFactura: true/false)'
+      });
+    }
+
+    const result = await ventasService.generarFactura(id, {
+      correoEnvio,      // ✅ opcional, si quieren enviar a otro correo
+      requiereFactura
+    }, idUsuario, ip);
+
+    res.status(201).json({
+      success: true,
+      message: 'Factura generada exitosamente',
+      data: result
+    });
+
+  } catch (error) {
+    res.status(error.status || 500).json({
+      success: false,
+      message: error.message || 'Error interno del servidor'
+    });
+  }
+};
+
+// POST /api/ventas/:id/factura/enviar
+const enviarFactura = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const idUsuario = req.usuario?.id || req.usuario?.Id;
+    const ip = req.ip || req.connection?.remoteAddress;
+    
+    const result = await ventasService.enviarFactura(id, idUsuario, ip);
+    
+    res.status(200).json({
+      success: true,
+      message: result.message,
+      data: result
+    });
+    
+  } catch (error) {
+    res.status(error.status || 500).json({
+      success: false,
+      message: error.message || 'Error interno del servidor'
+    });
+  }
+};
+
+// GET /api/ventas/:id/factura
+const getFacturaByVenta = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await ventasService.getFacturaByVenta(id);
+    
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: 'Esta venta no tiene factura asociada'
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: result
+    });
+    
+  } catch (error) {
+    res.status(error.status || 500).json({
+      success: false,
+      message: error.message || 'Error interno del servidor'
+    });
+  }
+};
+
+// ============================================================
+//  EXPORTAR
+// ============================================================
+
 module.exports = {
   createVenta,
   addDetalle,
@@ -179,4 +249,7 @@ module.exports = {
   getVentaById,
   confirmarVenta,
   anularVenta,
+  generarFactura,
+  enviarFactura,
+  getFacturaByVenta
 };

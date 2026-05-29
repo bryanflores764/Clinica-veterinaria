@@ -77,6 +77,11 @@ app.use('/api/vacunas', vacunasRoutes);
 app.use('/api/auditoria', auditoriaRoutes);
 
 
+const reportesRoutes = require('./src/routes/reportes.routes');
+app.use('/api/reportes', reportesRoutes);
+
+
+
 
 // ── Health check ──────────────────────────────────────────────
 app.get('/', (req, res) => {

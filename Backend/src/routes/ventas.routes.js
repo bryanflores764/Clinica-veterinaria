@@ -15,4 +15,20 @@ router.patch('/:id/confirmar',       verifyToken, ventasController.confirmarVent
 router.post('/:id/detalle',          verifyToken, ventasController.addDetalle);
 router.get('/:id/total',             verifyToken, ventasController.getTotalVenta);
 
+
+// Agregar al final del archivo, antes de module.exports
+
+// ============================================================
+//  RUTAS DE FACTURACIÓN
+// ============================================================
+
+// Generar factura para una venta
+router.post('/:id/factura/generar', verifyToken, ventasController.generarFactura);
+
+// Enviar factura por correo
+router.post('/:id/factura/enviar', verifyToken, ventasController.enviarFactura);
+
+// Obtener factura de una venta
+router.get('/:id/factura', verifyToken, ventasController.getFacturaByVenta);
+
 module.exports = router;
