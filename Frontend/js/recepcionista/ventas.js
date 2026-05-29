@@ -154,6 +154,7 @@ document.getElementById("btnConfirmarAnularVenta")?.addEventListener("click", as
 // EVENTO PARA BOTÓN FACTURA
 // ─────────────────────────────────────────────
 let idVentaSeleccionadaParaFactura = null;
+let correoDestinoFacturaSeleccionada = null;
 
 document.getElementById("tbodyVentas")?.addEventListener("click", (e) => {
     const btnFactura = e.target.closest(".btn-factura-venta");
@@ -984,6 +985,8 @@ function pintarVistaPreviaFactura(venta) {
     const facturaCodigoGeneracion = document.getElementById("facturaCodigoGeneracion");
 
     const btnGenerarFactura = document.getElementById("btnGenerarFactura");
+    const btnEnviarFactura = document.getElementById("btnEnviarFacturaVisual");
+    correoDestinoFacturaSeleccionada = null;
 
     const fechaVenta =
         venta.Fecha_Venta ??
@@ -1030,6 +1033,11 @@ function pintarVistaPreviaFactura(venta) {
     if (btnGenerarFactura) {
         btnGenerarFactura.disabled = false;
         btnGenerarFactura.textContent = "Generar factura";
+    }
+
+    if (btnEnviarFactura) {
+    btnEnviarFactura.disabled = true;
+    btnEnviarFactura.textContent = "Enviar factura";
     }
 
     tbodyProductos.innerHTML = "";
@@ -1124,6 +1132,7 @@ async function consultarFacturaExistente(idVenta) {
     const btnGenerarFactura = document.getElementById("btnGenerarFactura");
     const facturaNumeroControl = document.getElementById("facturaNumeroControl");
     const facturaCodigoGeneracion = document.getElementById("facturaCodigoGeneracion");
+    const btnEnviarFactura = document.getElementById("btnEnviarFacturaVisual");
 
     try {
         const res = await fetch(`${API_VENTAS}/${idVenta}/factura`, {
@@ -1141,6 +1150,8 @@ async function consultarFacturaExistente(idVenta) {
 
         const factura = json.data;
 
+        correoDestinoFacturaSeleccionada = factura.CorreoDestino ?? factura.correoDestino ?? factura.correo_destino ?? null;
+
         facturaNumeroControl.textContent =
             factura.NumeroControl ??
             factura.numeroControl ??
@@ -1154,6 +1165,22 @@ async function consultarFacturaExistente(idVenta) {
         if (btnGenerarFactura) {
             btnGenerarFactura.disabled = true;
             btnGenerarFactura.textContent = "Factura generada";
+        }
+
+        if (btnEnviarFactura) {
+            btnEnviarFactura.disabled = false;
+
+            const estadoEnvio =
+                factura.EstadoEnvio ??
+                factura.estadoEnvio ??
+                factura.estado_envio ??
+                "";
+
+            if (estadoEnvio.toLowerCase() === "enviado") {
+                btnEnviarFactura.textContent = "Reenviar factura";
+            } else {
+                btnEnviarFactura.textContent = "Enviar factura";
+            }
         }
 
     } catch (error) {
@@ -1214,6 +1241,7 @@ document.getElementById("btnGenerarFactura")?.addEventListener("click", async ()
         }
 
         mostrarExito(json.message || "Factura generada correctamente.");
+        await consultarFacturaExistente(idVentaSeleccionadaParaFactura);
 
     } catch (error) {
         console.error("Error al generar factura:", error);
@@ -1230,6 +1258,105 @@ document.getElementById("cerrarModalFacturaVenta")?.addEventListener("click", ce
 
 document.getElementById("cerrarModalFacturaVentaBtn")?.addEventListener("click", cerrarModalFacturaVenta);
 
+function abrirModalEnviarFactura() {
+    if (!idVentaSeleccionadaParaFactura) {
+        mostrarAlerta("No se encontró la venta seleccionada.");
+        return;
+    }
+
+    if (!correoDestinoFacturaSeleccionada) {
+        mostrarAlerta("No hay correo destino para enviar la factura.");
+        return;
+    }
+
+    const correoDestino = document.getElementById("correoDestinoFactura");
+    const mensaje = document.getElementById("enviarFacturaMensaje");
+
+    if (correoDestino) {
+        correoDestino.textContent = correoDestinoFacturaSeleccionada;
+    }
+
+    if (mensaje) {
+        mensaje.textContent = "Se enviará la factura al siguiente correo:";
+    }
+
+    document.getElementById("modalEnviarFactura")?.classList.remove("hidden");
+}
+
+function cerrarModalEnviarFactura() {
+    document.getElementById("modalEnviarFactura")?.classList.add("hidden");
+}
+
+async function enviarFacturaCorreo() {
+    if (!idVentaSeleccionadaParaFactura) {
+        mostrarAlerta("No se encontró la venta seleccionada.");
+        return;
+    }
+
+    const btnConfirmar = document.getElementById("btnConfirmarEnvioFactura");
+    const btnEnviarFactura = document.getElementById("btnEnviarFacturaVisual");
+
+    try {
+        if (btnConfirmar) {
+            btnConfirmar.disabled = true;
+            btnConfirmar.textContent = "Enviando...";
+        }
+
+        if (btnEnviarFactura) {
+            btnEnviarFactura.disabled = true;
+            btnEnviarFactura.textContent = "Enviando...";
+        }
+
+        const res = await fetch(`${API_VENTAS}/${idVentaSeleccionadaParaFactura}/factura/enviar`, {
+            method: "POST",
+            headers: obtenerHeadersAuth(),
+            body: JSON.stringify({})
+        });
+
+        const json = await res.json();
+
+        console.log("Respuesta enviar factura:", json);
+
+        if (!res.ok || json.success === false) {
+            throw new Error(json.message || "No se pudo enviar la factura.");
+        }
+
+        cerrarModalEnviarFactura();
+
+        if (btnEnviarFactura) {
+            btnEnviarFactura.disabled = false;
+            btnEnviarFactura.textContent = "Reenviar factura";
+        }
+
+        mostrarExito(json.message || "Factura enviada correctamente.");
+
+        await consultarFacturaExistente(idVentaSeleccionadaParaFactura);
+
+    } catch (error) {
+        console.error("Error al enviar factura:", error);
+
+        cerrarModalEnviarFactura();
+
+        if (btnEnviarFactura) {
+            btnEnviarFactura.disabled = false;
+            btnEnviarFactura.textContent = "Enviar factura";
+        }
+
+        mostrarAlerta(error.message || "Ocurrió un error al enviar la factura.");
+
+    } finally {
+        if (btnConfirmar) {
+            btnConfirmar.disabled = false;
+            btnConfirmar.textContent = "Sí, enviar factura";
+        }
+    }
+}
+
+document.getElementById("btnEnviarFacturaVisual")?.addEventListener("click", abrirModalEnviarFactura);
+
+document.getElementById("btnCancelarEnvioFactura")?.addEventListener("click", cerrarModalEnviarFactura);
+
+document.getElementById("btnConfirmarEnvioFactura")?.addEventListener("click", enviarFacturaCorreo);
 // ─────────────────────────────────────────────
 // CARGA INICIAL
 // ─────────────────────────────────────────────

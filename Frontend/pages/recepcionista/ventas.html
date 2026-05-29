@@ -442,6 +442,34 @@
         </div>
     </div>
 
+    <!-- ══════════════════════════════════════════
+     MODAL CONFIRMAR ENVÍO DE FACTURA
+══════════════════════════════════════════ -->
+    <div id="modalEnviarFactura" class="modal hidden">
+        <div class="modal-content modal-compact modal-sm modal-enviar-factura">
+            <h3>Enviar factura</h3>
+
+            <p id="enviarFacturaMensaje">
+                Se enviará la factura al correo del cliente.
+            </p>
+
+            <div class="correo-destino-box">
+                <span>Correo destino</span>
+                <strong id="correoDestinoFactura">—</strong>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-confirmar-envio-factura" id="btnConfirmarEnvioFactura">
+                    Sí, enviar factura
+                </button>
+
+                <button type="button" class="btn-secondary" id="btnCancelarEnvioFactura">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
     <script src="../../js/recepcionista/logout.js"></script>
     <script src="../../js/recepcionista/ventas.js"></script>
