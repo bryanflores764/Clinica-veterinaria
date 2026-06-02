@@ -194,7 +194,7 @@
         <!-- ══════════════════════════════════════════
              MODAL ÉXITO / ERROR
         ══════════════════════════════════════════ -->
-        <div id="modalExito" class="modal hidden">
+        <div id="modalExito" class="modal modal-mensaje-global hidden">
             <div class="modal-content modal-compact modal-sm modal-exito">
                 <h3 id="exitoTitulo">Éxito</h3>
                 <p id="exitoMensaje">Operación realizada correctamente.</p>
@@ -305,6 +305,165 @@
                 </button>
 
                 <button type="button" class="btn-secondary" id="btnCancelarAnularVenta">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+     MODAL FACTURA DE VENTA
+══════════════════════════════════════════ -->
+    <div id="modalFacturaVenta" class="modal hidden">
+        <div class="modal-content modal-compact modal-venta modal-factura">
+
+            <div class="modal-header-blue">
+                <div class="modal-header-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6" />
+                        <path d="M16 13H8" />
+                        <path d="M16 17H8" />
+                        <path d="M10 9H8" />
+                    </svg>
+                </div>
+
+                <div>
+                    <p class="modal-title-white">Factura de Venta</p>
+                    <p class="modal-subtitle-white">Vista previa del comprobante digital</p>
+                </div>
+
+                <button class="btn-close-white" id="cerrarModalFacturaVenta" type="button">✕</button>
+            </div>
+
+            <div class="factura-preview">
+
+                <div class="factura-encabezado">
+                    <div>
+                        <h3>VetCare</h3>
+                        <p>Comprobante digital de venta</p>
+                    </div>
+
+                    <div class="factura-info">
+                        <span id="facturaNumeroControl">Sin generar</span>
+                        <small id="facturaCodigoGeneracion">—</small>
+                    </div>
+                </div>
+
+                <div class="venta-meta">
+                    <div class="venta-meta-item">
+                        <span class="venta-meta-label">Fecha</span>
+                        <span class="venta-meta-value" id="facturaFecha">—</span>
+                    </div>
+
+                    <div class="venta-meta-item">
+                        <span class="venta-meta-label">Cliente</span>
+                        <span class="venta-meta-value" id="facturaCliente">—</span>
+                    </div>
+
+                    <div class="venta-meta-item">
+                        <span class="venta-meta-label">Estado venta</span>
+                        <span class="venta-meta-value" id="facturaEstadoVenta">—</span>
+                    </div>
+                </div>
+
+                <div class="venta-productos-header">
+                    <span class="venta-section-title">Productos</span>
+                </div>
+
+                <div class="venta-tabla-wrapper">
+                    <table class="venta-tabla">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cant.</th>
+                                <th>Precio unit.</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tbodyFacturaProductos">
+                            <!-- Productos dinámicos -->
+                        </tbody>
+                    </table>
+
+                    <p class="venta-empty-productos hidden" id="facturaProductosEmpty">
+                        Esta venta no tiene productos registrados.
+                    </p>
+                </div>
+
+                <div class="venta-productos-header">
+                    <span class="venta-section-title">Servicios</span>
+                </div>
+
+                <div class="venta-tabla-wrapper">
+                    <table class="venta-tabla">
+                        <thead>
+                            <tr>
+                                <th>Servicio</th>
+                                <th>Cant.</th>
+                                <th>Precio unit.</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tbodyFacturaServicios">
+                            <!-- Servicios dinámicos -->
+                        </tbody>
+                    </table>
+
+                    <p class="venta-empty-productos hidden" id="facturaServiciosEmpty">
+                        No hay servicios registrados en esta venta.
+                    </p>
+                </div>
+
+                <div class="venta-total-row">
+                    <span class="venta-total-label">Total factura</span>
+                    <span class="venta-total-value" id="facturaTotal">$0.00</span>
+                </div>
+
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-primary" id="btnGenerarFactura">
+                    Generar factura
+                </button>
+
+                <button type="button" class="btn-enviar-factura" id="btnEnviarFacturaVisual">
+                    Enviar factura
+                </button>
+
+                <button type="button" class="btn-secondary" id="cerrarModalFacturaVentaBtn">
+                    Cerrar
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+     MODAL CONFIRMAR ENVÍO DE FACTURA
+══════════════════════════════════════════ -->
+    <div id="modalEnviarFactura" class="modal hidden">
+        <div class="modal-content modal-compact modal-sm modal-enviar-factura">
+            <h3>Enviar factura</h3>
+
+            <p id="enviarFacturaMensaje">
+                Se enviará la factura al correo del cliente.
+            </p>
+
+            <div class="correo-destino-box">
+                <span>Correo destino</span>
+                <strong id="correoDestinoFactura">—</strong>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-confirmar-envio-factura" id="btnConfirmarEnvioFactura">
+                    Sí, enviar factura
+                </button>
+
+                <button type="button" class="btn-secondary" id="btnCancelarEnvioFactura">
                     Cancelar
                 </button>
             </div>

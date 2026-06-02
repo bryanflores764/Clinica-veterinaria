@@ -1,9 +1,6 @@
-create database vetcare;
-use vetcare;
-
-
-
-
+DROP DATABASE IF EXISTS vetcare;
+CREATE DATABASE vetcare;
+USE vetcare;
 
 -- 1. TABLAS BASE (sin dependencias)
 
@@ -719,27 +716,58 @@ ORDER BY rg.fecha_generacion DESC;
 --  ÍNDICES PARA OPTIMIZAR REPORTES (#466, #486)
 -- ============================================================
 
+-- Índices para reportes / MySQL compatible
+-- MySQL no acepta: CREATE INDEX IF NOT EXISTS.
+-- Por eso se usa un procedimiento auxiliar que revisa INFORMATION_SCHEMA.
+
+DELIMITER //
+
+DROP PROCEDURE IF EXISTS crear_indice_si_no_existe //
+CREATE PROCEDURE crear_indice_si_no_existe(
+    IN p_tabla VARCHAR(64),
+    IN p_indice VARCHAR(64),
+    IN p_columnas VARCHAR(500)
+)
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM information_schema.statistics
+        WHERE table_schema = DATABASE()
+          AND table_name = p_tabla
+          AND index_name = p_indice
+    ) THEN
+        SET @sql = CONCAT('CREATE INDEX ', p_indice, ' ON ', p_tabla, '(', p_columnas, ')');
+        PREPARE stmt FROM @sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+    END IF;
+END //
+
+DELIMITER ;
+
 -- Índices para ventas
-CREATE INDEX IF NOT EXISTS idx_ventas_fecha_estado ON ventas(Fecha_Venta, Estado);
-CREATE INDEX IF NOT EXISTS idx_ventas_fecha ON ventas(Fecha_Venta);
-CREATE INDEX IF NOT EXISTS idx_ventas_fecha_estado_total ON ventas(Fecha_Venta, Estado, Total);
-CREATE INDEX IF NOT EXISTS idx_ventas_propietario ON ventas(Id_Propietario, Estado);
-CREATE INDEX IF NOT EXISTS idx_ventas_fecha_propietario ON ventas(Fecha_Venta, Id_Propietario);
+CALL crear_indice_si_no_existe('ventas', 'idx_ventas_fecha_estado', 'Fecha_Venta, Estado');
+CALL crear_indice_si_no_existe('ventas', 'idx_ventas_fecha', 'Fecha_Venta');
+CALL crear_indice_si_no_existe('ventas', 'idx_ventas_fecha_estado_total', 'Fecha_Venta, Estado, Total');
+CALL crear_indice_si_no_existe('ventas', 'idx_ventas_propietario', 'Id_Propietario, Estado');
+CALL crear_indice_si_no_existe('ventas', 'idx_ventas_fecha_propietario', 'Fecha_Venta, Id_Propietario');
 
 -- Índices para detalleventa
-CREATE INDEX IF NOT EXISTS idx_detalle_venta ON detalleventa(Id_Venta, Id_Producto);
-CREATE INDEX IF NOT EXISTS idx_detalle_producto ON detalleventa(Id_Producto, Id_Venta);
-CREATE INDEX IF NOT EXISTS idx_detalle_venta_producto_cantidad ON detalleventa(Id_Venta, Id_Producto, Cantidad);
+CALL crear_indice_si_no_existe('detalleventa', 'idx_detalle_venta', 'Id_Venta, Id_Producto');
+CALL crear_indice_si_no_existe('detalleventa', 'idx_detalle_producto', 'Id_Producto, Id_Venta');
+CALL crear_indice_si_no_existe('detalleventa', 'idx_detalle_venta_producto_cantidad', 'Id_Venta, Id_Producto, Cantidad');
 
 -- Índices para productos
-CREATE INDEX IF NOT EXISTS idx_productos_categoria ON productos(Id_Categoria, Estado);
-CREATE INDEX IF NOT EXISTS idx_productos_estado ON productos(Estado);
-CREATE INDEX IF NOT EXISTS idx_productos_nombre ON productos(Nombre_Producto);
+CALL crear_indice_si_no_existe('productos', 'idx_productos_categoria', 'Id_Categoria, Estado');
+CALL crear_indice_si_no_existe('productos', 'idx_productos_estado', 'Estado');
+CALL crear_indice_si_no_existe('productos', 'idx_productos_nombre', 'Nombre_Producto');
 
 -- Índices para reportes_generados
-CREATE INDEX IF NOT EXISTS idx_reportes_fecha ON reportes_generados(fecha_generacion);
-CREATE INDEX IF NOT EXISTS idx_reportes_tipo ON reportes_generados(tipo_reporte);
-CREATE INDEX IF NOT EXISTS idx_reportes_usuario_fecha ON reportes_generados(usuario_id, fecha_generacion);
+CALL crear_indice_si_no_existe('reportes_generados', 'idx_reportes_fecha', 'fecha_generacion');
+CALL crear_indice_si_no_existe('reportes_generados', 'idx_reportes_tipo', 'tipo_reporte');
+CALL crear_indice_si_no_existe('reportes_generados', 'idx_reportes_usuario_fecha', 'usuario_id, fecha_generacion');
+
+DROP PROCEDURE IF EXISTS crear_indice_si_no_existe;
 
 -- ============================================================
 --  PROCEDIMIENTOS ALMACENADOS PARA REPORTES (#484)
@@ -748,7 +776,8 @@ CREATE INDEX IF NOT EXISTS idx_reportes_usuario_fecha ON reportes_generados(usua
 DELIMITER //
 
 -- Procedimiento para reporte de ventas por fechas
-CREATE OR REPLACE PROCEDURE sp_reporte_ventas_fechas(
+DROP PROCEDURE IF EXISTS sp_reporte_ventas_fechas //
+CREATE PROCEDURE sp_reporte_ventas_fechas(
     IN p_fecha_inicio DATE,
     IN p_fecha_fin DATE
 )
@@ -768,7 +797,8 @@ BEGIN
 END //
 
 -- Procedimiento para top productos por período
-CREATE OR REPLACE PROCEDURE sp_top_productos(
+DROP PROCEDURE IF EXISTS sp_top_productos //
+CREATE PROCEDURE sp_top_productos(
     IN p_fecha_inicio DATE,
     IN p_fecha_fin DATE,
     IN p_limit INT
@@ -797,7 +827,8 @@ DELIMITER ;
 DELIMITER //
 
 -- Función para validar formato de fecha (#485)
-CREATE OR REPLACE FUNCTION fn_validar_fecha(fecha_str VARCHAR(20))
+DROP FUNCTION IF EXISTS fn_validar_fecha //
+CREATE FUNCTION fn_validar_fecha(fecha_str VARCHAR(20))
 RETURNS BOOLEAN
 DETERMINISTIC
 BEGIN
@@ -805,7 +836,8 @@ BEGIN
 END //
 
 -- Función para calcular ingresos por período (#506)
-CREATE OR REPLACE FUNCTION fn_ingresos_periodo(
+DROP FUNCTION IF EXISTS fn_ingresos_periodo //
+CREATE FUNCTION fn_ingresos_periodo(
     p_fecha_inicio DATE,
     p_fecha_fin DATE
 )
@@ -894,38 +926,66 @@ USE vetcare;
 --  1. AGREGAR COLUMNAS A ventas
 -- ============================================================
 ALTER TABLE ventas
-  ADD COLUMN IF NOT EXISTS requiere_factura BOOLEAN DEFAULT FALSE,
-  ADD COLUMN IF NOT EXISTS correo_factura VARCHAR(150) NULL;
+  ADD COLUMN requiere_factura BOOLEAN DEFAULT FALSE,
+  ADD COLUMN correo_factura VARCHAR(150) NULL;
 
 -- ============================================================
 --  2. AGREGAR COLUMNAS A facturaelectronica
 -- ============================================================
 ALTER TABLE facturaelectronica
-  ADD COLUMN IF NOT EXISTS RutaComprobante VARCHAR(500) NULL,
-  ADD COLUMN IF NOT EXISTS IdentificadorComprobante VARCHAR(100) NULL,
-  ADD COLUMN IF NOT EXISTS EstadoEnvio ENUM('pendiente', 'enviado', 'fallido') NOT NULL DEFAULT 'pendiente',
-  ADD COLUMN IF NOT EXISTS FechaEnvio DATETIME NULL,
-  ADD COLUMN IF NOT EXISTS MensajeError TEXT NULL,
-  ADD COLUMN IF NOT EXISTS CorreoDestino VARCHAR(150) NULL;
+  ADD COLUMN RutaComprobante VARCHAR(500) NULL,
+  ADD COLUMN IdentificadorComprobante VARCHAR(100) NULL,
+  ADD COLUMN EstadoEnvio ENUM('pendiente', 'enviado', 'fallido') NOT NULL DEFAULT 'pendiente',
+  ADD COLUMN FechaEnvio DATETIME NULL,
+  ADD COLUMN MensajeError TEXT NULL,
+  ADD COLUMN CorreoDestino VARCHAR(150) NULL;
 
 -- ============================================================
 --  3. ACTUALIZAR FOREIGN KEY (Id_Cliente → propietarios)
 -- ============================================================
--- Eliminar foreign key vieja si existe
-ALTER TABLE facturaelectronica DROP FOREIGN KEY IF EXISTS facturaelectronica_ibfk_2;
+-- MySQL no acepta: ALTER TABLE ... DROP FOREIGN KEY IF EXISTS.
+-- Por eso se usa un procedimiento auxiliar para eliminar la FK solo si existe.
 
--- Agregar foreign key apuntando a propietarios
+DELIMITER //
+
+DROP PROCEDURE IF EXISTS eliminar_fk_si_existe //
+CREATE PROCEDURE eliminar_fk_si_existe(
+    IN p_tabla VARCHAR(64),
+    IN p_fk VARCHAR(64)
+)
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.table_constraints
+        WHERE constraint_schema = DATABASE()
+          AND table_name = p_tabla
+          AND constraint_name = p_fk
+          AND constraint_type = 'FOREIGN KEY'
+    ) THEN
+        SET @sql = CONCAT('ALTER TABLE ', p_tabla, ' DROP FOREIGN KEY ', p_fk);
+        PREPARE stmt FROM @sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+    END IF;
+END //
+
+DELIMITER ;
+
+CALL eliminar_fk_si_existe('facturaelectronica', 'facturaelectronica_ibfk_2');
+CALL eliminar_fk_si_existe('facturaelectronica', 'facturaelectronica_ibfk_4');
+CALL eliminar_fk_si_existe('facturaelectronica', 'fk_factura_cliente');
+
+DROP PROCEDURE IF EXISTS eliminar_fk_si_existe;
+
 ALTER TABLE facturaelectronica
   ADD CONSTRAINT fk_factura_cliente
   FOREIGN KEY (Id_Cliente) REFERENCES propietarios(Id) ON DELETE CASCADE;
 
 -- ============================================================
---  4. TIPOS DE DOCUMENTO (solo Factura Electrónica)
+--  4. TIPOS DE DOCUMENTO
 -- ============================================================
--- Eliminar registros que no sean útiles
 DELETE FROM tiposdocumento WHERE Tipo_Documento = 'Credito Fiscal';
 
--- Asegurar que existe Factura Electronica
 INSERT INTO tiposdocumento (Id, Tipo_Documento) VALUES (1, 'Factura Electronica')
 ON DUPLICATE KEY UPDATE Tipo_Documento = VALUES(Tipo_Documento);
 
