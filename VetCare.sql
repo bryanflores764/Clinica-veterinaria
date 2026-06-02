@@ -942,40 +942,6 @@ ALTER TABLE facturaelectronica
 
 -- ============================================================
 --  3. ACTUALIZAR FOREIGN KEY (Id_Cliente → propietarios)
--- ============================================================
--- MySQL no acepta: ALTER TABLE ... DROP FOREIGN KEY IF EXISTS.
--- Por eso se usa un procedimiento auxiliar para eliminar la FK solo si existe.
-
-DELIMITER //
-
-DROP PROCEDURE IF EXISTS eliminar_fk_si_existe //
-CREATE PROCEDURE eliminar_fk_si_existe(
-    IN p_tabla VARCHAR(64),
-    IN p_fk VARCHAR(64)
-)
-BEGIN
-    IF EXISTS (
-        SELECT 1
-        FROM information_schema.table_constraints
-        WHERE constraint_schema = DATABASE()
-          AND table_name = p_tabla
-          AND constraint_name = p_fk
-          AND constraint_type = 'FOREIGN KEY'
-    ) THEN
-        SET @sql = CONCAT('ALTER TABLE ', p_tabla, ' DROP FOREIGN KEY ', p_fk);
-        PREPARE stmt FROM @sql;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;
-    END IF;
-END //
-
-DELIMITER ;
-
-CALL eliminar_fk_si_existe('facturaelectronica', 'facturaelectronica_ibfk_2');
-CALL eliminar_fk_si_existe('facturaelectronica', 'facturaelectronica_ibfk_4');
-CALL eliminar_fk_si_existe('facturaelectronica', 'fk_factura_cliente');
-
-DROP PROCEDURE IF EXISTS eliminar_fk_si_existe;
 
 ALTER TABLE facturaelectronica
   ADD CONSTRAINT fk_factura_cliente
