@@ -1525,3 +1525,39 @@ body {
         width: 100%;
     }
 }
+
+.actions-col {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.actions-col button {
+    border: none;
+    outline: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-family: "Baloo Da 2", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 0 3px;
+    transition: 0.2s ease;
+}
+
+.btn-historial {
+    background-color: #2fa84f;
+    color: #ffffff;
+}
+
+.btn-historial:hover {
+    background-color: #258c40;
+}
+
+.btn-cartilla {
+    background-color: #0d6efd;
+    color: #ffffff;
+}
+
+.btn-cartilla:hover {
+    background-color: #0b5ed7;
+}

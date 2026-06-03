@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -22,14 +22,14 @@
 
             <ul>
                 <li>
-                    <a href="#">
+                    <a href="interfazveterinario.html">
                         <img src="../../assets/icons/icon-citas.svg" alt="citas">
                         Citas
                     </a>
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a href="interfazPacientes.html">
                         <img src="../../assets/icons/icon-pacientes.svg" alt="pacientes">
                         Pacientes
                     </a>
@@ -54,14 +54,14 @@
         <header class="header">
             <h1>Pacientes</h1>
 
-            <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">
+            <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false">
                 ☰
             </button>
 
             <div class="header-actions">
-                <a href="" class="btn-logout" id="cerrar-sesion">
-                    <img src="../../assets/icons/icon-sesion.svg" alt="CerrarSession">
-                    Cerrar Sesion
+                <a href="../../index.html" class="btn-logout" id="cerrar-sesion">
+                    <img src="../../assets/icons/icon-sesion.svg" alt="Cerrar sesión">
+                    Cerrar Sesión
                 </a>
             </div>
         </header>
@@ -78,9 +78,12 @@
                         </div>
                         <span class="alertas-panel-chevron" id="alertas-panel-chevron">▲</span>
                     </div>
+
                     <div class="alertas-panel-body" id="alertas-panel-body">
                         <div id="alertas-panel-lista" class="alertas-panel-lista"></div>
-                        <p id="alertas-panel-empty" class="alertas-panel-empty">No hay alertas de vacunación pendientes.</p>
+                        <p id="alertas-panel-empty" class="alertas-panel-empty">
+                            No hay alertas de vacunación pendientes.
+                        </p>
                     </div>
                 </div>
 
@@ -277,6 +280,7 @@
             </div>
         </div>
     </div>
+
     <!-- Modal cartilla de vacunación -->
     <div class="modal" id="modal-cartilla">
         <div class="modal-content modal-content-cartilla">
@@ -285,38 +289,45 @@
                 <button type="button" class="btn-cerrar-modal" id="cerrar-modal-cartilla">×</button>
             </div>
 
-            <!-- Datos generales (pre-cargados) -->
             <section class="cartilla-seccion">
                 <h3 class="cartilla-seccion-titulo">Datos Generales</h3>
+
                 <div class="cartilla-datos-grid">
                     <div class="cartilla-dato">
                         <span>Nombre</span>
                         <p id="cartilla-nombre">-</p>
                     </div>
+
                     <div class="cartilla-dato">
                         <span>Especie</span>
                         <p id="cartilla-especie">-</p>
                     </div>
+
                     <div class="cartilla-dato">
                         <span>Raza</span>
                         <p id="cartilla-raza">-</p>
                     </div>
+
                     <div class="cartilla-dato">
                         <span>Color</span>
                         <p id="cartilla-color">-</p>
                     </div>
+
                     <div class="cartilla-dato">
                         <span>Fecha de nacimiento</span>
                         <p id="cartilla-fecha-nacimiento">-</p>
                     </div>
+
                     <div class="cartilla-dato">
                         <span>Peso actual</span>
                         <p id="cartilla-peso">-</p>
                     </div>
+
                     <div class="cartilla-dato">
                         <span>Propietario</span>
                         <p id="cartilla-propietario">-</p>
                     </div>
+
                     <div class="cartilla-dato">
                         <span>Teléfono del propietario</span>
                         <p id="cartilla-telefono">-</p>
@@ -324,68 +335,126 @@
                 </div>
             </section>
 
-            <!-- Panel de alertas -->
             <section class="cartilla-seccion">
-                <h3 class="cartilla-seccion-titulo cartilla-seccion-titulo--alertas">Alertas de Vacunación</h3>
+                <h3 class="cartilla-seccion-titulo cartilla-seccion-titulo--alertas">
+                    Alertas de Vacunación
+                </h3>
+
                 <div id="cartilla-alertas-lista"></div>
-                <p id="cartilla-alertas-empty" class="cartilla-empty-msg">No hay vacunas próximas o vencidas.</p>
+
+                <p id="cartilla-alertas-empty" class="cartilla-empty-msg">
+                    No hay vacunas próximas o vencidas.
+                </p>
             </section>
 
-            <!-- Programa de vacunación -->
             <section class="cartilla-seccion">
                 <div class="cartilla-seccion-header">
                     <h3 class="cartilla-seccion-titulo">Programa de Vacunación</h3>
+
                     <button type="button" class="btn-agregar-vacuna" id="btn-toggle-form-vacuna">
                         + Registrar vacuna
                     </button>
                 </div>
 
-                <!-- Formulario registro de vacuna -->
-                <form id="form-vacuna" class="form-vacuna" style="display:none;">
+                <form id="form-vacuna" class="form-vacuna" style="display:none;" novalidate>
                     <input type="hidden" id="vacuna-mascota-id">
+
                     <div class="form-vacuna-grid">
+
                         <div class="form-group">
                             <label for="vacuna-nombre">Vacuna aplicada *</label>
-                            <input type="text" id="vacuna-nombre" placeholder="Ej: Antirrábica">
+                            <input
+                                type="text"
+                                id="vacuna-nombre"
+                                placeholder="Ej: Antirrábica"
+                                autocomplete="off"
+                                maxlength="50"
+                                required
+                            >
                             <small class="error-msg"></small>
                         </div>
+
                         <div class="form-group">
                             <label for="vacuna-fecha">Fecha de aplicación *</label>
-                            <input type="date" id="vacuna-fecha">
+                            <input
+                                type="date"
+                                id="vacuna-fecha"
+                                required
+                            >
                             <small class="error-msg"></small>
                         </div>
+
                         <div class="form-group">
-                            <label for="vacuna-peso">Peso del paciente (lbs)</label>
-                            <input type="number" step="0.01" min="0" id="vacuna-peso" placeholder="Ej: 12.5">
+                            <label for="vacuna-peso">Peso del paciente (lbs) *</label>
+                            <input
+                                type="number"
+                                id="vacuna-peso"
+                                placeholder="Ej: 12.5"
+                                min="0.01"
+                                max="500"
+                                step="0.01"
+                                autocomplete="off"
+                                required
+                            >
+                            <small class="error-msg"></small>
                         </div>
+
                         <div class="form-group">
-                            <label for="vacuna-proxima">Próxima dosis</label>
-                            <input type="date" id="vacuna-proxima">
+                            <label for="vacuna-proxima">Próxima dosis *</label>
+                            <input
+                                type="date"
+                                id="vacuna-proxima"
+                                required
+                            >
+                            <small class="error-msg"></small>
                         </div>
+
                         <div class="form-group">
-                            <label for="vacuna-lote">Lote</label>
-                            <input type="text" id="vacuna-lote" placeholder="Ej: ABC123">
+                            <label for="vacuna-lote">Lote *</label>
+                            <input
+                                type="text"
+                                id="vacuna-lote"
+                                placeholder="Ej: ABC123"
+                                autocomplete="off"
+                                maxlength="30"
+                                required
+                            >
+                            <small class="error-msg"></small>
                         </div>
+
                         <div class="form-group form-group-full">
-                            <label for="vacuna-observaciones">Observaciones</label>
-                            <textarea id="vacuna-observaciones" rows="2" placeholder="Ej: Sin reacciones adversas"></textarea>
+                            <label for="vacuna-observaciones">Observaciones *</label>
+                            <textarea
+                                id="vacuna-observaciones"
+                                rows="2"
+                                placeholder="Ej: Sin reacciones adversas"
+                                maxlength="200"
+                                required
+                            ></textarea>
+                            <small class="error-msg"></small>
                         </div>
+
                     </div>
+
                     <div class="modal-actions">
-                        <button type="button" class="btn-cancelar" id="cancelar-vacuna">Cancelar</button>
-                        <button type="submit" class="btn-guardar">Registrar vacuna</button>
+                        <button type="button" class="btn-cancelar" id="cancelar-vacuna">
+                            Cancelar
+                        </button>
+
+                        <button type="submit" class="btn-guardar">
+                            Registrar vacuna
+                        </button>
                     </div>
                 </form>
 
-                <!-- Lista de vacunas aplicadas -->
                 <div id="cartilla-vacunas-lista" class="lista-vacunas"></div>
+
                 <p id="cartilla-vacunas-empty" class="cartilla-empty-msg">
                     Esta mascota aún no tiene vacunas registradas.
                 </p>
             </section>
         </div>
     </div>
-
 
     <!-- Modal agregar consulta médica -->
     <div class="modal" id="modal-consulta">
@@ -401,11 +470,6 @@
 
             <form id="form-consulta" class="form-consulta">
                 <input type="hidden" id="consulta-historial-id">
-
-                <!-- 
-                    La fecha ya no se muestra ni se selecciona manualmente.
-                    El JS asigna automáticamente la fecha y hora actual al guardar.
-                -->
                 <input type="hidden" id="consulta-fecha">
 
                 <div class="form-group">
@@ -428,8 +492,11 @@
 
                 <div class="form-group form-group-full">
                     <label for="consulta-observaciones">Observaciones</label>
-                    <textarea id="consulta-observaciones" rows="3"
-                        placeholder="Ej: Reposo y control en 3 días"></textarea>
+                    <textarea
+                        id="consulta-observaciones"
+                        rows="3"
+                        placeholder="Ej: Reposo y control en 3 días"
+                    ></textarea>
                     <small class="error-msg"></small>
                 </div>
 
