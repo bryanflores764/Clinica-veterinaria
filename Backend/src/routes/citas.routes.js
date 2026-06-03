@@ -8,36 +8,30 @@ const router          = express.Router();
 const CitasController = require('../controllers/citas.controller');
 
 // ============================================================
-//  RUTAS EXISTENTES
+//  RUTAS ESPECÍFICAS PRIMERO (antes de /:id)
+//  Express evalúa rutas en orden — las rutas con segmentos
+//  estáticos deben ir ANTES que las rutas con parámetros dinámicos
 // ============================================================
 
-// GET    /api/citas                        → listar todas
-// GET    /api/citas/:id                    → buscar por IdCita
-// GET    /api/citas/mascota/:idMascota     → citas de una mascota
-// POST   /api/citas                        → crear
-// PUT    /api/citas/:id                    → actualizar completa
-// PATCH  /api/citas/:id/estado             → solo cambiar estado
-// DELETE /api/citas/:id                    → eliminar
+// GET  /api/citas/veterinario/:id
+router.get('/veterinario/:id',       CitasController.getCitasByVeterinario);
 
-router.get('/',                       CitasController.getAll);
-router.get('/:id',                    CitasController.getById);
-router.get('/mascota/:idMascota',     CitasController.getByMascota);
-router.post('/',                      CitasController.create);
-router.put('/:id',                    CitasController.update);
-router.patch('/:id/estado',           CitasController.updateEstado);
-router.delete('/:id',                 CitasController.delete);
+// GET  /api/citas/mascota/historial/:id
+router.get('/mascota/historial/:id', CitasController.getCitasByMascotaId);
+
+// GET  /api/citas/mascota/:idMascota
+router.get('/mascota/:idMascota',    CitasController.getByMascota);
 
 // ============================================================
-//  NUEVAS RUTAS PARA VETERINARIO
+//  RUTAS GENÉRICAS (después de las específicas)
 // ============================================================
 
-// GET    /api/citas/veterinario/:id     → citas de un veterinario específico
-router.get('/veterinario/:id',        CitasController.getCitasByVeterinario);
-
-// GET    /api/citas/mascota/historial/:id → historial de citas de una mascota
-router.get('/mascota/historial/:id',  CitasController.getCitasByMascotaId);
-
-// PATCH  /api/citas/:id/completar      → marcar cita como completada
-router.patch('/:id/completar',        CitasController.completarCita);
+router.get('/',              CitasController.getAll);
+router.get('/:id',           CitasController.getById);
+router.post('/',             CitasController.create);
+router.put('/:id',           CitasController.update);
+router.patch('/:id/estado',  CitasController.updateEstado);
+router.patch('/:id/completar', CitasController.completarCita);
+router.delete('/:id',        CitasController.delete);
 
 module.exports = router;
