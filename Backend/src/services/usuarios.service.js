@@ -6,10 +6,38 @@
 const bcrypt = require('bcryptjs');
 const usuariosRepository = require('../repository/usuarios.repository');
 
+// ── Helper de validación ─────────────────────────────────────
+const validarContrasena = (contrasena) => {
+  const errores = [];
+
+  if (!contrasena || contrasena.length < 8) {
+    errores.push('Mínimo 8 caracteres');
+  }
+  if (!/[A-Z]/.test(contrasena)) {
+    errores.push('Al menos una letra mayúscula');
+  }
+  if (!/[a-z]/.test(contrasena)) {
+    errores.push('Al menos una letra minúscula');
+  }
+  if (!/[0-9]/.test(contrasena)) {
+    errores.push('Al menos un número');
+  }
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(contrasena)) {
+    errores.push('Al menos un carácter especial (!@#$%^&*...)');
+  }
+
+  if (errores.length > 0) {
+    throw { status: 400, message: `Contraseña inválida: ${errores.join(', ')}` };
+  }
+};
+
 const createUsuario = async (nombre, correo, contrasena, rolId) => {
   if (!nombre || !correo || !contrasena || !rolId) {
     throw { status: 400, message: 'Todos los campos son obligatorios' };
   }
+
+  // ← Agrega esta línea
+  validarContrasena(contrasena);
 
   const existing = await usuariosRepository.findUsuarioByCorreo(correo);
   if (existing) {
@@ -43,9 +71,10 @@ const updateUsuario = async (id, nombre, correo, rolId, contrasena) => {
     throw { status: 409, message: `El correo "${correo}" ya está en uso` };
   }
 
-  // Si viene contraseña la encripta, si no usa la actual
   let contrasenaFinal = usuario.Contrasena;
   if (contrasena && contrasena.trim() !== '') {
+    // ← Agrega esta línea (solo valida si viene contraseña nueva)
+    validarContrasena(contrasena);
     contrasenaFinal = await bcrypt.hash(contrasena, 10);
   }
 
@@ -83,4 +112,6 @@ const getVeterinarios = async () => {
 
   return vets;
 };
+
+
 module.exports = { createUsuario, getAllUsuarios, updateUsuario, toggleActivo, deleteUsuario,getVeterinarios };

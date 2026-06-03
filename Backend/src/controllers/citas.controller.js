@@ -1,6 +1,6 @@
 // ============================================================
 //  CAPA: Controller
-//  Archivo: citas.controller.js
+//  Archivo: citas.controller.js  (CORREGIDO)
 // ============================================================
 
 const citasService = require('../services/citas.service');
@@ -37,22 +37,48 @@ const CitasController = {
   async create(req, res) {
     try {
       const { Id_Mascota, Id_Veterinario, IdTipoConsulta, IdEstadoCita, FechaHora } = req.body;
-      const result = await citasService.createCita(Id_Mascota, Id_Veterinario, IdTipoConsulta, IdEstadoCita, FechaHora);
+      const result = await citasService.createCita(
+        Id_Mascota, Id_Veterinario, IdTipoConsulta, IdEstadoCita, FechaHora
+      );
       res.status(201).json(result);
     } catch (err) {
       res.status(err.status || 500).json({ message: err.message || 'Error interno del servidor.' });
     }
   },
 
+  // FIX: parsear explícitamente los valores del body antes de pasarlos al service
   async update(req, res) {
-    try {
-      const { Id_Mascota, Id_Veterinario, IdTipoConsulta, IdEstadoCita, FechaHora } = req.body;
-      const result = await citasService.updateCita(req.params.id, Id_Mascota, Id_Veterinario, IdTipoConsulta, IdEstadoCita, FechaHora);
-      res.status(200).json(result);
-    } catch (err) {
-      res.status(err.status || 500).json({ message: err.message || 'Error interno del servidor.' });
-    }
-  },
+  try {
+    const id = req.params.id;
+    const { Id_Mascota, Id_Veterinario, IdTipoConsulta, IdEstadoCita, FechaHora } = req.body;;
+
+    // IMPORTANTE: Si Id_Veterinario es "null" o "undefined" como string, convertirlo
+    const cleanVeterinario = (Id_Veterinario === 'null' || Id_Veterinario === 'undefined') 
+      ? undefined 
+      : Id_Veterinario;
+
+    const result = await citasService.updateCita(
+      id,
+      Id_Mascota     ? Number(Id_Mascota)     : undefined,
+      cleanVeterinario ? Number(cleanVeterinario) : undefined,  // ← clave
+      IdTipoConsulta ? Number(IdTipoConsulta) : undefined,
+      IdEstadoCita   ? Number(IdEstadoCita)   : undefined,
+      FechaHora
+    );
+
+    res.status(200).json({
+      success: true,
+      message: result.message,
+      data: result
+    });
+  } catch (err) {
+    console.error(`❌ [Controller PUT /citas] Error:`, err);
+    res.status(err.status || 500).json({
+      success: false,
+      message: err.message || 'Error interno del servidor.'
+    });
+  }
+},
 
   async updateEstado(req, res) {
     try {
@@ -73,62 +99,32 @@ const CitasController = {
     }
   },
 
-  // ============================================================
-  //  NUEVAS FUNCIONES PARA VETERINARIO
-  // ============================================================
-
-  // GET /api/citas/veterinario/:id
   async getCitasByVeterinario(req, res) {
     try {
-      const { id } = req.params;
-      const citas = await citasService.getCitasByVeterinario(id);
-      res.status(200).json({
-        success: true,
-        data: citas
-      });
+      const citas = await citasService.getCitasByVeterinario(req.params.id);
+      res.status(200).json({ success: true, data: citas });
     } catch (err) {
-      res.status(err.status || 500).json({ 
-        success: false, 
-        message: err.message || 'Error interno del servidor' 
-      });
+      res.status(err.status || 500).json({ success: false, message: err.message || 'Error interno del servidor.' });
     }
   },
 
-  // GET /api/citas/mascota/:id
   async getCitasByMascotaId(req, res) {
     try {
-      const { id } = req.params;
-      const citas = await citasService.getCitasByMascotaId(id);
-      res.status(200).json({
-        success: true,
-        data: citas
-      });
+      const citas = await citasService.getCitasByMascotaId(req.params.id);
+      res.status(200).json({ success: true, data: citas });
     } catch (err) {
-      res.status(err.status || 500).json({ 
-        success: false, 
-        message: err.message || 'Error interno del servidor' 
-      });
+      res.status(err.status || 500).json({ success: false, message: err.message || 'Error interno del servidor.' });
     }
   },
 
-  // PATCH /api/citas/:id/completar
   async completarCita(req, res) {
     try {
-      const { id } = req.params;
-      const result = await citasService.completarCita(id);
-      res.status(200).json({
-        success: true,
-        message: result.message,
-        data: result
-      });
+      const result = await citasService.completarCita(req.params.id);
+      res.status(200).json({ success: true, message: result.message, data: result });
     } catch (err) {
-      res.status(err.status || 500).json({ 
-        success: false, 
-        message: err.message || 'Error interno del servidor' 
-      });
+      res.status(err.status || 500).json({ success: false, message: err.message || 'Error interno del servidor.' });
     }
   }
-
 };
 
 module.exports = CitasController;
