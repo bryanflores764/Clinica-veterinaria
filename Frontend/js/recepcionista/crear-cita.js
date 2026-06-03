@@ -1,5 +1,40 @@
 const API_URL = "http://localhost:3000/api/citas";
 
+// Variable para controlar envíos simultáneos
+let enviando = false;
+// Agrega esta función al inicio del archivo
+
+// En la función createCita, envuelve la llamada al repository
+const createCita = async (Id_Mascota, Id_Veterinario, IdTipoConsulta, IdEstadoCita, FechaHora) => {
+  // ... validaciones existentes ...
+  
+  try {
+    return await citasRepository.create({ Id_Mascota, Id_Veterinario, IdTipoConsulta, IdEstadoCita, FechaHora });
+  } catch (error) {
+    const errorAmigable = manejarErrorDuplicado(error);
+    if (errorAmigable) {
+      throw errorAmigable;
+    }
+    throw error;
+  }
+};
+
+// En la función updateCita, también envuelve
+const updateCita = async (id, Id_Mascota, Id_Veterinario, IdTipoConsulta, IdEstadoCita, FechaHora) => {
+  // ... validaciones existentes ...
+  
+  try {
+    await citasRepository.update(id, datos);
+    return { id: Number(id), ...datos, message: 'Cita actualizada exitosamente.' };
+  } catch (error) {
+    const errorAmigable = manejarErrorDuplicado(error);
+    if (errorAmigable) {
+      throw errorAmigable;
+    }
+    throw error;
+  }
+};
+
 async function cargarCitas() {
     const filtro = document.getElementById("filtroEstado")?.value || "todos";
     try {
@@ -29,10 +64,10 @@ async function cargarCitas() {
                     <td><span class="badge-estado estado-${estadoClase}">${cita.Estado}</span></td>
                     <td>
                         <div class="acciones-container">
-                            <button class="btn-tabla btn-editar-tabla"  onclick="abrirEditarCita(${cita.IdCita})">Editar</button>
+                            <button class="btn-tabla btn-editar-tabla" onclick="abrirEditarCita(${cita.IdCita})">Editar</button>
                             <button class="btn-tabla btn-cancelar-tabla" onclick="abrirCancelarCita(${cita.IdCita})">Cancelar</button>
                         </div>
-                    </td>
+                     </td>
                 </tr>`;
         });
     } catch (err) {
@@ -78,7 +113,32 @@ function fallbackTipos(select, idSel) {
         <option value="5" ${idSel==5?"selected":""}>Urgencia</option>`;
 }
 
+// Función para validar conflicto antes de enviar (usando citas actuales)
+async function validarConflictoLocal(veterinarioId, fechaHora, citaIdExcluir = null) {
+    try {
+        const res = await fetch(API_URL);
+        if (!res.ok) return false;
+        const citas = await res.json();
+        
+        // Buscar conflicto: mismo veterinario, misma fecha/hora, excluyendo la propia cita si es edición
+        const conflicto = citas.find(cita => 
+            cita.Id_Veterinario == veterinarioId && 
+            cita.FechaHora === fechaHora &&
+            (citaIdExcluir === null || cita.IdCita != citaIdExcluir)
+        );
+        
+        return conflicto !== undefined;
+    } catch (err) {
+        console.error("Error en validación local:", err);
+        return false;
+    }
+}
+
 async function abrirEditarCita(id) {
+    // Deshabilitar botones mientras se carga
+    const btnEditar = event?.target;
+    if (btnEditar) btnEditar.disabled = true;
+    
     try {
         const res = await fetch(`${API_URL}/${id}`);
         if (!res.ok) throw new Error("No se pudo obtener la cita");
@@ -92,7 +152,7 @@ async function abrirEditarCita(id) {
         await Promise.all([
             cargarSelect("editMascota",      "http://localhost:3000/api/mascotas",       "Seleccionar...", cita.Id_Mascota),
             cargarSelect("editVeterinario",  "http://localhost:3000/api/veterinarios",   "Seleccionar...", cita.Id_Veterinario, fallbackVets),
-            cargarSelect("editTipoConsulta", "http://localhost:3000/api/tipos-consulta", "Seleccionar...", cita.IdTipoConsulta,  fallbackTipos),
+            cargarSelect("editTipoConsulta", "http://localhost:3000/api/tipos-consulta", "Seleccionar...", cita.IdTipoConsulta, fallbackTipos),
         ]);
 
         const selectEstado = document.getElementById("editEstado");
@@ -102,11 +162,20 @@ async function abrirEditarCita(id) {
     } catch (err) {
         console.error("Error abriendo editar:", err);
         if (typeof mostrarAlerta === "function") mostrarAlerta("No se pudo cargar la cita para editar.");
+    } finally {
+        if (btnEditar) btnEditar.disabled = false;
     }
 }
 
 document.getElementById("formEditarCita")?.addEventListener("submit", async (e) => {
     e.preventDefault();
+    
+    // Prevenir múltiples envíos
+    if (enviando) {
+        mostrarAlerta("Ya hay una operación en proceso, espera por favor.");
+        return;
+    }
+    
     const id     = document.getElementById("editIdCita").value;
     const mascota = document.getElementById("editMascota").value;
     const vet    = document.getElementById("editVeterinario").value;
@@ -115,35 +184,111 @@ document.getElementById("formEditarCita")?.addEventListener("submit", async (e) 
     const fecha  = document.getElementById("editFecha").value;
     const hora   = document.getElementById("editHora").value;
 
-    if (!mascota || !vet || !tipo || !estado || !fecha || !hora) {
-        if (typeof mostrarAlerta === "function") mostrarAlerta("Por favor completa todos los campos obligatorios.");
+    // Validaciones estrictas
+    if (!mascota || mascota === "null" || mascota === "undefined" || mascota === "") {
+        mostrarAlerta("Debes seleccionar una mascota válida.");
+        return;
+    }
+    if (!vet || vet === "null" || vet === "undefined" || vet === "") {
+        mostrarAlerta("Debes seleccionar un veterinario válido.");
+        return;
+    }
+    if (!tipo || tipo === "null" || tipo === "undefined" || tipo === "") {
+        mostrarAlerta("Debes seleccionar un tipo de consulta.");
+        return;
+    }
+    if (!estado || estado === "null" || estado === "undefined" || estado === "") {
+        mostrarAlerta("Debes seleccionar un estado.");
+        return;
+    }
+    if (!fecha || !hora) {
+        mostrarAlerta("Debes seleccionar fecha y hora.");
         return;
     }
 
-    const data = {
-        Id_Mascota: parseInt(mascota), Id_Veterinario: parseInt(vet),
-        IdTipoConsulta: parseInt(tipo), IdEstadoCita: parseInt(estado),
-        FechaHora: `${fecha}T${hora}:00`
-    };
+    const fechaHoraStr = `${fecha}T${hora}:00`;
+    const fechaHoraObj = new Date(fechaHoraStr);
+    
+    // Validar que no sea fecha pasada
+    if (fechaHoraObj < new Date()) {
+        mostrarAlerta("No se pueden agendar citas en fechas pasadas.");
+        return;
+    }
 
+    // Validación local antes de enviar
+    mostrarCargando(true);
+    
     try {
+        const hayConflicto = await validarConflictoLocal(parseInt(vet), fechaHoraStr, parseInt(id));
+        if (hayConflicto) {
+            mostrarAlerta("❌ El veterinario ya tiene una cita agendada para esta fecha y hora.");
+            mostrarCargando(false);
+            return;
+        }
+
+        const data = {
+            Id_Mascota: parseInt(mascota), 
+            Id_Veterinario: parseInt(vet),
+            IdTipoConsulta: parseInt(tipo), 
+            IdEstadoCita: parseInt(estado),
+            FechaHora: fechaHoraStr
+        };
+
+        // Verificar que no haya NaN
+        if (isNaN(data.Id_Mascota) || isNaN(data.Id_Veterinario) || 
+            isNaN(data.IdTipoConsulta) || isNaN(data.IdEstadoCita)) {
+            mostrarAlerta("Hay valores inválidos en el formulario.");
+            mostrarCargando(false);
+            return;
+        }
+
+        enviando = true;
+        
         const res = await fetch(`${API_URL}/${id}`, {
-            method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data)
+            method: "PUT", 
+            headers: { "Content-Type": "application/json" }, 
+            body: JSON.stringify(data)
         });
+        
         if (res.ok) {
             document.getElementById("modalEditarCita").classList.add("hidden");
-            if (typeof mostrarExito === "function") mostrarExito("¡Cita actualizada correctamente!");
+            mostrarExito("¡Cita actualizada correctamente!");
             cargarCitas();
         } else {
             const err = await res.json();
-            if (typeof mostrarAlerta === "function") mostrarAlerta("Error: " + (err.message || JSON.stringify(err)));
+            mostrarAlerta("Error: " + (err.message || JSON.stringify(err)));
         }
     } catch (err) {
-        if (typeof mostrarAlerta === "function") mostrarAlerta("Error de conexión al actualizar.");
+        console.error("Error en actualización:", err);
+        mostrarAlerta("Error de conexión al actualizar.");
+    } finally {
+        enviando = false;
+        mostrarCargando(false);
     }
 });
 
-function cerrarModalEditar() { document.getElementById("modalEditarCita").classList.add("hidden"); }
+// Funciones auxiliares de UI
+function mostrarCargando(mostrar) {
+    const btnSubmit = document.querySelector("#formEditarCita button[type='submit']");
+    if (btnSubmit) {
+        btnSubmit.disabled = mostrar;
+        btnSubmit.textContent = mostrar ? "Guardando..." : "Guardar cambios";
+    }
+}
+
+function mostrarAlerta(mensaje) {
+    // Si tienes una función de alerta personalizada, úsala
+    alert(mensaje);
+}
+
+function mostrarExito(mensaje) {
+    alert(mensaje);
+}
+
+function cerrarModalEditar() { 
+    document.getElementById("modalEditarCita").classList.add("hidden"); 
+}
+
 document.getElementById("cerrarEditarModal")?.addEventListener("click", cerrarModalEditar);
 document.getElementById("cerrarEditarModalBtn")?.addEventListener("click", cerrarModalEditar);
 
@@ -176,7 +321,11 @@ document.getElementById("confirmarCancelar")?.addEventListener("click", async ()
     }
 });
 
-function cerrarModalCancelar() { document.getElementById("modalCancelar").classList.add("hidden"); citaACancelar = null; }
+function cerrarModalCancelar() { 
+    document.getElementById("modalCancelar").classList.add("hidden"); 
+    citaACancelar = null; 
+}
+
 document.getElementById("cerrarCancelar")?.addEventListener("click", cerrarModalCancelar);
 document.getElementById("cerrarCancelarBtn")?.addEventListener("click", cerrarModalCancelar);
 
@@ -195,6 +344,7 @@ document.querySelectorAll(".modal").forEach(modal => {
 
 document.getElementById("filtroEstado")?.addEventListener("change", cargarCitas);
 
+// Exponer funciones globales
 window.cargarCitas       = cargarCitas;
 window.abrirEditarCita   = abrirEditarCita;
 window.abrirCancelarCita = abrirCancelarCita;

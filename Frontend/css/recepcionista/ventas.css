@@ -927,3 +927,144 @@
         font-size: 17px;
     }
 }
+
+/* ── Sección de pago en modal nueva venta ── */
+.venta-pago-section {
+    border-top: 1px solid #e2e8f0;
+    margin-top: 12px;
+    padding-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.venta-pago-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.venta-pago-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    min-width: 130px;
+}
+
+/* Chips de método de pago */
+.metodo-pago-opciones {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.metodo-pago-opcion {
+    cursor: pointer;
+}
+
+.metodo-pago-opcion input[type="radio"] {
+    display: none;
+}
+
+.metodo-pago-chip {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 2px solid #cbd5e1;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: all .2s ease;
+    font-family: 'Baloo Da 2', sans-serif;
+}
+
+.metodo-pago-opcion input[type="radio"]:checked + .metodo-pago-chip {
+    border-color: #3b82f6;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+/* Input monto recibido */
+.monto-recibido-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    width: 160px;
+}
+
+.monto-prefix {
+    padding: 7px 10px;
+    background: #f1f5f9;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 14px;
+    border-right: 1.5px solid #cbd5e1;
+}
+
+.input-monto-recibido {
+    border: none;
+    outline: none;
+    padding: 7px 10px;
+    font-size: 14px;
+    width: 100%;
+    font-family: 'Baloo Da 2', sans-serif;
+}
+
+/* Fila de cambio */
+.venta-cambio-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f0fdf4;
+    border: 1.5px solid #bbf7d0;
+    border-radius: 10px;
+    padding: 10px 16px;
+}
+
+.venta-cambio-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #166534;
+}
+
+.venta-cambio-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: #16a34a;
+    font-family: 'Baloo Da 2', sans-serif;
+}
+
+.venta-cambio-value.cambio-negativo {
+    color: #dc2626;
+}
+
+/* Columna método de pago en tabla */
+.venta-metodo {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+
+/* Resumen de pago en modal detalle */
+.venta-pago-resumen {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 10px;
+    padding-top: 12px;
+}
+
+.venta-pago-resumen-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 120px;
+}

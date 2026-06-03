@@ -1,478 +1,622 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico" type="image/x-icon">
-    <link rel="stylesheet" href="../../css/recepcionista/interfazRecepcionista.css">
-    <link rel="stylesheet" href="../../css/recepcionista/interfazCitas.css">
-    <link rel="stylesheet" href="../../css/recepcionista/ventas.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico"
+      type="image/x-icon"
+    />
+    <link
+      rel="stylesheet"
+      href="../../css/recepcionista/interfazRecepcionista.css"
+    />
+    <link rel="stylesheet" href="../../css/recepcionista/interfazCitas.css" />
+    <link rel="stylesheet" href="../../css/recepcionista/ventas.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap"
+      rel="stylesheet"
+    />
     <title>RECEPCIONISTA — Ventas</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="sidebar-backdrop"></div>
 
     <div class="layout">
-        <aside class="sidebar">
-            <div class="logo">
-                <img id="logo" src="../../assets/img/Logo de clínica Veterinaria azul.png" alt="logo">
-            </div>
-            <ul>
-                <li>
-                    <a href="interfazRecepcionista.html">
-                        <img src="../../assets/icons/icon-citas.svg" alt="citas">
-                        Citas
-                    </a>
-                </li>
-                <li>
-                    <a href="recepcionistaMascotas.html">
-                        <img src="../../assets/icons/icon-pacientes.svg" alt="pacientes">
-                        Pacientes
-                    </a>
-                </li>
-                <li>
-                    <a href="propetario.html">
-                        <img src="../../assets/icons/icon-user.svg" alt="Cliente">
-                        Clientes
-                    </a>
-                </li>
-                <li>
-                    <a href="tienda.html">
-                        <img src="../../assets/icons/shop.svg" alt="tienda">
-                        Tienda
-                    </a>
-                </li>
-                <li>
-                    <a href="ventas.html">
-                        <img src="../../assets/icons/ico-sale.svg" alt="ventas">
-                        Ventas
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <img src="../../assets/icons/icon-historial.svg" alt="historial">
-                        Historial Citas
-                    </a>
-                </li>
-            </ul>
-        </aside>
+      <aside class="sidebar">
+        <div class="logo">
+          <img
+            id="logo"
+            src="../../assets/img/Logo de clínica Veterinaria azul.png"
+            alt="logo"
+          />
+        </div>
+        <ul>
+          <li>
+            <a href="interfazRecepcionista.html">
+              <img src="../../assets/icons/icon-citas.svg" alt="citas" />
+              Citas
+            </a>
+          </li>
+          <li>
+            <a href="recepcionistaMascotas.html">
+              <img
+                src="../../assets/icons/icon-pacientes.svg"
+                alt="pacientes"
+              />
+              Pacientes
+            </a>
+          </li>
+          <li>
+            <a href="propetario.html">
+              <img src="../../assets/icons/icon-user.svg" alt="Cliente" />
+              Clientes
+            </a>
+          </li>
+          <li>
+            <a href="tienda.html">
+              <img src="../../assets/icons/shop.svg" alt="tienda" />
+              Tienda
+            </a>
+          </li>
+          <li>
+            <a href="ventas.html">
+              <img src="../../assets/icons/ico-sale.svg" alt="ventas" />
+              Ventas
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <img
+                src="../../assets/icons/icon-historial.svg"
+                alt="historial"
+              />
+              Historial Citas
+            </a>
+          </li>
+        </ul>
+      </aside>
 
-        <header class="header">
-            <h1>Ventas</h1>
-            <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">☰</button>
-            <div class="header-actions">
-                <a class="btn-new" href="#" id="btnNuevaVenta">
-                    <img src="../../assets/icons/icon-newcita.svg" alt="">
-                    Nueva Venta
-                </a>
-                <a class="btn-logout" id="cerrar-sesion" href="#">
-                    <img src="../../assets/icons/icon-sesion.svg" alt="cerrar-sesion">
-                    Cerrar Sesión
-                </a>
-            </div>
+      <header class="header">
+        <h1>Ventas</h1>
+        <button
+          class="menu-toggle"
+          aria-label="Abrir-menu"
+          aria-expanded="false"
+        >
+          ☰
+        </button>
+        <div class="header-actions">
+          <a class="btn-new" href="#" id="btnNuevaVenta">
+            <img src="../../assets/icons/icon-newcita.svg" alt="" />
+            Nueva Venta
+          </a>
+          <a class="btn-logout" id="cerrar-sesion" href="#">
+            <img src="../../assets/icons/icon-sesion.svg" alt="cerrar-sesion" />
+            Cerrar Sesión
+          </a>
+        </div>
+      </header>
+
+      <main class="main">
+        <header class="header-main">
+          <h1 class="title">Registro de Ventas</h1>
         </header>
 
-        <main class="main">
-            <header class="header-main">
-                <h1 class="title">Registro de Ventas</h1>
-            </header>
+        <div id="contenedorVentas" class="ventas-table-card">
+          <div class="table-responsive">
+            <table class="ventas-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Usuario / Cliente</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyVentas">
+                <!-- Ventas dinámicas -->
+              </tbody>
+            </table>
+          </div>
 
-            <div id="contenedorVentas" class="ventas-table-card">
-                <div class="table-responsive">
-                    <table class="ventas-table">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Usuario / Cliente</th>
-                                <th>Total</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbodyVentas">
-                            <!-- Ventas dinámicas -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <p class="ventas-empty hidden" id="ventasEmpty">
-                    No hay ventas registradas aún.
-                </p>
-            </div>
-
-        </main>
-
-        <!-- ══════════════════════════════════════════
-             MODAL NUEVA VENTA
-        ══════════════════════════════════════════ -->
-        <div id="modalVenta" class="modal hidden">
-            <div class="modal-content modal-compact modal-venta">
-
-                <div class="modal-header-blue">
-                    <div class="modal-header-icon">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="9" cy="21" r="1" />
-                            <circle cx="20" cy="21" r="1" />
-                            <path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.97-1.67L23 6H6" />
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="modal-title-white">Nueva Venta</p>
-                        <p class="modal-subtitle-white">Registra los productos vendidos</p>
-                    </div>
-                    <button class="btn-close-white" id="cerrarModalVenta" type="button">✕</button>
-                </div>
-
-                <!-- Fecha, usuario y propietario -->
-                <div class="venta-meta">
-                    <div class="venta-meta-item">
-                        <span class="venta-meta-label">Fecha</span>
-                        <span class="venta-meta-value" id="ventaFecha">—</span>
-                    </div>
-
-                    <div class="venta-meta-item">
-                        <span class="venta-meta-label">Registrado por</span>
-                        <span class="venta-meta-value" id="ventaUsuario">—</span>
-                    </div>
-
-                    <div class="venta-meta-item">
-                        <span class="venta-meta-label">Propietario</span>
-                        <select id="selectPropietarioVenta" class="select-producto">
-                            <option value="">Seleccionar propietario...</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Tabla de productos -->
-                <div class="venta-productos-header">
-                    <span class="venta-section-title">Productos</span>
-                    <button type="button" class="btn-agregar-producto" id="btnAgregarProducto">
-                        + Agregar producto
-                    </button>
-                </div>
-
-                <div class="venta-tabla-wrapper">
-                    <table class="venta-tabla" id="tablaProductosVenta">
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Cant.</th>
-                                <th>Precio unit.</th>
-                                <th>Subtotal</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbodyProductosVenta">
-                            <!-- filas dinámicas -->
-                        </tbody>
-                    </table>
-                    <p class="venta-empty-productos hidden" id="ventaEmptyMsg">
-                        Agrega al menos un producto para continuar.
-                    </p>
-                </div>
-
-                <!-- Total -->
-                <div class="venta-total-row">
-                    <span class="venta-total-label">Total</span>
-                    <span class="venta-total-value" id="ventaTotal">$0.00</span>
-                </div>
-
-                <div class="modal-actions">
-                    <button type="button" class="btn-primary" id="btnGuardarVenta">✓ Registrar venta</button>
-                    <button type="button" class="btn-secondary" id="cerrarModalVentaBtn">Cancelar</button>
-                </div>
-
-            </div>
+          <p class="ventas-empty hidden" id="ventasEmpty">
+            No hay ventas registradas aún.
+          </p>
         </div>
+      </main>
 
-        <!-- ══════════════════════════════════════════
+      <!-- ══════════════════════════════════════════
+     MODAL NUEVA VENTA
+══════════════════════════════════════════ -->
+      <div id="modalVenta" class="modal hidden">
+        <div class="modal-content modal-compact modal-venta">
+          <div class="modal-header-blue">
+            <div class="modal-header-icon">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path
+                  d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.97-1.67L23 6H6"
+                />
+              </svg>
+            </div>
+            <div>
+              <p class="modal-title-white">Nueva Venta</p>
+              <p class="modal-subtitle-white">
+                Registra los productos vendidos
+              </p>
+            </div>
+            <button class="btn-close-white" id="cerrarModalVenta" type="button">
+              ✕
+            </button>
+          </div>
+
+          <!-- Fecha, usuario y propietario -->
+          <div class="venta-meta">
+            <div class="venta-meta-item">
+              <span class="venta-meta-label">Fecha</span>
+              <span class="venta-meta-value" id="ventaFecha">—</span>
+            </div>
+            <div class="venta-meta-item">
+              <span class="venta-meta-label">Registrado por</span>
+              <span class="venta-meta-value" id="ventaUsuario">—</span>
+            </div>
+            <div class="venta-meta-item">
+              <span class="venta-meta-label">Propietario</span>
+              <select id="selectPropietarioVenta" class="select-producto">
+                <option value="">Seleccionar propietario...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Tabla de productos -->
+          <div class="venta-productos-header">
+            <span class="venta-section-title">Productos</span>
+            <button
+              type="button"
+              class="btn-agregar-producto"
+              id="btnAgregarProducto"
+            >
+              + Agregar producto
+            </button>
+          </div>
+
+          <div class="venta-tabla-wrapper">
+            <table class="venta-tabla" id="tablaProductosVenta">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Cant.</th>
+                  <th>Precio unit.</th>
+                  <th>Subtotal</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="tbodyProductosVenta"></tbody>
+            </table>
+            <p class="venta-empty-productos hidden" id="ventaEmptyMsg">
+              Agrega al menos un producto para continuar.
+            </p>
+          </div>
+
+          <!-- Total -->
+          <div class="venta-total-row">
+            <span class="venta-total-label">Total</span>
+            <span class="venta-total-value" id="ventaTotal">$0.00</span>
+          </div>
+
+          <!-- ── NUEVO: Método de pago y cambio ── -->
+          <div class="venta-pago-section">
+            <div class="venta-pago-row">
+              <label class="venta-pago-label" for="selectMetodoPago"
+                >Método de pago</label
+              >
+              <div class="metodo-pago-opciones">
+                <label class="metodo-pago-opcion">
+                  <input
+                    type="radio"
+                    name="metodoPago"
+                    value="efectivo"
+                    checked
+                  />
+                  <span class="metodo-pago-chip">💵 Efectivo</span>
+                </label>
+                <label class="metodo-pago-opcion">
+                  <input type="radio" name="metodoPago" value="tarjeta" />
+                  <span class="metodo-pago-chip">💳 Tarjeta</span>
+                </label>
+                <label class="metodo-pago-opcion">
+                  <input type="radio" name="metodoPago" value="transferencia" />
+                  <span class="metodo-pago-chip">🏦 Transferencia</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Solo visible si método = efectivo -->
+            <div class="venta-pago-row" id="filaMontoPago">
+              <label class="venta-pago-label" for="inputMontoRecibido"
+                >Monto recibido</label
+              >
+              <div class="monto-recibido-wrapper">
+                <span class="monto-prefix">$</span>
+                <input
+                  type="number"
+                  id="inputMontoRecibido"
+                  class="input-monto-recibido"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+            </div>
+
+            <!-- Cambio calculado en tiempo real -->
+            <div class="venta-cambio-row" id="filaCambio">
+              <span class="venta-cambio-label">Cambio a entregar</span>
+              <span class="venta-cambio-value" id="ventaCambio">$0.00</span>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-primary" id="btnGuardarVenta">
+              ✓ Registrar venta
+            </button>
+            <button
+              type="button"
+              class="btn-secondary"
+              id="cerrarModalVentaBtn"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- ══════════════════════════════════════════
              MODAL ÉXITO / ERROR
         ══════════════════════════════════════════ -->
-        <div id="modalExito" class="modal modal-mensaje-global hidden">
-            <div class="modal-content modal-compact modal-sm modal-exito">
-                <h3 id="exitoTitulo">Éxito</h3>
-                <p id="exitoMensaje">Operación realizada correctamente.</p>
-                <button id="cerrarExito">Aceptar</button>
-            </div>
+      <div id="modalExito" class="modal modal-mensaje-global hidden">
+        <div class="modal-content modal-compact modal-sm modal-exito">
+          <h3 id="exitoTitulo">Éxito</h3>
+          <p id="exitoMensaje">Operación realizada correctamente.</p>
+          <button id="cerrarExito">Aceptar</button>
         </div>
-
+      </div>
     </div>
 
     <!-- ══════════════════════════════════════════
      MODAL DETALLE DE VENTA
 ══════════════════════════════════════════ -->
     <div id="modalDetalleVenta" class="modal hidden">
-        <div class="modal-content modal-compact modal-venta">
+      <div class="modal-content modal-compact modal-venta">
+        <div class="modal-header-blue">
+          <div class="modal-header-icon">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M9 11H5a2 2 0 0 0-2 2v7h18v-7a2 2 0 0 0-2-2h-4" />
+              <path d="M9 11V5a3 3 0 0 1 6 0v6" />
+              <path d="M9 11h6" />
+            </svg>
+          </div>
 
-            <div class="modal-header-blue">
-                <div class="modal-header-icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 11H5a2 2 0 0 0-2 2v7h18v-7a2 2 0 0 0-2-2h-4" />
-                        <path d="M9 11V5a3 3 0 0 1 6 0v6" />
-                        <path d="M9 11h6" />
-                    </svg>
-                </div>
+          <div>
+            <p class="modal-title-white">Detalle de Venta</p>
+            <p class="modal-subtitle-white">Productos incluidos en la venta</p>
+          </div>
 
-                <div>
-                    <p class="modal-title-white">Detalle de Venta</p>
-                    <p class="modal-subtitle-white">Productos incluidos en la venta</p>
-                </div>
-
-                <button class="btn-close-white" id="cerrarModalDetalleVenta" type="button">✕</button>
-            </div>
-
-            <div class="venta-meta">
-                <div class="venta-meta-item">
-                    <span class="venta-meta-label">Fecha</span>
-                    <span class="venta-meta-value" id="detalleFecha">—</span>
-                </div>
-
-                <div class="venta-meta-item">
-                    <span class="venta-meta-label">Propietario</span>
-                    <span class="venta-meta-value" id="detallePropietario">—</span>
-                </div>
-
-                <div class="venta-meta-item">
-                    <span class="venta-meta-label">Estado</span>
-                    <span class="venta-meta-value" id="detalleEstado">—</span>
-                </div>
-            </div>
-
-            <div class="venta-productos-header">
-                <span class="venta-section-title">Productos vendidos</span>
-            </div>
-
-            <div class="venta-tabla-wrapper">
-                <table class="venta-tabla">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cant.</th>
-                            <th>Precio unit.</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="tbodyDetalleVenta">
-                        <!-- Productos dinámicos -->
-                    </tbody>
-                </table>
-
-                <p class="venta-empty-productos hidden" id="detalleEmptyMsg">
-                    Esta venta no tiene productos registrados.
-                </p>
-            </div>
-
-            <div class="venta-total-row">
-                <span class="venta-total-label">Total</span>
-                <span class="venta-total-value" id="detalleTotal">$0.00</span>
-            </div>
-
-            <div class="modal-actions">
-                <button type="button" class="btn-secondary" id="cerrarModalDetalleVentaBtn">
-                    Cerrar
-                </button>
-            </div>
-
+          <button
+            class="btn-close-white"
+            id="cerrarModalDetalleVenta"
+            type="button"
+          >
+            ✕
+          </button>
         </div>
+
+        <div class="venta-meta">
+          <div class="venta-meta-item">
+            <span class="venta-meta-label">Fecha</span>
+            <span class="venta-meta-value" id="detalleFecha">—</span>
+          </div>
+
+          <div class="venta-meta-item">
+            <span class="venta-meta-label">Propietario</span>
+            <span class="venta-meta-value" id="detallePropietario">—</span>
+          </div>
+
+          <div class="venta-meta-item">
+            <span class="venta-meta-label">Estado</span>
+            <span class="venta-meta-value" id="detalleEstado">—</span>
+          </div>
+        </div>
+
+        <div class="venta-productos-header">
+          <span class="venta-section-title">Productos vendidos</span>
+        </div>
+
+        <div class="venta-tabla-wrapper">
+          <table class="venta-tabla">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cant.</th>
+                <th>Precio unit.</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+
+            <tbody id="tbodyDetalleVenta">
+              <!-- Productos dinámicos -->
+            </tbody>
+          </table>
+
+          <p class="venta-empty-productos hidden" id="detalleEmptyMsg">
+            Esta venta no tiene productos registrados.
+          </p>
+        </div>
+
+        <div class="venta-total-row">
+          <span class="venta-total-label">Total</span>
+          <span class="venta-total-value" id="detalleTotal">$0.00</span>
+        </div>
+        <!-- Detalle de pago — solo visible si la venta está confirmada -->
+        <!-- Detalle de pago — solo visible si la venta está confirmada -->
+        <div class="venta-pago-resumen" id="detallePagoResumen">
+          <div class="venta-pago-resumen-item">
+            <span class="venta-meta-label">Método de pago</span>
+            <span class="venta-meta-value" id="detalleMetodoPago">—</span>
+          </div>
+          <div class="venta-pago-resumen-item">
+            <span class="venta-meta-label">Monto recibido</span>
+            <span class="venta-meta-value" id="detalleMontoRecibido">—</span>
+          </div>
+          <div class="venta-pago-resumen-item">
+            <span class="venta-meta-label">Cambio entregado</span>
+            <span class="venta-meta-value" id="detalleCambio">—</span>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="btn-secondary"
+            id="cerrarModalDetalleVentaBtn"
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- ══════════════════════════════════════════
      MODAL CONFIRMAR ANULACIÓN DE VENTA
 ══════════════════════════════════════════ -->
     <div id="modalAnularVenta" class="modal hidden">
-        <div class="modal-content modal-compact modal-sm modal-anular-venta">
-            <h3>Anular venta</h3>
+      <div class="modal-content modal-compact modal-sm modal-anular-venta">
+        <h3>Anular venta</h3>
 
-            <p id="anularVentaMensaje">
-                ¿Estás seguro de que deseas anular esta venta?
-            </p>
+        <p id="anularVentaMensaje">
+          ¿Estás seguro de que deseas anular esta venta?
+        </p>
 
-            <p class="anular-venta-warning">
-                Esta acción no eliminará el registro, solo cambiará el estado de la venta a anulada.
-            </p>
+        <p class="anular-venta-warning">
+          Esta acción no eliminará el registro, solo cambiará el estado de la
+          venta a anulada.
+        </p>
 
-            <div class="modal-actions">
-                <button type="button" class="btn-anular-confirmar" id="btnConfirmarAnularVenta">
-                    Sí, anular venta
-                </button>
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="btn-anular-confirmar"
+            id="btnConfirmarAnularVenta"
+          >
+            Sí, anular venta
+          </button>
 
-                <button type="button" class="btn-secondary" id="btnCancelarAnularVenta">
-                    Cancelar
-                </button>
-            </div>
+          <button
+            type="button"
+            class="btn-secondary"
+            id="btnCancelarAnularVenta"
+          >
+            Cancelar
+          </button>
         </div>
+      </div>
     </div>
 
     <!-- ══════════════════════════════════════════
      MODAL FACTURA DE VENTA
 ══════════════════════════════════════════ -->
-    <div id="modalFacturaVenta" class="modal hidden">
-        <div class="modal-content modal-compact modal-venta modal-factura">
-
-            <div class="modal-header-blue">
-                <div class="modal-header-icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <path d="M14 2v6h6" />
-                        <path d="M16 13H8" />
-                        <path d="M16 17H8" />
-                        <path d="M10 9H8" />
-                    </svg>
-                </div>
-
-                <div>
-                    <p class="modal-title-white">Factura de Venta</p>
-                    <p class="modal-subtitle-white">Vista previa del comprobante digital</p>
-                </div>
-
-                <button class="btn-close-white" id="cerrarModalFacturaVenta" type="button">✕</button>
-            </div>
-
-            <div class="factura-preview">
-
-                <div class="factura-encabezado">
-                    <div>
-                        <h3>VetCare</h3>
-                        <p>Comprobante digital de venta</p>
-                    </div>
-
-                    <div class="factura-info">
-                        <span id="facturaNumeroControl">Sin generar</span>
-                        <small id="facturaCodigoGeneracion">—</small>
-                    </div>
-                </div>
-
-                <div class="venta-meta">
-                    <div class="venta-meta-item">
-                        <span class="venta-meta-label">Fecha</span>
-                        <span class="venta-meta-value" id="facturaFecha">—</span>
-                    </div>
-
-                    <div class="venta-meta-item">
-                        <span class="venta-meta-label">Cliente</span>
-                        <span class="venta-meta-value" id="facturaCliente">—</span>
-                    </div>
-
-                    <div class="venta-meta-item">
-                        <span class="venta-meta-label">Estado venta</span>
-                        <span class="venta-meta-value" id="facturaEstadoVenta">—</span>
-                    </div>
-                </div>
-
-                <div class="venta-productos-header">
-                    <span class="venta-section-title">Productos</span>
-                </div>
-
-                <div class="venta-tabla-wrapper">
-                    <table class="venta-tabla">
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Cant.</th>
-                                <th>Precio unit.</th>
-                                <th>Subtotal</th>
-                            </tr>
-                        </thead>
-
-                        <tbody id="tbodyFacturaProductos">
-                            <!-- Productos dinámicos -->
-                        </tbody>
-                    </table>
-
-                    <p class="venta-empty-productos hidden" id="facturaProductosEmpty">
-                        Esta venta no tiene productos registrados.
-                    </p>
-                </div>
-
-                <div class="venta-productos-header">
-                    <span class="venta-section-title">Servicios</span>
-                </div>
-
-                <div class="venta-tabla-wrapper">
-                    <table class="venta-tabla">
-                        <thead>
-                            <tr>
-                                <th>Servicio</th>
-                                <th>Cant.</th>
-                                <th>Precio unit.</th>
-                                <th>Subtotal</th>
-                            </tr>
-                        </thead>
-
-                        <tbody id="tbodyFacturaServicios">
-                            <!-- Servicios dinámicos -->
-                        </tbody>
-                    </table>
-
-                    <p class="venta-empty-productos hidden" id="facturaServiciosEmpty">
-                        No hay servicios registrados en esta venta.
-                    </p>
-                </div>
-
-                <div class="venta-total-row">
-                    <span class="venta-total-label">Total factura</span>
-                    <span class="venta-total-value" id="facturaTotal">$0.00</span>
-                </div>
-
-            </div>
-
-            <div class="modal-actions">
-                <button type="button" class="btn-primary" id="btnGenerarFactura">
-                    Generar factura
-                </button>
-
-                <button type="button" class="btn-enviar-factura" id="btnEnviarFacturaVisual">
-                    Enviar factura
-                </button>
-
-                <button type="button" class="btn-secondary" id="cerrarModalFacturaVentaBtn">
-                    Cerrar
-                </button>
-            </div>
-
-        </div>
+   <div id="modalFacturaVenta" class="modal hidden">
+  <div class="modal-content modal-compact modal-venta modal-factura">
+    <div class="modal-header-blue">
+      <div class="modal-header-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <path d="M14 2v6h6"/>
+          <path d="M16 13H8"/>
+          <path d="M16 17H8"/>
+          <path d="M10 9H8"/>
+        </svg>
+      </div>
+      <div>
+        <p class="modal-title-white">Factura de Venta</p>
+        <p class="modal-subtitle-white">Vista previa del comprobante digital</p>
+      </div>
+      <button class="btn-close-white" id="cerrarModalFacturaVenta" type="button">✕</button>
     </div>
+ 
+    <div class="factura-preview">
+ 
+      <!-- Encabezado VetCare + número de control -->
+      <div class="factura-encabezado">
+        <div>
+          <h3>VetCare</h3>
+          <p>Comprobante digital de venta</p>
+        </div>
+        <div class="factura-info">
+          <span id="facturaNumeroControl">Sin generar</span>
+          <small id="facturaCodigoGeneracion">—</small>
+        </div>
+      </div>
+ 
+      <!-- Fecha, cliente, estado -->
+      <div class="venta-meta">
+        <div class="venta-meta-item">
+          <span class="venta-meta-label">Fecha</span>
+          <span class="venta-meta-value" id="facturaFecha">—</span>
+        </div>
+        <div class="venta-meta-item">
+          <span class="venta-meta-label">Cliente</span>
+          <span class="venta-meta-value" id="facturaCliente">—</span>
+        </div>
+        <div class="venta-meta-item">
+          <span class="venta-meta-label">Estado venta</span>
+          <span class="venta-meta-value" id="facturaEstadoVenta">—</span>
+        </div>
+      </div>
+ 
+      <!-- Productos -->
+      <div class="venta-productos-header">
+        <span class="venta-section-title">Productos</span>
+      </div>
+      <div class="venta-tabla-wrapper">
+        <table class="venta-tabla">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cant.</th>
+              <th>Precio unit.</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyFacturaProductos"></tbody>
+        </table>
+        <p class="venta-empty-productos hidden" id="facturaProductosEmpty">
+          Esta venta no tiene productos registrados.
+        </p>
+      </div>
+ 
+      <!-- Servicios -->
+      <div class="venta-productos-header">
+        <span class="venta-section-title">Servicios</span>
+      </div>
+      <div class="venta-tabla-wrapper">
+        <table class="venta-tabla">
+          <thead>
+            <tr>
+              <th>Servicio</th>
+              <th>Cant.</th>
+              <th>Precio unit.</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyFacturaServicios"></tbody>
+        </table>
+        <p class="venta-empty-productos hidden" id="facturaServiciosEmpty">
+          No hay servicios registrados en esta venta.
+        </p>
+      </div>
+ 
+      <!-- Total -->
+      <div class="venta-total-row">
+        <span class="venta-total-label">Total factura</span>
+        <span class="venta-total-value" id="facturaTotal">$0.00</span>
+      </div>
+ 
+      <!-- ── Resumen de pago (visible solo si la venta está confirmada) ── -->
+      <div class="venta-pago-resumen hidden" id="facturaPagoResumen">
+        <div class="venta-pago-resumen-item">
+          <span class="venta-meta-label">Método de pago</span>
+          <span class="venta-meta-value" id="facturaPagoMetodo">—</span>
+        </div>
+        <!-- Solo visible si el método fue efectivo -->
+        <div class="venta-pago-resumen-item hidden" id="facturaFilaMontoRecibido">
+          <span class="venta-meta-label">Monto recibido</span>
+          <span class="venta-meta-value" id="facturaPagoMonto">—</span>
+        </div>
+        <div class="venta-pago-resumen-item hidden" id="facturaFilaCambio">
+          <span class="venta-meta-label">Cambio entregado</span>
+          <span class="venta-meta-value" id="facturaPagoCambio">—</span>
+        </div>
+      </div>
+ 
+    </div><!-- /factura-preview -->
+ 
+    <div class="modal-actions">
+      <button type="button" class="btn-primary" id="btnGenerarFactura">
+        Generar factura
+      </button>
+      <button type="button" class="btn-enviar-factura" id="btnEnviarFacturaVisual">
+        Enviar factura
+      </button>
+      <button type="button" class="btn-secondary" id="cerrarModalFacturaVentaBtn">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
 
     <!-- ══════════════════════════════════════════
      MODAL CONFIRMAR ENVÍO DE FACTURA
 ══════════════════════════════════════════ -->
     <div id="modalEnviarFactura" class="modal hidden">
-        <div class="modal-content modal-compact modal-sm modal-enviar-factura">
-            <h3>Enviar factura</h3>
+      <div class="modal-content modal-compact modal-sm modal-enviar-factura">
+        <h3>Enviar factura</h3>
 
-            <p id="enviarFacturaMensaje">
-                Se enviará la factura al correo del cliente.
-            </p>
+        <p id="enviarFacturaMensaje">
+          Se enviará la factura al correo del cliente.
+        </p>
 
-            <div class="correo-destino-box">
-                <span>Correo destino</span>
-                <strong id="correoDestinoFactura">—</strong>
-            </div>
-
-            <div class="modal-actions">
-                <button type="button" class="btn-confirmar-envio-factura" id="btnConfirmarEnvioFactura">
-                    Sí, enviar factura
-                </button>
-
-                <button type="button" class="btn-secondary" id="btnCancelarEnvioFactura">
-                    Cancelar
-                </button>
-            </div>
+        <div class="correo-destino-box">
+          <span>Correo destino</span>
+          <strong id="correoDestinoFactura">—</strong>
         </div>
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="btn-confirmar-envio-factura"
+            id="btnConfirmarEnvioFactura"
+          >
+            Sí, enviar factura
+          </button>
+
+          <button
+            type="button"
+            class="btn-secondary"
+            id="btnCancelarEnvioFactura"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
     </div>
 
     <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
     <script src="../../js/recepcionista/logout.js"></script>
     <script src="../../js/recepcionista/ventas.js"></script>
-</body>
-
+  </body>
 </html>
