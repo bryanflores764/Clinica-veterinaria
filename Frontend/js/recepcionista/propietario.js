@@ -317,17 +317,11 @@ const textoBotonToggle = esMovil
                 </span>
             </td>
             <td>
-                <button type="button" class="btn-ver" data-id="${prop.id}" title="Ver">
-                    <img src="../../assets/icons/eye.svg" alt="Ver">
-                </button>
-
-                <button type="button" class="btn-editar" data-id="${prop.id}" title="Editar">
-                    <img src="../../assets/icons/pencil.svg" alt="Editar">
-                </button>
-
-                <button type="button" class="btn-toggle ${claseToggle}" data-id="${prop.id}"> 
-                    ${textoBotonToggle}
-                </button>
+                <div class="acciones-propietario">
+                    <button type="button" class="btn-ver" data-id="${prop.id}">Ver</button>
+                    <button type="button" class="btn-editar" data-id="${prop.id}">Editar</button>
+                    <button type="button" class="btn-toggle ${claseToggle}" data-id="${prop.id}">${textoBotonToggle}</button>
+                </div>
             </td>
         `;
 
