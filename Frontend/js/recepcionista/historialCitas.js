@@ -109,7 +109,6 @@
 
             return `
                 <tr>
-                    <td data-label="ID">${c.IdCita}</td>
                     <td data-label="Mascota" style="font-weight:600">${c.Mascota ?? "—"}</td>
                     <td data-label="Veterinario">${c.Veterinario ?? "—"}</td>
                     <td data-label="Tipo">${c.Tipo_Consulta ?? "—"}</td>
