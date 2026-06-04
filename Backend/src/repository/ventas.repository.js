@@ -109,9 +109,9 @@ const createFactura = async (data) => {
     rutaComprobante || null, identificadorComprobante || null,
     estadoEnvio, correoDestino || null,
   ]);
-  return { id: result.insertId };
+  
+  return { id: result.insertId, codigoGeneracion };
 };
-
 const updateFacturaEnvio = async (idVenta, estadoEnvio, fechaEnvio, mensajeError) => {
   const [result] = await connection.execute(VentasQueries.UPDATE_FACTURA_ENVIO, [
     estadoEnvio, fechaEnvio, mensajeError || null, idVenta,
@@ -151,10 +151,14 @@ const findPropietarioById = async (id) => {
 };
 
 const getUltimoCodigoFactura = async () => {
+  // Contar cuántas facturas existen en total
   const [rows] = await connection.execute(
-    "SELECT NumeroControl FROM facturaelectronica WHERE NumeroControl LIKE 'VC%' ORDER BY Id DESC LIMIT 1"
+    "SELECT COUNT(*) as total FROM facturaelectronica"
   );
-  return rows[0] || null;
+
+  
+  const numero = rows[0].total + 1;
+  return `VC${numero.toString().padStart(4, '0')}`;
 };
 
 // ── EXPORTAR ──────────────────────────────────────────────────
