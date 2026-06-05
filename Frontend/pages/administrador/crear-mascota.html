@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VetCare - Crear Mascota</title>
+
+    <link rel="icon" type="image/x-icon" href="../assets/icons/Logo-de-clínica-Veterinaria-azul.ico">
+
+    <!-- Fuente VetCare -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../../css/administrador/crear-mascota.css">
+</head>
+
+<body>
+
+    <!-- Botón hamburguesa para móvil -->
+    <button class="menu-toggle" id="menuToggle" type="button">☰</button>
+
+    <!-- Fondo oscuro para móvil -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <main class="layout">
+
+        <aside class="sidebar">
+
+            <a href="interfazAdmin.html" class="logo-container">
+                <img
+                    src="../../assets/img/Logo de clínica Veterinaria azul.png"
+                    alt="Logo de VetCare"
+                    class="logo-img"
+                >
+            </a>
+
+            <nav class="menu-lateral">
+
+                <div class="menu-grupo">
+                    <a href="#" class="item">
+                        <img src="../../assets/icons/icon-user.svg" alt="" class="menu-icon">
+                        <span>Gestión de usuarios</span>
+                    </a>
+
+                    <div class="submenu">
+                        <a href="ver-usuario.html" class="sub-item">Ver usuarios</a>
+                        <a href="crear-usuario.html" class="sub-item">Crear usuario</a>
+                    </div>
+                </div>
+
+                <div class="menu-grupo">
+                    <a href="#" class="item">
+                        <img src="../../assets/icons/icon-user.svg" alt="" class="menu-icon">
+                        <span>Gestión de clientes</span>
+                    </a>
+
+                    <div class="submenu">
+                        <a href="ver-cliente.html" class="sub-item">Ver clientes</a>
+                        <a href="crear-cliente.html" class="sub-item">Crear cliente</a>
+                    </div>
+                </div>
+
+                <div class="menu-grupo open">
+                    <a href="#" class="item active">
+                        <img src="../../assets/icons/icon-pacientes.svg" alt="" class="menu-icon">
+                        <span>Gestión de mascotas</span>
+                    </a>
+
+                    <div class="submenu">
+                        <a href="ver-mascota.html" class="sub-item">Ver mascotas</a>
+                        <a href="crear-mascota.html" class="sub-item active">Crear mascota</a>
+                    </div>
+                </div>
+
+                <div class="menu-grupo">
+                    <a href="historial-acciones.html" class="item">
+                        <img src="../../assets/icons/icon-user.svg" alt="" class="menu-icon">
+                        <span>Historial de acciones</span>
+                    </a>
+                </div>
+
+                <div class="menu-grupo">
+                    <a href="reportes-ventas.html" class="item">
+                        <img src="../../assets/icons/icon-user.svg" alt="" class="menu-icon">
+                        <span>Reportes de ventas</span>
+                    </a>
+                </div>
+
+            </nav>
+
+        </aside>
+
+        <section class="main-container">
+
+            <header class="topbar">
+                <div>
+                    <h1>Crear Mascota</h1>
+                    <p class="descripcion-panel">
+                        Registra nuevas mascotas asociadas a un cliente propietario.
+                    </p>
+                </div>
+
+                <a href="../../index.html" class="btn-cerrar-sesion">
+                    <img src="../../assets/icons/icon-sesion.svg" alt="" class="btn-icon">
+                    <span>Cerrar sesión</span>
+                </a>
+            </header>
+
+            <div class="form-container">
+
+                <form id="formNuevaMascota" class="form-mascota">
+
+                    <div class="form-grid">
+
+                        <!-- Nombre -->
+                        <div class="form-group">
+                            <label for="nombreMascota">Nombre</label>
+                            <input
+                                type="text"
+                                id="nombreMascota"
+                                name="nombreMascota"
+                                placeholder="Ingrese el nombre"
+                                required
+                            >
+                        </div>
+
+                        <!-- Fecha de nacimiento -->
+                        <div class="form-group">
+                            <label for="fechaNacimiento">Fecha de nacimiento</label>
+                            <input
+                                type="date"
+                                id="fechaNacimiento"
+                                name="fechaNacimiento"
+                                required
+                            >
+                        </div>
+
+                        <!-- Peso -->
+                        <div class="form-group">
+                            <label for="pesoMascota">Peso (lbs)</label>
+                            <input
+                                type="number"
+                                id="pesoMascota"
+                                name="pesoMascota"
+                                placeholder="Ej. 12.5"
+                                min="0.1"
+                                step="0.01"
+                                required
+                            >
+                        </div>
+
+                        <!-- Color -->
+                        <div class="form-group">
+                            <label for="colorMascota">Color</label>
+                            <input
+                                type="text"
+                                id="colorMascota"
+                                name="colorMascota"
+                                placeholder="Ej. Café, blanco, negro"
+                                required
+                            >
+                        </div>
+
+                        <!-- Propietario -->
+                        <div class="form-group">
+                            <label for="propietarioMascota">Propietario</label>
+                            <select id="propietarioMascota" name="propietarioMascota" required>
+                                <option value="">Seleccione un propietario</option>
+                            </select>
+                        </div>
+
+                        <!-- Especie -->
+                        <div class="form-group">
+                            <label for="especieMascota">Especie</label>
+
+                            <div class="select-add-group">
+                                <select id="especieMascota" name="especieMascota" required>
+                                    <option value="">Seleccione una especie</option>
+                                </select>
+
+                                <button type="button" id="btnNuevaEspecie" class="btn-secundario">
+                                    + Nueva
+                                </button>
+                            </div>
+
+                            <div id="contenedorNuevaEspecie" class="extra-field hidden">
+                                <input
+                                    type="text"
+                                    id="inputNuevaEspecie"
+                                    placeholder="Escriba la nueva especie"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Raza -->
+                        <div class="form-group">
+                            <label for="razaMascota">Raza</label>
+
+                            <div class="select-add-group">
+                                <select id="razaMascota" name="razaMascota" required>
+                                    <option value="">Seleccione una raza</option>
+                                </select>
+
+                                <button type="button" id="btnNuevaRaza" class="btn-secundario">
+                                    + Nueva
+                                </button>
+                            </div>
+
+                            <div id="contenedorNuevaRaza" class="extra-field hidden">
+                                <input
+                                    type="text"
+                                    id="inputNuevaRaza"
+                                    placeholder="Escriba la nueva raza"
+                                >
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-crear">Crear Mascota</button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="../../js/administrador/interfazAdmin.js"></script>
+    <script src="../../js/administrador/crear-mascota.js"></script>
+</body>
+
+</html>

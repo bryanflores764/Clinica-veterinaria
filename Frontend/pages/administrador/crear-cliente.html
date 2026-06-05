@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VetCare - Ver Usuarios</title>
+    <title>VetCare - Crear Cliente</title>
 
     <link rel="icon" type="image/x-icon" href="../assets/icons/Logo-de-clínica-Veterinaria-azul.ico">
 
@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="../../css/administrador/ver-usuario.css">
+    <link rel="stylesheet" href="../../css/administrador/crear-cliente.css">
 </head>
 
 <body>
@@ -29,9 +29,9 @@
         <aside class="sidebar">
 
             <a href="interfazAdmin.html" class="logo-container">
-                <img 
+                <img
                     src="../../assets/img/Logo de clínica Veterinaria azul.png"
-                    alt="Logo de VetCare" 
+                    alt="Logo de VetCare"
                     class="logo-img"
                 >
             </a>
@@ -50,15 +50,15 @@
                     </div>
                 </div>
 
-                <div class="menu-grupo">
-                    <a href="#" class="item">
+                <div class="menu-grupo open">
+                    <a href="#" class="item active">
                         <img src="../../assets/icons/icon-user.svg" alt="" class="menu-icon">
                         <span>Gestión de clientes</span>
                     </a>
 
                     <div class="submenu">
                         <a href="ver-cliente.html" class="sub-item">Ver clientes</a>
-                        <a href="crear-cliente.html" class="sub-item">Crear cliente</a>
+                        <a href="crear-cliente.html" class="sub-item active">Crear cliente</a>
                     </div>
                 </div>
 
@@ -96,9 +96,9 @@
 
             <header class="topbar">
                 <div>
-                    <h1>Ver Usuarios</h1>
+                    <h1>Crear Cliente</h1>
                     <p class="descripcion-panel">
-                        Consulta, busca y administra los usuarios registrados en VetCare.
+                        Registra nuevos clientes propietarios de mascotas en VetCare.
                     </p>
                 </div>
 
@@ -108,33 +108,37 @@
                 </a>
             </header>
 
-            <div class="table-container">
+            <div class="form-container">
 
-                <div class="table-header">
-                    <h2 class="table-title">Usuarios registrados</h2>
-                    <input id="search" class="search" type="text" placeholder="Buscar por usuario, correo o rol...">
-                </div>
+                <form id="crearClienteForm">
 
-                <div class="table-wrapper">
-                    <table class="users-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Usuario</th>
-                                <th>Correo</th>
-                                <th>Rol</th>
-                                <th>Estado</th>
-                                <th class="actions-col">Acciones</th>
-                            </tr>
-                        </thead>
+                    <div class="form-group">
 
-                        <tbody id="users-tbody">
-                            <!-- JS inyecta filas -->
-                        </tbody>
-                    </table>
-                </div>
+                        <div class="nombre-componente">
+                            <label for="nombre">Nombre completo:</label>
+                            <input type="text" id="nombre" name="nombre" required>
+                        </div>
 
-                <p id="empty-msg" class="empty-msg" style="display:none;">No hay usuarios para mostrar.</p>
+                        <div class="telefono-componente">
+                            <label for="telefono">Teléfono:</label>
+                            <input type="text" id="telefono" name="telefono" required>
+                        </div>
+
+                        <div class="correo-componente">
+                            <label for="correo">Correo:</label>
+                            <input type="email" id="correo" name="correo" required>
+                        </div>
+
+                        <div class="direccion-componente">
+                            <label for="direccion">Dirección:</label>
+                            <input type="text" id="direccion" name="direccion" required>
+                        </div>
+
+                        <button type="submit" class="btn-crear">Crear Cliente</button>
+
+                    </div>
+
+                </form>
 
             </div>
 
@@ -143,7 +147,7 @@
     </main>
 
     <script src="../../js/administrador/interfazAdmin.js"></script>
-    <script src="../../js/administrador/ver-usuario.js"></script>
+    <script src="../../js/administrador/crear-cliente.js"></script>
 </body>
 
 </html>
