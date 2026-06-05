@@ -1223,9 +1223,13 @@ Confirma la venta y descuenta el stock de cada producto. Valida stock de todos l
 
 ```
 PATCH /api/ventas/:id/confirmar
-```
 
-**Sin body.**
+Body efectivo:
+{ "metodoPago": "efectivo", "montoRecibido": 50.00 }
+
+Body tarjeta / transferencia:
+{ "metodoPago": "tarjeta" }
+```
 
 **Respuesta exitosa `200`:**
 ```json

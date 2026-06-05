@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../../css/recepcionista/interfazRecepcionista.css">
+    <link rel="stylesheet" href="../../css/recepcionista/interfazCitas.css">
+    <link rel="stylesheet" href="../../css/recepcionista/historialCitas.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
+    <title>RECEPCIONISTA — Historial de Citas</title>
+</head>
+<body>
+<div class="sidebar-backdrop"></div>
+    <div class="layout">
+
+        <aside class="sidebar">
+            <div class="logo">
+                <img id="logo" src="../../assets/img/Logo de clínica Veterinaria azul.png" alt="logo">
+            </div>
+            <ul>
+                <li>
+                    <a href="interfazRecepcionista.html">
+                        <img src="../../assets/icons/icon-citas.svg" alt="citas">
+                        Citas
+                    </a>
+                </li>
+                <li>
+                    <a href="recepcionistaMascotas.html">
+                        <img src="../../assets/icons/icon-pacientes.svg" alt="pacientes">
+                        Pacientes
+                    </a>
+                </li>
+                <li>
+                    <a href="propetario.html">
+                        <img src="../../assets/icons/icon-user.svg" alt="Cliente">
+                        Clientes
+                    </a>
+                </li>
+                <li>
+                    <a href="tienda.html">
+                        <img src="../../assets/icons/shop.svg" alt="pagos">
+                        Tienda
+                    </a>
+                </li>
+                <li>
+                    <a href="ventas.html">
+                        <img src="../../assets/icons/ico-sale.svg" alt="ventas">
+                        Ventas
+                    </a>
+                </li>
+                <li>
+                    <a href="historialCitas.html" class="active">
+                        <img src="../../assets/icons/icon-historial.svg" alt="historial">
+                        Historial Citas
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <header class="header">
+            <h1>Historial de Citas</h1>
+            <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">☰</button>
+            <div class="header-actions">
+                <a class="btn-logout" id="cerrar-sesion" href="#">
+                    <img src="../../assets/icons/icon-sesion.svg" alt="cerrar-sesion">
+                    Cerrar Sesión
+                </a>
+            </div>
+        </header>
+
+        <main class="main">
+            <div class="historial-container">
+
+                <div class="historial-header">
+                    <h2>Registro de citas</h2>
+                    <span>Consulta el historial completo de atenciones</span>
+                </div>
+
+                <div class="historial-toolbar">
+                    <div class="search-box">
+                        <img src="../../assets/icons/search.svg" alt="buscar">
+                        <input type="text" id="buscarHistorial" placeholder="Buscar por mascota o veterinario...">
+                    </div>
+
+                    <select id="filtroEstadoHistorial">
+                        <option value="todos">Todos los estados</option>
+                        <option value="completada">Completada</option>
+                        <option value="cancelada">Cancelada</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="curso">En Curso</option>
+                    </select>
+
+                    <div class="fecha-group">
+                        <label for="fechaDesde">Desde</label>
+                        <input type="date" id="fechaDesde">
+                    </div>
+
+                    <div class="fecha-group">
+                        <label for="fechaHasta">Hasta</label>
+                        <input type="date" id="fechaHasta">
+                    </div>
+
+                    <button type="button" id="btnLimpiarFiltros" class="btn-limpiar">Limpiar</button>
+                </div>
+
+                <div class="historial-resumen" id="resumenHistorial">
+                    Cargando...
+                </div>
+
+                <div class="historial-table-wrapper">
+                    <table class="tabla-citas">
+                        <thead>
+                            <tr>
+                                <th>Mascota</th>
+                                <th>Veterinario</th>
+                                <th>Tipo de Consulta</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historialBody"></tbody>
+                    </table>
+                </div>
+
+            </div>
+        </main>
+
+    </div><!-- cierre div.layout -->
+
+    <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
+    <script src="../../js/recepcionista/logout.js"></script>
+    <script src="../../js/recepcionista/historialCitas.js"></script>
+</body>
+</html>

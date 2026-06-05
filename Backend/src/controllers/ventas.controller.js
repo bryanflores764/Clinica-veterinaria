@@ -8,7 +8,6 @@ const ventasService = require('../services/ventas.service');
 // ── CREAR VENTA ──────────────────────────────────────────────
 const createVenta = async (req, res) => {
   try {
-    console.log("📝 [Controller] Creando venta");
     const { idPropietario } = req.body;
     const idUsuario = req.usuario?.id || req.usuario?.Id;
     const ip = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
@@ -20,7 +19,6 @@ const createVenta = async (req, res) => {
       data: venta,
     });
   } catch (err) {
-    console.error("❌ [Controller] Error al crear venta:", err);
     return res.status(err.status || 500).json({ 
       success: false, 
       message: err.message || 'Error interno del servidor' 
@@ -35,8 +33,7 @@ const addDetalle = async (req, res) => {
     const { idProducto, cantidad } = req.body;
     const idUsuario = req.usuario?.id || req.usuario?.Id;
     const ip = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
-    
-    console.log(`📝 [Controller] Agregando detalle a venta ${id}, producto ${idProducto}, cantidad ${cantidad}`);
+
     const detalle = await ventasService.addDetalle(id, idProducto, cantidad, idUsuario, ip);
     return res.status(201).json({
       success: true,
@@ -44,7 +41,6 @@ const addDetalle = async (req, res) => {
       data: detalle,
     });
   } catch (err) {
-    console.error("❌ [Controller] Error al agregar detalle:", err);
     return res.status(err.status || 500).json({ 
       success: false, 
       message: err.message || 'Error interno del servidor' 
@@ -106,24 +102,31 @@ const getVentaById = async (req, res) => {
 };
 
 // ── CONFIRMAR VENTA ──────────────────────────────────────────
+// ── Solo reemplaza confirmarVenta ────────────────────────────
+
 const confirmarVenta = async (req, res) => {
   try {
-    const { id } = req.params;
-    const idUsuario = req.usuario?.id || req.usuario?.Id;
-    const ip = req.ip || req.connection?.remoteAddress;
-    
-    const result = await ventasService.confirmarVenta(id, idUsuario, ip);
-    
+    const { id }       = req.params;
+    const idUsuario    = req.usuario?.id || req.usuario?.Id;
+    const ip           = req.ip || req.connection?.remoteAddress;
+
+    // Nuevos campos del body
+    const { metodoPago, montoRecibido } = req.body;
+
+    const result = await ventasService.confirmarVenta(id, idUsuario, ip, {
+      metodoPago,
+      montoRecibido,
+    });
+
     return res.status(200).json({
       success: true,
       message: result.mensaje,
-      data: result,
+      data:    result,
     });
   } catch (err) {
-    console.error("❌ [Controller] Error al confirmar venta:", err);
-    return res.status(err.status || 500).json({ 
-      success: false, 
-      message: err.message || 'Error interno del servidor' 
+    return res.status(err.status || 500).json({
+      success: false,
+      message: err.message || 'Error interno del servidor',
     });
   }
 };
@@ -158,7 +161,7 @@ const anularVenta = async (req, res) => {
 const generarFactura = async (req, res) => {
   try {
     const { id } = req.params;
-    const { correoEnvio, requiereFactura } = req.body; // ✅ Quitamos idPropietario
+    const { correoEnvio, requiereFactura } = req.body;
     const idUsuario = req.usuario?.id || req.usuario?.Id;
     const ip = req.ip || req.connection?.remoteAddress;
 
@@ -170,14 +173,19 @@ const generarFactura = async (req, res) => {
     }
 
     const result = await ventasService.generarFactura(id, {
-      correoEnvio,      // ✅ opcional, si quieren enviar a otro correo
+      correoEnvio,
       requiereFactura
     }, idUsuario, ip);
 
+    // ✅ Devolver también los datos de pago
     res.status(201).json({
       success: true,
       message: 'Factura generada exitosamente',
-      data: result
+      data: {
+        numeroControl: result.numeroControl,
+        codigoGeneracion: result.codigoGeneracion,
+        datosPago: result.datosPago
+      }
     });
 
   } catch (error) {

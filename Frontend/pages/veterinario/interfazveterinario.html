@@ -1,74 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veterinario - Citas</title>
+
     <link rel="shortcut icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico" type="image/x-icon">
     <link rel="stylesheet" href="../../css/veterinario/interfazveterinario.css">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
-    <title>VETERINARIO</title>
+    <link 
+        href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" 
+        rel="stylesheet"
+    >
 </head>
+
 <body>
     <div class="layout">
 
         <aside class="sidebar">
             <div class="logo">
-                <img id="logo" src="../../assets/img/Logo de clínica Veterinaria azul.png" alt="logo">
+                <img 
+                    id="logo" 
+                    src="../../assets/img/Logo de clínica Veterinaria azul.png" 
+                    alt="Logo clínica veterinaria"
+                >
             </div>
+
             <ul>
                 <li>
-                    <a href="#">
+                    <a href="interfazVeterinario.html">
                         <img src="../../assets/icons/icon-citas.svg" alt="citas">
                         Citas
                     </a>
                 </li>
+
                 <li>
                     <a href="interfazPacientes.html">
                         <img src="../../assets/icons/icon-pacientes.svg" alt="pacientes">
                         Pacientes
                     </a>
                 </li>
-                <li>
-                    <a href="#">
-                        <img src="../../assets/icons/icon-historial.svg" alt="historial">
-                        Historial Citas
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <img src="../../assets/icons/icon-medicina.svg" alt="tratamiento">
-                        Tratamientos
-                    </a>
-                </li>
-                
             </ul>
         </aside>
 
-        <header class="header"> <!--Solo Cuadrante-->
-            <h1>Bienvenido, Veterinari@</h1>
-            <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">
+        <header class="header">
+            <h1 id="titulo-bienvenida">Bienvenido Veterinari@</h1>
+
+            <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false">
                 ☰
             </button>
+
             <div class="header-actions">
-                <a href="" class="btn-logout" id="cerrar-sesion">
-                    <img src="../../assets/icons/icon-sesion.svg" alt="CerrarSession">
-                    Cerrar Sesion
+                <a href="../../index.html" class="btn-logout" id="cerrar-sesion">
+                    <img src="../../assets/icons/icon-sesion.svg" alt="Cerrar sesión">
+                    Cerrar Sesión
                 </a>
             </div>
         </header>
 
         <main class="main">
-            <header class="header-main">
-                <h1></h1>
-                <span></span>
-            </header>
-            
+            <section class="main-container">
+
+                <section class="citas-card">
+                    <div class="citas-header">
+                        <div>
+                            <h2>Citas Programadas</h2>
+                            <p>Veterinario | Control de citas registradas</p>
+                        </div>
+                    </div>
+
+                    <div class="filtros-citas">
+                        <label for="filtroEstado">Filtrar por estado:</label>
+
+                        <select id="filtroEstado">
+                            <option value="todos">Todos</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En Curso">En Curso</option>
+                            <option value="Cancelada">Cancelada</option>
+                            <option value="Completada">Completada</option>
+                        </select>
+                    </div>
+
+                    <div class="table-wrapper" id="contenedorTabla">
+                        <table class="tabla-citas">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Mascota</th>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tablaCitas">
+                                <!-- Las citas se cargan desde interfazCitas.js -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p id="mensajeSinCitas" class="mensaje-sin-citas" style="display: none;">
+                        No hay citas para mostrar.
+                    </p>
+                </section>
+
+            </section>
         </main>
 
     </div>
-    <script src="../../js/veterinario/logout.js"></script> <!--Ruta Hacias JS-->
-    <script src="../../js/veterinario/interfazveterinario.js"></script><!--Ruta Hacias JS-->
+
+    <script src="../../js/veterinario/interfazCitas.js"></script>
 </body>
+
 </html>

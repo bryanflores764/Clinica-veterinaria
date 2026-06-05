@@ -1,34 +1,40 @@
 // ============================================================
-//  Archivo: js/administrador/crear-usuario.js
+// Archivo: js/administrador/crear-cliente.js
 // ============================================================
 
 const API_URL = "http://localhost:3000";
 
-const form               = document.getElementById("crearUsuarioForm");
-const nombreUsuarioInput = document.getElementById("nombreUsuario");
-const contraseniaInput   = document.getElementById("contrasenia");
-const rolInput           = document.getElementById("rol");
-const correoInput        = document.getElementById("correo");
-const btnCrear           = document.querySelector(".btn-crear");
+const form = document.getElementById("crearClienteForm");
+
+const nombreInput = document.getElementById("nombre");
+const telefonoInput = document.getElementById("telefono");
+const correoInput = document.getElementById("correo");
+const direccionInput = document.getElementById("direccion");
+
+const btnCrear = document.querySelector(".btn-crear");
 
 function getAuthHeaders(extra = {}) {
     const token = localStorage.getItem("token");
-    return { ...extra, Authorization: `Bearer ${token}` };
+
+    return {
+        ...extra,
+        Authorization: `Bearer ${token}`
+    };
 }
 
 function limpiarFormulario() {
     form.reset();
-    rolInput.value = "";
-    nombreUsuarioInput.focus();
+    nombreInput.focus();
 }
 
 // ── Toast ────────────────────────────────────────────────────
+
 function mostrarToast(mensaje, tipo = "error") {
     document.querySelector(".vc-toast")?.remove();
 
     const config = {
         success: { color: "#2e7d6b", border: "#22c55e", icon: "✔" },
-        error:   { color: "#c0392b", border: "#ef4444", icon: "✖" },
+        error: { color: "#c0392b", border: "#ef4444", icon: "✖" },
         warning: { color: "#b45309", border: "#f59e0b", icon: "⚠" },
     };
 
@@ -56,12 +62,14 @@ function mostrarToast(mensaje, tipo = "error") {
                 font-family: 'Baloo Da 2', sans-serif;
                 animation: vcSlideIn .3s ease;
             }
+
             .vc-toast-icon {
                 font-size: 20px;
                 font-weight: 700;
                 flex-shrink: 0;
                 margin-top: 1px;
             }
+
             .vc-toast-body p {
                 margin: 0;
                 font-size: 14px;
@@ -69,16 +77,19 @@ function mostrarToast(mensaje, tipo = "error") {
                 color: #1e293b;
                 line-height: 1.5;
             }
+
             .vc-toast.saliendo {
                 animation: vcSlideOut .3s ease forwards;
             }
+
             @keyframes vcSlideIn {
                 from { opacity: 0; transform: translateX(60px); }
-                to   { opacity: 1; transform: translateX(0); }
+                to { opacity: 1; transform: translateX(0); }
             }
+
             @keyframes vcSlideOut {
                 from { opacity: 1; transform: translateX(0); }
-                to   { opacity: 0; transform: translateX(60px); }
+                to { opacity: 0; transform: translateX(60px); }
             }
         `;
         document.head.appendChild(style);
@@ -98,31 +109,38 @@ function mostrarToast(mensaje, tipo = "error") {
 
     setTimeout(() => {
         toast.classList.add("saliendo");
+
         setTimeout(() => toast.remove(), 300);
     }, 3500);
 }
 
 // ── Submit ───────────────────────────────────────────────────
+
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const nombreUsuario = nombreUsuarioInput.value.trim();
-    const contrasena    = contraseniaInput.value.trim();
-    const rolId         = Number(rolInput.value);
-    const correo        = correoInput.value.trim();
+    const nombre = nombreInput.value.trim();
+    const telefono = telefonoInput.value.trim();
+    const correo = correoInput.value.trim();
+    const direccion = direccionInput.value.trim();
 
-    if (!nombreUsuario || !contrasena || !rolId || !correo) {
+    if (!nombre || !telefono || !correo || !direccion) {
         mostrarToast("Por favor completa todos los campos.", "warning");
         return;
     }
 
-    const payload = { nombre_usuario: nombreUsuario, contrasena, rolId, correo };
+    const payload = {
+        nombre,
+        telefono,
+        correo,
+        direccion
+    };
 
-    btnCrear.disabled     = true;
-    btnCrear.textContent  = "Creando...";
+    btnCrear.disabled = true;
+    btnCrear.textContent = "Creando...";
 
     try {
-        const res = await fetch(`${API_URL}/api/usuarios`, {
+        const res = await fetch(`${API_URL}/api/propietarios`, {
             method: "POST",
             headers: getAuthHeaders({ "Content-Type": "application/json" }),
             body: JSON.stringify(payload)
@@ -138,17 +156,17 @@ form.addEventListener("submit", async (e) => {
         const json = await res.json().catch(() => ({}));
 
         if (!res.ok || json.success === false) {
-            throw new Error(json.message || "No se pudo crear el usuario");
+            throw new Error(json.message || "No se pudo crear el cliente");
         }
 
-        mostrarToast(json.message || "Usuario creado correctamente", "success");
+        mostrarToast(json.message || "Cliente creado correctamente", "success");
         limpiarFormulario();
 
     } catch (error) {
-        console.error("Error al crear usuario:", error);
-        mostrarToast(error.message || "Ocurrió un error al crear el usuario", "error");
+        console.error("Error al crear cliente:", error);
+        mostrarToast(error.message || "Ocurrió un error al crear el cliente", "error");
     } finally {
-        btnCrear.disabled    = false;
-        btnCrear.textContent = "Crear Usuario";
+        btnCrear.disabled = false;
+        btnCrear.textContent = "Crear Cliente";
     }
 });

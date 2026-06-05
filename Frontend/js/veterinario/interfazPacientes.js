@@ -1631,18 +1631,27 @@ async function guardarVacuna(e) {
     const lote = document.getElementById("vacuna-lote").value.trim();
     const observacionesInput = document.getElementById("vacuna-observaciones").value.trim();
 
+    // Referencias a los campos
     const inputNombreV = document.getElementById("vacuna-nombre");
     const inputFechaV = document.getElementById("vacuna-fecha");
+    const inputPeso = document.getElementById("vacuna-peso");
+    const inputProxima = document.getElementById("vacuna-proxima");
+    const inputLote = document.getElementById("vacuna-lote");
 
-    [inputNombreV, inputFechaV].forEach((inp) => {
+    // Limpiar errores previos
+    [inputNombreV, inputFechaV, inputPeso, inputProxima, inputLote].forEach((inp) => {
+        if (!inp) return;
         const fg = inp.closest(".form-group");
-        fg.classList.remove("error");
-        const em = fg.querySelector(".error-msg");
-        if (em) em.textContent = "";
+        if (fg) {
+            fg.classList.remove("error");
+            const em = fg.querySelector(".error-msg");
+            if (em) em.textContent = "";
+        }
     });
 
     let valido = true;
 
+    // Validar nombre de vacuna (requerido)
     if (!nombreVacuna) {
         const fg = inputNombreV.closest(".form-group");
         fg.classList.add("error");
@@ -1650,10 +1659,35 @@ async function guardarVacuna(e) {
         valido = false;
     }
 
+    // Validar fecha de aplicación (requerido)
     if (!fechaAplicacion) {
         const fg = inputFechaV.closest(".form-group");
         fg.classList.add("error");
         fg.querySelector(".error-msg").textContent = "La fecha de aplicación es obligatoria.";
+        valido = false;
+    }
+
+    // Validar peso del paciente (requerido)
+    if (!pesoInput) {
+        const fg = inputPeso.closest(".form-group");
+        fg.classList.add("error");
+        fg.querySelector(".error-msg").textContent = "El peso del paciente es obligatorio.";
+        valido = false;
+    }
+
+    // Validar lote (requerido)
+    if (!lote) {
+        const fg = inputLote.closest(".form-group");
+        fg.classList.add("error");
+        fg.querySelector(".error-msg").textContent = "El número de lote es obligatorio.";
+        valido = false;
+    }
+
+    // Validar próxima dosis (requerido)
+    if (!proximaDosis) {
+        const fg = inputProxima.closest(".form-group");
+        fg.classList.add("error");
+        fg.querySelector(".error-msg").textContent = "La fecha de próxima dosis es obligatoria.";
         valido = false;
     }
 
@@ -1665,21 +1699,25 @@ async function guardarVacuna(e) {
         return;
     }
 
-    let observacionesFinal = observacionesInput;
-    if (pesoInput) {
-        observacionesFinal = observacionesInput
+    // Observaciones es opcional, se incluye solo si tiene valor
+    let observacionesFinal = null;
+    if (observacionesInput) {
+        observacionesFinal = pesoInput
             ? `Peso: ${pesoInput} lbs. ${observacionesInput}`
-            : `Peso: ${pesoInput} lbs.`;
+            : observacionesInput;
+    } else if (pesoInput) {
+        observacionesFinal = `Peso: ${pesoInput} lbs.`;
     }
 
     const datosVacuna = {
         mascota_id: Number(mascotaId),
         nombre_vacuna: nombreVacuna,
         fecha_aplicacion: fechaAplicacion,
-        proxima_dosis: proximaDosis || null,
-        lote: lote || null,
-        observaciones: observacionesFinal || null,
-        veterinario_id: Number(veterinarioId)
+        proxima_dosis: proximaDosis,
+        lote: lote,
+        observaciones: observacionesFinal,
+        veterinario_id: Number(veterinarioId),
+        peso_lbs: parseFloat(pesoInput)
     };
 
     try {

@@ -3,226 +3,165 @@
 //  Archivo: ventas.repository.js
 // ============================================================
 
-const connection = require('../database/connection');
+const connection   = require('../database/connection');
+const VentasQueries = require('../models/ventas.models');
 
-// ── VENTAS ───────────────────────────────────────────────────
+// ── VENTAS ────────────────────────────────────────────────────
 
 const createVenta = async (idPropietario) => {
-  const [result] = await connection.execute(
-    "INSERT INTO ventas (Id_Propietario, Fecha_Venta, Estado, Total) VALUES (?, NOW(), 'activa', 0.00)",
-    [idPropietario]
-  );
+  const [result] = await connection.execute(VentasQueries.CREATE_VENTA, [idPropietario]);
   return { id: result.insertId, Id_Propietario: idPropietario };
 };
 
 const findAllVentas = async () => {
-  const [rows] = await connection.execute(`
-    SELECT v.*, p.Nombre as Nombre_Propietario 
-    FROM ventas v
-    LEFT JOIN propietarios p ON v.Id_Propietario = p.Id
-    ORDER BY v.Fecha_Venta DESC
-  `);
+  const [rows] = await connection.execute(VentasQueries.FIND_ALL_VENTAS);
   return rows;
 };
 
 const findVentaById = async (id) => {
-  const [rows] = await connection.execute(`
-    SELECT v.*, p.Nombre as Nombre_Propietario 
-    FROM ventas v
-    LEFT JOIN propietarios p ON v.Id_Propietario = p.Id
-    WHERE v.Id = ?
-  `, [id]);
+  const [rows] = await connection.execute(VentasQueries.FIND_VENTA_BY_ID, [id]);
   return rows[0] || null;
 };
 
 const findDetalleByVenta = async (idVenta) => {
-  const [rows] = await connection.execute(`
-    SELECT d.*, p.Nombre_Producto, p.Precio 
-    FROM detalleventa d
-    INNER JOIN productos p ON d.Id_Producto = p.Id
-    WHERE d.Id_Venta = ?
-  `, [idVenta]);
+  const [rows] = await connection.execute(VentasQueries.FIND_DETALLE_BY_VENTA, [idVenta]);
   return rows;
 };
 
 // ── DETALLE ───────────────────────────────────────────────────
 
 const createDetalle = async (idVenta, idProducto, cantidad, precioUnitario) => {
-  const [result] = await connection.execute(
-    "INSERT INTO detalleventa (Id_Venta, Id_Producto, Cantidad, Precio_Unitario) VALUES (?, ?, ?, ?)",
-    [idVenta, idProducto, cantidad, precioUnitario]
-  );
-  return { 
-    id: result.insertId, 
-    Id_Venta: idVenta, 
-    Id_Producto: idProducto, 
-    Cantidad: cantidad, 
-    Precio_Unitario: precioUnitario 
-  };
+  const [result] = await connection.execute(VentasQueries.CREATE_DETALLE, [
+    idVenta, idProducto, cantidad, precioUnitario,
+  ]);
+  return { id: result.insertId, Id_Venta: idVenta, Id_Producto: idProducto, Cantidad: cantidad, Precio_Unitario: precioUnitario };
 };
 
 // ── STOCK ─────────────────────────────────────────────────────
 
 const getStockProducto = async (idProducto) => {
-  const [rows] = await connection.execute(
-    "SELECT Id, Nombre_Producto, Stock, Precio, Estado FROM productos WHERE Id = ?",
-    [idProducto]
-  );
+  const [rows] = await connection.execute(VentasQueries.GET_STOCK_PRODUCTO, [idProducto]);
   return rows[0] || null;
 };
 
 const descontarStock = async (idProducto, cantidad) => {
-  const [result] = await connection.execute(
-    "UPDATE productos SET Stock = Stock - ? WHERE Id = ? AND Stock >= ?",
-    [cantidad, idProducto, cantidad]
-  );
+  const [result] = await connection.execute(VentasQueries.DESCONTAR_STOCK, [cantidad, idProducto, cantidad]);
   return result.affectedRows;
 };
 
 const actualizarStock = async (idProducto, nuevoStock) => {
-  const [result] = await connection.execute(
-    "UPDATE productos SET Stock = ? WHERE Id = ?",
-    [nuevoStock, idProducto]
-  );
+  const [result] = await connection.execute(VentasQueries.ACTUALIZAR_STOCK, [nuevoStock, idProducto]);
   return result.affectedRows;
 };
 
-// ── MOVIMIENTOS STOCK ─────────────────────────────────────────
+// ── MOVIMIENTOS ───────────────────────────────────────────────
 
 const registrarMovimientoStock = async (idProducto, idVenta, idUsuario, tipo, cantidad, stockAntes, stockDespues) => {
-  const [result] = await connection.execute(
-    `INSERT INTO movimientosstock 
-     (Id_Producto, Id_Venta, Id_Usuario, Tipo, Cantidad, Stock_Antes, Stock_Despues, Fecha) 
-     VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
-    [idProducto, idVenta, idUsuario, tipo, cantidad, stockAntes, stockDespues]
-  );
+  const [result] = await connection.execute(VentasQueries.REGISTRAR_MOVIMIENTO, [
+    idProducto, idVenta, idUsuario, tipo, cantidad, stockAntes, stockDespues,
+  ]);
   return result.insertId;
 };
 
 // ── TOTAL ─────────────────────────────────────────────────────
 
 const calcularTotal = async (idVenta) => {
-  const [rows] = await connection.execute(
-    "SELECT SUM(Cantidad * Precio_Unitario) as Total FROM detalleventa WHERE Id_Venta = ?",
-    [idVenta]
-  );
+  const [rows] = await connection.execute(VentasQueries.CALCULAR_TOTAL, [idVenta]);
   return rows[0]?.Total ?? 0;
 };
 
-// ── ESTADO VENTAS ─────────────────────────────────────────────
+// ── ESTADOS ───────────────────────────────────────────────────
 
-const confirmarVenta = async (idVenta) => {
-  const [result] = await connection.execute(
-    "UPDATE ventas SET Estado = 'confirmada' WHERE Id = ?",
-    [idVenta]
-  );
-  return result.affectedRows;
-};
-
-const confirmarVentaConTotal = async (idVenta, total) => {
-  const [result] = await connection.execute(
-    "UPDATE ventas SET Estado = 'confirmada', Total = ? WHERE Id = ?",
-    [total, idVenta]
-  );
+/**
+ * Confirma la venta y guarda de una sola vez: total, método de pago,
+ * monto recibido y cambio.
+ */
+const confirmarVentaConPago = async (idVenta, total, metodoPago, montoRecibido, cambio) => {
+  const [result] = await connection.execute(VentasQueries.CONFIRMAR_VENTA_CON_PAGO, [
+    total, metodoPago, montoRecibido, cambio, idVenta,
+  ]);
   return result.affectedRows;
 };
 
 const anularVentaConDatos = async (idVenta, idUsuario) => {
-  const [result] = await connection.execute(
-    "UPDATE ventas SET Estado = 'anulada', Anulado_Por = ?, Fecha_Anulacion = NOW() WHERE Id = ?",
-    [idUsuario, idVenta]
-  );
+  const [result] = await connection.execute(VentasQueries.ANULAR_VENTA, [idUsuario, idVenta]);
   return result.affectedRows;
 };
 
-// ============================================================
-//  FACTURACIÓN (SIN DEPENDENCIA DE VentasQueries)
-// ============================================================
+// ── FACTURACIÓN ───────────────────────────────────────────────
 
-// Obtener factura por ID de venta
 const getFacturaByVenta = async (idVenta) => {
-  const [rows] = await connection.execute(`
-    SELECT f.*, 
-           p.Nombre as NombreFiscal,
-           p.Correo,
-           td.Tipo_Documento
-    FROM facturaelectronica f
-    INNER JOIN propietarios p ON p.Id = f.Id_Cliente
-    INNER JOIN tiposdocumento td ON td.Id = f.Id_TipoDocumento
-    WHERE f.Id_Venta = ?
-  `, [idVenta]);
+  const [rows] = await connection.execute(VentasQueries.GET_FACTURA_BY_VENTA, [idVenta]);
   return rows[0] || null;
 };
-// Crear factura
+
 const createFactura = async (data) => {
-  const { 
-    idVenta, idCliente, idTipoDocumento,  // ← quita idEstadoFactura
-    numeroControl, codigoGeneracion, rutaComprobante, 
-    identificadorComprobante, estadoEnvio, correoDestino 
-  } = data;
-  
-  const [result] = await connection.execute(`
-    INSERT INTO facturaelectronica 
-    (Id_Venta, Id_Cliente, Id_TipoDocumento, 
-     NumeroControl, CodigoGeneracion, FechaEmision, 
-     RutaComprobante, IdentificadorComprobante, EstadoEnvio, CorreoDestino)
-    VALUES (?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)
-  `, [
+  const {
     idVenta, idCliente, idTipoDocumento,
-    numeroControl, codigoGeneracion, rutaComprobante || null,
-    identificadorComprobante || null, estadoEnvio, correoDestino || null
+    numeroControl, codigoGeneracion,
+    rutaComprobante, identificadorComprobante,
+    estadoEnvio, correoDestino,
+  } = data;
+
+  const [result] = await connection.execute(VentasQueries.CREATE_FACTURA, [
+    idVenta, idCliente, idTipoDocumento,
+    numeroControl, codigoGeneracion,
+    rutaComprobante || null, identificadorComprobante || null,
+    estadoEnvio, correoDestino || null,
   ]);
   
-  return { id: result.insertId };
+  return { id: result.insertId, codigoGeneracion };
 };
-
-// Actualizar estado de envío de factura
 const updateFacturaEnvio = async (idVenta, estadoEnvio, fechaEnvio, mensajeError) => {
-  const [result] = await connection.execute(`
-    UPDATE facturaelectronica 
-    SET EstadoEnvio = ?, FechaEnvio = ?, MensajeError = ?
-    WHERE Id_Venta = ?
-  `, [estadoEnvio, fechaEnvio, mensajeError || null, idVenta]);
+  const [result] = await connection.execute(VentasQueries.UPDATE_FACTURA_ENVIO, [
+    estadoEnvio, fechaEnvio, mensajeError || null, idVenta,
+  ]);
   return result.affectedRows;
 };
 
-// Actualizar venta con datos de facturación
 const updateVentaFactura = async (idVenta, data) => {
-  const { requiere_factura, correo_factura } = data;
-  const [result] = await connection.execute(
-    "UPDATE ventas SET requiere_factura = ?, correo_factura = ? WHERE Id = ?",
-    [requiere_factura, correo_factura, idVenta]
-  );
+  const [result] = await connection.execute(VentasQueries.UPDATE_VENTA_FACTURA, [
+    data.requiere_factura, data.correo_factura, idVenta,
+  ]);
   return result.affectedRows;
 };
 
-// Buscar cliente de facturación por propietario
 const findClienteFacturacionByPropietario = async (idPropietario) => {
   const [rows] = await connection.execute(
-    "SELECT * FROM clientesfacturacion WHERE Id_Propietario = ? LIMIT 1",
+    'SELECT * FROM clientesfacturacion WHERE Id_Propietario = ? LIMIT 1',
     [idPropietario]
   );
   return rows[0] || null;
 };
 
-// Buscar cliente de facturación por ID
 const findClienteFacturacionById = async (id) => {
   const [rows] = await connection.execute(
-    `SELECT * FROM clientesfacturacion WHERE Id = ?`,
+    'SELECT * FROM clientesfacturacion WHERE Id = ?',
     [id]
   );
   return rows[0] || null;
 };
 
-// Obtener propietario por ID
 const findPropietarioById = async (id) => {
   const [rows] = await connection.execute(
-    "SELECT Id, Nombre, Correo, Telefono FROM propietarios WHERE Id = ?",
+    'SELECT Id, Nombre, Correo, Telefono FROM propietarios WHERE Id = ?',
     [id]
   );
   return rows[0] || null;
 };
-// ── EXPORTAR TODAS LAS FUNCIONES ──────────────────────────────
+
+const getUltimoCodigoFactura = async () => {
+  // Contar cuántas facturas existen en total
+  const [rows] = await connection.execute(
+    "SELECT COUNT(*) as total FROM facturaelectronica"
+  );
+
+  
+  const numero = rows[0].total + 1;
+  return `VC${numero.toString().padStart(4, '0')}`;
+};
+
+// ── EXPORTAR ──────────────────────────────────────────────────
 
 module.exports = {
   createVenta,
@@ -235,15 +174,14 @@ module.exports = {
   actualizarStock,
   registrarMovimientoStock,
   calcularTotal,
-  confirmarVenta,
-  confirmarVentaConTotal,
+  confirmarVentaConPago,
   anularVentaConDatos,
-  // ✅ Facturación
   getFacturaByVenta,
   createFactura,
   updateFacturaEnvio,
   updateVentaFactura,
   findClienteFacturacionByPropietario,
   findClienteFacturacionById,
-  findPropietarioById
+  findPropietarioById,
+  getUltimoCodigoFactura
 };

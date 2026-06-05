@@ -368,3 +368,304 @@
   }
 
 }
+
+
+/* ============================================================
+   Citas veterinario Diseno
+============================================================ */
+
+.main-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.citas-card {
+    width: 100%;
+    background-color: #f4f6f6;
+    border-radius: 12px;
+    padding: 28px 32px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.citas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.citas-header h2 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #111111;
+    margin-bottom: 4px;
+}
+
+.citas-header p {
+    color: #0071bc;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.filtros-citas {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.filtros-citas label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #222222;
+}
+
+.filtros-citas select {
+    height: 40px;
+    min-width: 170px;
+    border: 1px solid #cfcfcf;
+    border-radius: 8px;
+    padding: 0 12px;
+    background-color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    color: #222222;
+    outline: none;
+    cursor: pointer;
+}
+
+.filtros-citas select:focus {
+    border-color: #42ab49;
+    box-shadow: 0 0 0 3px rgba(66, 171, 73, 0.12);
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.tabla-citas {
+    width: 100%;
+    min-width: 1000px;
+    border-collapse: collapse;
+    font-size: 16px;
+    color: #222222;
+}
+
+.tabla-citas thead tr {
+    background-color: #e9eeee;
+}
+
+.tabla-citas th {
+    padding: 16px 14px;
+    font-weight: 800;
+    color: #111111;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.tabla-citas td {
+    padding: 16px 14px;
+    border-bottom: 1px solid #dddddd;
+    vertical-align: middle;
+    color: #2b2b2b;
+    text-align: center;
+}
+
+.tabla-citas tbody tr:hover {
+    background-color: #f8fbf8;
+}
+
+/* ============================================================
+   Botones de cambio de estado
+============================================================ */
+
+.acciones-cita-veterinario {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-estado {
+    border: none;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s ease;
+    color: #ffffff;
+    white-space: nowrap;
+}
+
+.btn-estado:hover {
+    transform: translateY(-1px);
+}
+
+.btn-pendiente {
+    background-color: #0071bc;
+}
+
+.btn-pendiente:hover {
+    background-color: #00568f;
+}
+
+.btn-en-curso {
+    background-color: #f5a623;
+}
+
+.btn-en-curso:hover {
+    background-color: #d98c00;
+}
+
+.btn-completada {
+    background-color: #42ab49;
+}
+
+.btn-completada:hover {
+    background-color: #348c3a;
+}
+
+.btn-cancelada {
+    background-color: #e53935;
+}
+
+.btn-cancelada:hover {
+    background-color: #c62828;
+}
+
+/* ============================================================
+   Badges de estado
+============================================================ */
+
+.estado-pendiente,
+.estado-en-curso,
+.estado-completada,
+.estado-cancelada {
+    display: inline-block;
+    min-width: 105px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.estado-pendiente {
+    background-color: #e8f4fd;
+    color: #0071bc;
+}
+
+.estado-en-curso {
+    background-color: #fff8e1;
+    color: #d46b08;
+}
+
+.estado-completada {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.estado-cancelada {
+    background-color: #fdecea;
+    color: #c0392b;
+}
+
+/* ============================================================
+   Mensaje sin citas
+============================================================ */
+
+.mensaje-sin-citas {
+    margin-top: 18px;
+    text-align: center;
+    color: #777777;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ============================================================
+   Responsive
+============================================================ */
+
+@media (max-width: 900px) {
+    .citas-card {
+        padding: 22px;
+    }
+
+    .citas-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .citas-header h2 {
+        font-size: 28px;
+    }
+
+    .citas-header p {
+        font-size: 16px;
+    }
+
+    .filtros-citas {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .filtros-citas select {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .citas-card {
+        padding: 16px;
+        border-radius: 10px;
+    }
+
+    .citas-header h2 {
+        font-size: 24px;
+    }
+
+    .citas-header p {
+        font-size: 14px;
+    }
+
+    .table-wrapper {
+        padding: 8px;
+    }
+
+    .tabla-citas {
+        min-width: 950px;
+    }
+
+    .tabla-citas th,
+    .tabla-citas td {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .btn-estado {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .estado-pendiente,
+    .estado-en-curso,
+    .estado-completada,
+    .estado-cancelada {
+        min-width: 90px;
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+}

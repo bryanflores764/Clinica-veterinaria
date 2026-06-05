@@ -1,5 +1,5 @@
 // ============================================================
-//  UTILS: Envío de correos reales (RESPONSIVE - Simplificado)
+//  UTILS: Envío de correos reales (Diseño VetCare Profesional)
 //  Archivo: utils/emailSender.js
 // ============================================================
 
@@ -18,241 +18,410 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// ── Enviar factura por correo ─────────────────────────────────
-const enviarFacturaPorCorreo = async (destino, facturaData) => {
-  const {
-    numeroFactura,
-    fechaEmision,
-    total,
-    cliente,
-    productos
-  } = facturaData;
+// ── Enviar factura por correo ─────────────────────────────────────────────────
+const enviarFacturaPorCorreo = async (correoDestino, facturaData) => {
+  try {
+    const fechaEmision = facturaData.fechaEmision
+      ? new Date(facturaData.fechaEmision).toLocaleString('es-ES', {
+          day: 'numeric', month: 'numeric', year: 'numeric',
+          hour: '2-digit', minute: '2-digit', hour12: true
+        })
+      : new Date().toLocaleString('es-ES');
 
-  // Generar filas de productos
-  let productosRowsTabla = '';
-  let productosCards = '';
+    const getMetodoPagoTexto = (metodo) => {
+      const metodos = {
+        'efectivo': 'Efectivo',
+        'tarjeta': 'Tarjeta',
+        'transferencia': 'Transferencia'
+      };
+      return metodos[metodo?.toLowerCase()] || metodo || 'No especificado';
+    };
 
-  if (productos && productos.length > 0) {
-    productosRowsTabla = productos.map(p => `
+    // Tabla de productos usando <table> anidado (compatibilidad email)
+    const filasProductos = facturaData.productos.map(p => `
       <tr>
-        <td style="padding:12px 14px; text-align:left; font-size:13px; color:#334155; border-bottom:1px solid #e2e8f0;">${p.nombre || 'Producto'}</td>
-        <td style="padding:12px 14px; text-align:center; font-size:13px; color:#334155; border-bottom:1px solid #e2e8f0;">${p.cantidad || 0}</td>
-        <td style="padding:12px 14px; text-align:right; font-size:13px; color:#334155; border-bottom:1px solid #e2e8f0;">$${(p.precio_unitario || 0).toFixed(2)}</td>
-        <td style="padding:12px 14px; text-align:right; font-size:13px; color:#334155; border-bottom:1px solid #e2e8f0;">$${(p.subtotal || 0).toFixed(2)}</td>
+        <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#1e293b;font-family:Arial,sans-serif;">${p.nombre}</td>
+        <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#475569;text-align:center;font-family:Arial,sans-serif;">${p.cantidad}</td>
+        <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#475569;text-align:right;font-family:Arial,sans-serif;">$${(p.precio_unitario ?? (p.subtotal / p.cantidad)).toFixed(2)}</td>
+        <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#0071BC;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">$${p.subtotal.toFixed(2)}</td>
       </tr>
     `).join('');
 
-    productosCards = productos.map(p => `
-      <div style="background:#f8fafc; border-radius:10px; padding:12px 14px; margin-bottom:10px; border-left:4px solid #1a5d8f;">
-        <p style="margin:0 0 6px 0; font-size:14px; font-weight:700; color:#1e293b;">${p.nombre || 'Producto'}</p>
-        <table width="100%" cellpadding="0" cellspacing="0" border="0">
-          <tr>
-            <td style="font-size:12px; color:#64748b; padding:2px 0;">Cantidad:</td>
-            <td style="font-size:12px; color:#334155; font-weight:600; text-align:right; padding:2px 0;">${p.cantidad || 0}</td>
-          </tr>
-          <tr>
-            <td style="font-size:12px; color:#64748b; padding:2px 0;">Precio unitario:</td>
-            <td style="font-size:12px; color:#334155; font-weight:600; text-align:right; padding:2px 0;">$${(p.precio_unitario || 0).toFixed(2)}</td>
-          </tr>
-          <tr>
-            <td style="font-size:12px; color:#64748b; padding:2px 0;">Subtotal:</td>
-            <td style="font-size:13px; color:#42AB49; font-weight:800; text-align:right; padding:2px 0;">$${(p.subtotal || 0).toFixed(2)}</td>
-          </tr>
-        <table>
-      </div>
-    `).join('');
-  } else {
-    productosRowsTabla = `
+    const filaPago = facturaData.metodoPago ? `
       <tr>
-        <td colspan="4" style="padding:20px; text-align:center; color:#999; font-size:13px;">No hay productos registrados</td>
+        <td colspan="4" style="padding:0;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0fdf4;border-radius:10px;margin-top:16px;">
+            <tr>
+              <td style="padding:16px 20px;">
+                <p style="margin:0 0 10px 0;font-size:11px;font-weight:bold;color:#166534;text-transform:uppercase;letter-spacing:0.5px;font-family:Arial,sans-serif;">Informacion de pago</p>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="padding:4px 0;font-size:13px;color:#374151;font-family:Arial,sans-serif;">Metodo:</td>
+                    <td style="padding:4px 0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">${getMetodoPagoTexto(facturaData.metodoPago)}</td>
+                  </tr>
+                  ${facturaData.metodoPago === 'efectivo' ? `
+                  <tr>
+                    <td style="padding:4px 0;font-size:13px;color:#374151;font-family:Arial,sans-serif;">Recibido:</td>
+                    <td style="padding:4px 0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">$${facturaData.montoRecibido?.toFixed(2) || '0.00'}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:4px 0;font-size:13px;color:#374151;font-family:Arial,sans-serif;">Cambio:</td>
+                    <td style="padding:4px 0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">$${facturaData.cambio?.toFixed(2) || '0.00'}</td>
+                  </tr>
+                  ` : ''}
+                  <tr>
+                    <td style="padding:4px 0;font-size:13px;color:#374151;font-family:Arial,sans-serif;">Total pagado:</td>
+                    <td style="padding:4px 0;font-size:14px;color:#0071BC;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">$${facturaData.total?.toFixed(2) || '0.00'}</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
       </tr>
-    `;
-    productosCards = `<p style="text-align:center; color:#999; font-size:13px; padding:20px 0;">No hay productos registrados</p>`;
-  }
+    ` : '';
 
-  const htmlContent = `<!DOCTYPE html>
+    const htmlContent = `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Factura VetCare</title>
+  <!--[if mso]>
+  <noscript>
+    <xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
+  </noscript>
+  <![endif]-->
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body, html { margin:0; padding:0; width:100% !important; background-color:#f4f8f7; }
-    .email-wrapper { width:100% !important; }
-    .email-container { width:100% !important; max-width:620px !important; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
-    .desktop-table { display:table !important; }
-    .mobile-cards { display:none !important; }
-    
-    @media screen and (max-width: 600px) {
-      body { padding: 8px !important; }
-      .header-cell { padding: 20px 16px !important; }
-      .header-title { font-size: 20px !important; }
-      .content-cell { padding: 16px !important; }
-      .desktop-table { display: none !important; }
-      .mobile-cards { display: block !important; }
-      .total-amount { font-size: 20px !important; }
+    body, table, td, p, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; outline: none; }
+    body { margin: 0 !important; padding: 0 !important; background-color: #f0f2f5; }
+    @media only screen and (max-width: 600px) {
+      .wrapper { width: 100% !important; padding: 12px !important; }
+      .container { border-radius: 14px !important; }
+      .header-cell { padding: 24px 20px !important; }
+      .header-title { font-size: 24px !important; }
+      .content-cell { padding: 24px 16px !important; }
+      .footer-cell { padding: 16px !important; }
+      .info-table td { font-size: 12px !important; }
+      .total-amount { font-size: 22px !important; }
+      .prod-table th, .prod-table td { padding: 8px 4px !important; font-size: 11px !important; }
+      .carta td { font-size: 13px !important; padding: 16px 14px !important; }
     }
   </style>
 </head>
-<body style="margin:0; padding:20px; font-family:'Segoe UI',Arial,sans-serif; background-color:#f4f8f7;">
-  <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" border="0">
+<body style="margin:0;padding:0;background-color:#f0f2f5;">
+
+  <!-- Wrapper -->
+  <table class="wrapper" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f0f2f5;padding:24px 16px;">
     <tr>
-      <td align="center" style="padding:0;">
-        <table class="email-container" width="620" cellpadding="0" cellspacing="0" border="0">
+      <td align="center">
+
+        <!-- Container (max 560px) -->
+        <table class="container" width="560" cellpadding="0" cellspacing="0" border="0"
+          style="max-width:560px;width:100%;background:#ffffff;border-radius:18px;overflow:hidden;">
+
+          <!-- HEADER -->
           <tr>
-            <td class="header-cell" style="background-color:#1a5d8f; padding:28px 24px; text-align:center;">
-              <p class="header-title" style="color:#ffffff; font-size:26px; font-weight:700; margin:0;">🐾 VetCare</p>
-              <p style="color:rgba(255,255,255,0.82); font-size:14px; margin:6px 0 0;">Clínica Veterinaria</p>
+            <td class="header-cell" align="center" style="background-color:#0071BC;padding:32px 28px;">
+              <p class="header-title" style="margin:0 0 4px 0;font-size:28px;font-weight:bold;color:#ffffff;font-family:Arial,sans-serif;">VetCare</p>
+              <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.85);font-family:Arial,sans-serif;">Comprobante de Venta Electronico</p>
             </td>
           </tr>
+
+          <!-- BODY -->
           <tr>
             <td class="content-cell" style="padding:28px 24px;">
-              <table width="100%" style="margin-bottom:22px;">
+
+              <!-- Carta formal -->
+              <table class="carta" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
                 <tr>
-                  <td style="background-color:#e8f5e9; padding:14px 16px; border-radius:12px; text-align:center;">
-                    <p style="margin:0; color:#2e7d32; font-size:14px; font-weight:600;">🐾 ¡Gracias por confiar en nosotros!</p>
+                  <td style="background:#f8fafc;border-left:4px solid #0071BC;border-radius:0 10px 10px 0;padding:18px 20px;font-size:14px;color:#374151;font-family:Arial,sans-serif;line-height:1.7;">
+                    <p style="margin:0 0 10px 0;">Estimado(a) <strong style="color:#0f172a;">${facturaData.cliente}</strong>:</p>
+                    <p style="margin:0 0 10px 0;">Gracias por confiar en nosotros. Adjuntamos la factura correspondiente a su compra para su referencia y control.</p>
+                    <p style="margin:0 0 10px 0;">En el documento encontrara el detalle completo de los productos o servicios adquiridos, asi como la informacion fiscal correspondiente.</p>
+                    <p style="margin:0 0 10px 0;">Si tiene alguna consulta, estaremos encantados de atenderle.</p>
+                    <p style="margin:0;">Atentamente,<br>
+                      <strong style="color:#0071BC;">VetCare Clinica Veterinaria</strong><br>
+                      <span style="color:#6b7280;font-size:12px;">${EMAIL_USER}</span>
+                    </p>
                   </td>
                 </tr>
               </table>
-              <table width="100%" style="background-color:#f8fafc; border-radius:12px; padding:16px; margin-bottom:24px;">
+
+              <!-- Info de factura -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8fafc;border-radius:12px;margin-bottom:20px;">
                 <tr>
-                  <td style="padding:16px;">
-                    <table width="100%">
+                  <td style="padding:18px 20px;">
+                    <p style="margin:0 0 14px 0;font-size:14px;font-weight:bold;color:#1e293b;border-left:4px solid #0071BC;padding-left:10px;font-family:Arial,sans-serif;">Informacion de la factura</p>
+                    <table class="info-table" width="100%" cellpadding="0" cellspacing="0" border="0">
                       <tr>
-                        <td width="50%" valign="top" style="padding-right:12px;">
-                          <p style="margin:0 0 8px 0;"><span style="font-size:12px; color:#64748b; display:block;">Cliente</span><span style="font-size:14px; font-weight:700; color:#1e293b;">${cliente || 'Cliente'}</span></p>
-                        </td>
-                        <td width="50%" valign="top" style="padding-left:12px;">
-                          <p style="margin:0 0 8px 0;"><span style="font-size:12px; color:#64748b; display:block;">N° Factura</span><span style="font-size:14px; font-weight:700; color:#1a5d8f;">#${numeroFactura}</span></p>
-                          <p style="margin:0;"><span style="font-size:12px; color:#64748b; display:block;">Fecha Emisión</span><span style="font-size:13px; font-weight:600; color:#1e293b;">${new Date(fechaEmision).toLocaleString()}</span></p>
+                        <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#475569;font-family:Arial,sans-serif;">N° de control</td>
+                        <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;text-align:right;font-family:Arial,sans-serif;">#${facturaData.numeroFactura}</td>
+                      </tr>
+                      ${facturaData.codigoGeneracion ? `
+                      <tr>
+                        <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#475569;font-family:Arial,sans-serif;">Codigo generacion</td>
+                        <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;text-align:right;word-break:break-all;font-family:Arial,sans-serif;">${facturaData.codigoGeneracion}</td>
+                      </tr>
+                      ` : ''}
+                      <tr>
+                        <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#475569;font-family:Arial,sans-serif;">Fecha de emision</td>
+                        <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;text-align:right;font-family:Arial,sans-serif;">${fechaEmision}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#475569;font-family:Arial,sans-serif;">Cliente</td>
+                        <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;text-align:right;font-family:Arial,sans-serif;">${facturaData.cliente}</td>
+                      </tr>
+                      ${facturaData.correoCliente || correoDestino ? `
+                      <tr>
+                        <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#475569;font-family:Arial,sans-serif;">Correo</td>
+                        <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;text-align:right;word-break:break-all;font-family:Arial,sans-serif;">${facturaData.correoCliente || correoDestino}</td>
+                      </tr>
+                      ` : ''}
+                      <tr>
+                        <td style="padding:7px 0;font-size:13px;font-weight:bold;color:#475569;font-family:Arial,sans-serif;">Estado</td>
+                        <td style="padding:7px 0;text-align:right;font-family:Arial,sans-serif;">
+                          <span style="display:inline-block;padding:3px 10px;background:#dcfce7;color:#166534;border-radius:20px;font-size:12px;font-weight:bold;font-family:Arial,sans-serif;">Confirmada</span>
                         </td>
                       </tr>
                     </table>
                   </td>
                 </tr>
               </table>
-              <p style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:14px;">🛒 Detalle de compra</p>
-              <div class="desktop-table" style="width:100%; overflow-x:auto; margin-bottom:20px;">
-                <table width="100%" style="border-collapse:collapse; border-radius:12px; overflow:hidden;">
-                  <thead><tr style="background-color:#1a5d8f;"><th style="padding:12px 14px; text-align:left; color:#fff;">Producto</th><th style="padding:12px 14px; text-align:center; color:#fff;">Cant.</th><th style="padding:12px 14px; text-align:right; color:#fff;">Precio Unit.</th><th style="padding:12px 14px; text-align:right; color:#fff;">Subtotal</th></tr></thead>
-                  <tbody>${productosRowsTabla}</tbody>
-                </table>
-              </div>
-              <div class="mobile-cards" style="display:none; margin-bottom:20px;">${productosCards}</div>
-              <table width="100%" style="background:linear-gradient(135deg,#1a5d8f,#1e7abf); border-radius:12px; padding:18px 20px; margin-bottom:22px;">
-                <tr><td style="color:rgba(255,255,255,0.85); font-size:13px; font-weight:600;">TOTAL A PAGAR</td><td class="total-amount" style="color:#ffffff; font-size:24px; font-weight:800; text-align:right;">$${(total || 0).toFixed(2)}</td></tr>
+
+              <!-- Productos -->
+              <p style="margin:0 0 10px 0;font-size:14px;font-weight:bold;color:#1e293b;font-family:Arial,sans-serif;">Detalle de productos</p>
+              <table class="prod-table" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <thead>
+                  <tr style="background:#f8fafc;">
+                    <th style="padding:10px 8px;text-align:left;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">Producto</th>
+                    <th style="padding:10px 8px;text-align:center;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">Cant.</th>
+                    <th style="padding:10px 8px;text-align:right;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">P. Unit.</th>
+                    <th style="padding:10px 8px;text-align:right;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${filasProductos}
+                </tbody>
               </table>
-              <table width="100%"><tr><td style="border-top:1px solid #e2e8f0; padding-top:16px; text-align:center;"><p style="margin:0; color:#64748b; font-size:12px;">✨ Esta factura es un comprobante válido de tu compra. ✨</p></td></tr></table>
+
+              <!-- Total -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8fafc;border-radius:12px;margin:20px 0;">
+                <tr>
+                  <td style="padding:16px 20px;text-align:right;">
+                    <p style="margin:0 0 4px 0;font-size:11px;font-weight:bold;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;font-family:Arial,sans-serif;">Total a pagar</p>
+                    <p class="total-amount" style="margin:0;font-size:26px;font-weight:bold;color:#0071BC;font-family:Arial,sans-serif;">$${facturaData.total?.toFixed(2) || '0.00'}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Pago -->
+              ${facturaData.metodoPago ? `
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>${filaPago}</tr>
+              </table>
+              ` : ''}
+
             </td>
           </tr>
+
+          <!-- FOOTER -->
           <tr>
-            <td style="background-color:#f1f5f9; padding:16px 24px; text-align:center;">
-              <p style="margin:0; color:#94a3b8; font-size:11px;">© 2026 VetCare Clínica Veterinaria. Todos los derechos reservados.</p>
-              <p style="margin:6px 0 0; color:#94a3b8; font-size:11px;">Este es un correo automático, por favor no responder.</p>
+            <td class="footer-cell" align="center" style="background:#f8f9fa;padding:18px 24px;border-top:1px solid #e2e8f0;">
+              <p style="margin:0 0 4px 0;font-size:11px;color:#94a3b8;font-family:Arial,sans-serif;">Este comprobante es de caracter informativo.</p>
+              <p style="margin:0 0 4px 0;font-size:11px;color:#94a3b8;font-family:Arial,sans-serif;">VetCare — Cuidando a quien mas amas</p>
+              <p style="margin:0;font-size:11px;color:#94a3b8;font-family:Arial,sans-serif;">© ${new Date().getFullYear()} Todos los derechos reservados</p>
             </td>
           </tr>
+
         </table>
+        <!-- /Container -->
+
       </td>
     </tr>
   </table>
+  <!-- /Wrapper -->
+
 </body>
 </html>`;
 
-  const mailOptions = {
-    from: `"VetCare" <${EMAIL_USER}>`,
-    to: destino,
-    subject: `🧾 Factura Electrónica #${numeroFactura} - VetCare`,
-    html: htmlContent
-  };
+    const info = await transporter.sendMail({
+      from: `"VetCare" <${EMAIL_USER}>`,
+      to: correoDestino,
+      subject: `Factura VetCare #${facturaData.numeroFactura} — Confirmada`,
+      html: htmlContent
+    });
 
-  try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`✅ Correo enviado a ${destino}`);
-    return { success: true, message: `Factura enviada a ${destino}` };
+    return { success: true, message: `Factura enviada a ${correoDestino}` };
+
   } catch (error) {
-    console.error(`❌ Error:`, error.message);
-    return { success: false, message: `Error: ${error.message}` };
+    return { success: false, message: error.message, error: error.message };
   }
 };
 
-// ── Enviar notificación de vacuna ─────────────────────────────
+// ── Enviar notificación de vacuna ─────────────────────────────────────────────
 const enviarNotificacionVacuna = async (destino, vacunaData) => {
-  const { mascota, vacuna, proximaDosis, diasRestantes } = vacunaData;
-  
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Recordatorio de Vacuna - VetCare</title>
-      <style>
-        body { margin: 0; padding: 20px; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f8f7; }
-        .container { max-width: 500px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .header { background: #0071BC; padding: 20px; text-align: center; }
-        .header h1 { color: white; margin: 0; font-size: 22px; }
-        .content { padding: 24px; }
-        .mensaje { background: #e8f5e9; padding: 16px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
-        .mensaje p { margin: 0; color: #2e7d32; font-size: 14px; font-weight: 600; }
-        .datos { background: #f8fafc; padding: 16px; border-radius: 12px; margin-bottom: 20px; }
-        .datos p { margin: 8px 0; font-size: 14px; }
-        .datos strong { color: #334155; }
-        .alerta { background: #fff3e0; padding: 12px; border-radius: 10px; text-align: center; margin-bottom: 20px; }
-        .alerta p { margin: 0; color: #e65100; font-weight: 600; }
-        .footer { background: #f1f5f9; padding: 16px; text-align: center; font-size: 12px; color: #64748b; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>🐾 VetCare</h1>
-          <p>Clínica Veterinaria</p>
-        </div>
-        <div class="content">
-          <div class="mensaje">
-            <p>🐾 ¡Recordatorio importante para tu mascota! 🐾</p>
-          </div>
-          <div class="alerta">
-            <p>⚠️ La siguiente vacuna está próxima a vencer</p>
-          </div>
-          <div class="datos">
-            <p><strong>🐕 Mascota:</strong> ${mascota}</p>
-            <p><strong>💉 Vacuna:</strong> ${vacuna}</p>
-            <p><strong>📅 Próxima dosis:</strong> ${new Date(proximaDosis).toLocaleDateString()}</p>
-            <p><strong>⏰ Días restantes:</strong> ${diasRestantes} días</p>
-          </div>
-          <p style="text-align: center;">Por favor, agende una cita para aplicar la vacuna a tiempo.</p>
-          <p style="text-align: center;">¡Gracias por cuidar la salud de tu mascota!</p>
-        </div>
-        <div class="footer">
-          <p>© 2026 VetCare Clínica Veterinaria</p>
-          <p>Este es un correo automático, por favor no responder.</p>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
-  
-  const mailOptions = {
-    from: `"VetCare" <${EMAIL_USER}>`,
-    to: destino,
-    subject: `⚠️ Recordatorio: Vacuna próxima para ${mascota}`,
-    html: htmlContent
-  };
-  
+  const mascota       = vacunaData.mascotaNombre   || vacunaData.mascota   || 'la mascota';
+  const vacuna        = vacunaData.vacunaNombre     || vacunaData.vacuna    || 'la vacuna';
+  const proximaDosis  = vacunaData.proximaDosis;
+  const diasRestantes = vacunaData.diasRestantes;
+  const propietario   = vacunaData.propietarioNombre || vacunaData.propietario || null;
+
+  const esUrgente  = diasRestantes <= 7;
+  const esModerado = diasRestantes > 7 && diasRestantes <= 15;
+
+  const alertaBgColor  = esUrgente ? '#fef2f2' : esModerado ? '#fff7ed' : '#fffbeb';
+  const alertaBoColor  = esUrgente ? '#fecaca' : esModerado ? '#fed7aa' : '#fde68a';
+  const alertaTxColor  = esUrgente ? '#991b1b' : esModerado ? '#9a3412' : '#92400e';
+  const alertaMensaje  = esUrgente
+    ? 'Atencion: La vacuna vence en menos de una semana'
+    : esModerado
+    ? 'La vacuna esta proxima a vencer'
+    : 'Recordatorio: Vacuna proxima a su fecha de aplicacion';
+
+  const diasBgColor  = esUrgente ? '#fef2f2' : esModerado ? '#fff7ed' : '#eff6ff';
+  const diasTxColor  = esUrgente ? '#dc2626' : esModerado ? '#ea580c' : '#1d4ed8';
+  const diasBoColor  = esUrgente ? '#fecaca' : esModerado ? '#fed7aa' : '#bfdbfe';
+
+  const fechaDosis = proximaDosis
+    ? new Date(proximaDosis).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+    : 'No especificada';
+
+  const htmlContent = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Recordatorio de Vacuna — VetCare</title>
+  <style>
+    body, table, td, p, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    body { margin: 0 !important; padding: 0 !important; background-color: #f0f2f5; }
+    @media only screen and (max-width: 600px) {
+      .wrapper { padding: 12px !important; }
+      .container { border-radius: 14px !important; }
+      .header-cell { padding: 24px 20px !important; }
+      .header-title { font-size: 24px !important; }
+      .content-cell { padding: 24px 16px !important; }
+      .carta-cell { font-size: 13px !important; padding: 16px 14px !important; }
+      .dato-table td { font-size: 12px !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#f0f2f5;">
+
+  <table class="wrapper" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f0f2f5;padding:24px 16px;">
+    <tr>
+      <td align="center">
+
+        <table class="container" width="520" cellpadding="0" cellspacing="0" border="0"
+          style="max-width:520px;width:100%;background:#ffffff;border-radius:18px;overflow:hidden;">
+
+          <!-- HEADER -->
+          <tr>
+            <td class="header-cell" align="center" style="background-color:#0071BC;padding:32px 28px;">
+              <p class="header-title" style="margin:0 0 4px 0;font-size:28px;font-weight:bold;color:#ffffff;font-family:Arial,sans-serif;">VetCare</p>
+              <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.85);font-family:Arial,sans-serif;">Recordatorio de Vacunacion</p>
+            </td>
+          </tr>
+
+          <!-- BODY -->
+          <tr>
+            <td class="content-cell" style="padding:28px 24px;">
+
+              <!-- Carta formal -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+                <tr>
+                  <td class="carta-cell" style="background:#f8fafc;border-left:4px solid #0071BC;border-radius:0 10px 10px 0;padding:18px 20px;font-size:14px;color:#374151;font-family:Arial,sans-serif;line-height:1.7;">
+                    <p style="margin:0 0 10px 0;">Estimado(a) <strong style="color:#0f172a;">${propietario || 'propietario(a)'}</strong>:</p>
+                    <p style="margin:0 0 10px 0;">Reciba un cordial saludo.</p>
+                    <p style="margin:0 0 10px 0;">Le recordamos que su mascota <strong style="color:#0071BC;">${mascota}</strong> tiene programada o proxima a vencer una vacuna importante para mantener su salud y bienestar.</p>
+                    <p style="margin:0 0 10px 0;">Le recomendamos ponerse en contacto con nosotros para agendar su cita y asegurar que su mascota continue protegida de acuerdo con su calendario de vacunacion.</p>
+                    <p style="margin:0 0 10px 0;">Gracias por confiar en nosotros para el cuidado de su mascota.</p>
+                    <p style="margin:0;">Atentamente,<br>
+                      <strong style="color:#0071BC;">VetCare Clinica Veterinaria</strong><br>
+                      <span style="color:#6b7280;font-size:12px;">${EMAIL_USER}</span>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Alerta dinámica -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+                <tr>
+                  <td align="center" style="background-color:${alertaBgColor};border:1px solid ${alertaBoColor};border-radius:10px;padding:12px 16px;">
+                    <p style="margin:0;font-size:13px;font-weight:bold;color:${alertaTxColor};font-family:Arial,sans-serif;">${alertaMensaje}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Card mascota -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8fafc;border-radius:12px;margin-bottom:20px;">
+                <tr>
+                  <td style="padding:18px 20px;">
+                    <p style="margin:0 0 14px 0;font-size:14px;font-weight:bold;color:#1e293b;border-left:4px solid #0071BC;padding-left:10px;font-family:Arial,sans-serif;">Informacion de la mascota</p>
+                    <table class="dato-table" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#64748b;font-family:Arial,sans-serif;">Mascota</td>
+                        <td style="padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">${mascota}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#64748b;font-family:Arial,sans-serif;">Vacuna pendiente</td>
+                        <td style="padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">${vacuna}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#64748b;font-family:Arial,sans-serif;">Proxima dosis</td>
+                        <td style="padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">${fechaDosis}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:8px 0;font-size:13px;font-weight:bold;color:#64748b;font-family:Arial,sans-serif;">Dias restantes</td>
+                        <td style="padding:8px 0;text-align:right;font-family:Arial,sans-serif;">
+                          <span style="display:inline-block;background:${diasBgColor};color:${diasTxColor};border:1px solid ${diasBoColor};padding:3px 10px;border-radius:20px;font-size:12px;font-weight:bold;font-family:Arial,sans-serif;">${diasRestantes} dia${diasRestantes !== 1 ? 's' : ''}</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td align="center" style="background:#f8f9fa;padding:18px 24px;border-top:1px solid #e2e8f0;">
+              <p style="margin:0 0 4px 0;font-size:11px;color:#94a3b8;font-family:Arial,sans-serif;">Este es un correo automatico, por favor no responder.</p>
+              <p style="margin:0 0 4px 0;font-size:11px;color:#94a3b8;font-family:Arial,sans-serif;">VetCare — Cuidando a quien mas amas</p>
+              <p style="margin:0;font-size:11px;color:#94a3b8;font-family:Arial,sans-serif;">© ${new Date().getFullYear()} Todos los derechos reservados</p>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>`;
+
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`✅ Notificación enviada a ${destino}`);
-    return { success: true, message: `Notificación enviada a ${destino}` };
+    const info = await transporter.sendMail({
+      from: `"VetCare" <${EMAIL_USER}>`,
+      to: destino,
+      subject: `Recordatorio de vacunacion — ${mascota} (${diasRestantes} dias restantes)`,
+      html: htmlContent
+    });
   } catch (error) {
-    console.error(`❌ Error:`, error.message);
     return { success: false, message: `Error: ${error.message}` };
   }
 };
 
-// ── EXPORTAR ─────────────────────────────────────────────────
-module.exports = { 
+module.exports = {
   enviarFacturaPorCorreo,
   enviarNotificacionVacuna
 };

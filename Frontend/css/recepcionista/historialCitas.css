@@ -1,0 +1,178 @@
+/* =======================
+   CONTENEDOR PRINCIPAL
+======================= */
+.historial-container {
+    padding: 25px 30px;
+}
+
+.historial-header {
+    margin-bottom: 20px;
+}
+
+.historial-header h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a202c;
+    margin: 0 0 4px;
+}
+
+.historial-header span {
+    font-size: 14px;
+    color: #718096;
+}
+
+/* =======================
+   TOOLBAR DE FILTROS
+======================= */
+.historial-toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0 12px;
+    flex: 1;
+    min-width: 250px;
+}
+
+.search-box img {
+    width: 18px;
+    height: 18px;
+    opacity: 0.5;
+    flex-shrink: 0;
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    flex: 1;
+    padding: 10px 0;
+    font-size: 15px;
+    font-family: inherit;
+    background: transparent;
+}
+
+.historial-toolbar select,
+.historial-toolbar input[type="date"] {
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    background: white;
+    color: #333;
+    cursor: pointer;
+}
+
+.fecha-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.fecha-group label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.fecha-group input[type="date"] {
+    padding: 8px 12px;
+}
+
+/* Botón limpiar */
+.btn-limpiar {
+    padding: 10px 18px;
+    background: #f0f3f5;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    color: #555;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.btn-limpiar:hover {
+    background: #e2e8f0;
+}
+
+/* =======================
+   RESUMEN
+======================= */
+.historial-resumen {
+    font-size: 13px;
+    color: #718096;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+/* =======================
+   WRAPPER DE LA TABLA
+======================= */
+.historial-table-wrapper {
+    background: white;
+    border-radius: 14px;
+    padding: 8px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
+}
+
+/* Celda vacía */
+.celda-vacia {
+    text-align: center;
+    color: #888;
+    padding: 30px !important;
+    font-size: 14px;
+}
+
+/* =======================
+   RESPONSIVE
+======================= */
+@media (max-width: 900px) {
+    .historial-container {
+        padding: 20px;
+    }
+
+    .historial-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .historial-toolbar select,
+    .historial-toolbar input[type="date"],
+    .btn-limpiar {
+        width: 100%;
+    }
+
+    .fecha-group {
+        width: 100%;
+    }
+
+    .fecha-group input[type="date"] {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .historial-container {
+        padding: 15px 12px;
+    }
+
+    .historial-header h2 {
+        font-size: 18px;
+    }
+}

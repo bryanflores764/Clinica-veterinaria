@@ -124,16 +124,24 @@
 }
 
 /* BOTONES DE LA TABLA */
+.acciones-propietario {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
 .owners-table button {
-  padding: 6px 10px;
-  margin-right: 6px;
+  padding: 6px 12px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: 0.3s;
+  transition: filter 0.2s;
 }
 
 .owners-table td span.badge {
@@ -151,13 +159,7 @@
 }
 
 .btn-toggle {
-  width: 120px;
-  font-weight: 600;
-  text-align: center;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
+  min-width: 80px;
 }
 
 .btn-activar {
@@ -169,13 +171,7 @@
 }
 
 .owners-table button:hover {
-  filter: brightness(0.9);
-}
-
-.owners-table button img {
-  width: 18px;
-  height: 18px;
-  display: block;
+  filter: brightness(0.88);
 }
 /*ESTILO DEL BUSCADOR*/
 .search-box {
@@ -302,13 +298,8 @@
   }
 
   .btn-toggle {
-    width: 110px;
+    min-width: 90px;
     font-size: 14px;
-  }
-
-  .owners-table button img {
-    width: 16px;
-    height: 16px;
   }
 }
 
@@ -363,20 +354,17 @@
     font-size: 13px;
   }
 
+  .acciones-propietario {
+    gap: 4px;
+  }
+
   .owners-table button {
-    padding: 5px 7px;
-    margin-right: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
   }
 
   .btn-toggle {
-    width: 60px;
-    font-size: 10px;
-    padding: 6px 6px;
-  }
-
-  .owners-table button img {
-    width: 15px;
-    height: 15px;
+    min-width: 55px;
   }
 
   .notificacion {
