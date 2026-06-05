@@ -2001,6 +2001,389 @@ function escapeHtml(valor) {
         .replace(/'/g, "&#039;");
 }
 
+
+// ============================================================
+// ICC (Índice de Condición Corporal)
+// ============================================================
+// ============================================================
+// ICC (Índice de Condición Corporal) - VERSIÓN CORREGIDA
+// ============================================================
+
+// ============================================================
+// ICC (Índice de Condición Corporal) - CON INFORMACIÓN DE MASCOTA
+// ============================================================
+
+// Elementos del DOM
+const modalICC = document.getElementById("modal-icc");
+const btnCerrarModalICC = document.getElementById("cerrar-modal-icc");
+const btnICCHeader = document.getElementById("btn-icc-header");
+const iccMascotaSelect = document.getElementById("icc-mascota-select");
+const iccInfoMascota = document.getElementById("icc-info-mascota");
+const iccMascotaNombre = document.getElementById("icc-mascota-nombre");
+const iccMascotaEspecie = document.getElementById("icc-mascota-especie");
+const iccMascotaPropietario = document.getElementById("icc-mascota-propietario");
+const formICC = document.getElementById("form-icc");
+const iccEspecieSelect = document.getElementById("icc-especie");
+const iccTamanioSelect = document.getElementById("icc-tamanio");
+const iccRangoSelect = document.getElementById("icc-rango");
+const grupoTamanio = document.getElementById("grupo-tamanio");
+const grupoRango = document.getElementById("grupo-rango");
+const iccPesoInput = document.getElementById("icc-peso");
+const iccResultadoDiv = document.getElementById("icc-resultado");
+const iccPuntuacionSpan = document.getElementById("icc-puntuacion");
+const iccCategoriaDiv = document.getElementById("icc-categoria");
+const iccDescripcionDiv = document.getElementById("icc-descripcion");
+const iccRecomendacionesDiv = document.getElementById("icc-recomendaciones");
+const iccFechaCalculo = document.getElementById("icc-fecha-calculo");
+
+let mascotaICCActual = null;
+let iccCalculadoActual = null;
+
+// ============================================================
+// PESO IDEAL POR ESPECIE Y TAMAÑO (en kg)
+// ============================================================
+
+const pesosIdeales = {
+    perro: { mini: 2.5, pequeno: 7, mediano: 18, grande: 35, gigante: 55 },
+    gato: { pequeno: 3, mediano: 4.5, grande: 6 },
+    conejo: { pequeno: 1.5, mediano: 2.2, grande: 3 },
+    hamster: { pequeno: 0.05, mediano: 0.1, grande: 0.15 },
+    cobaya: { pequeno: 0.8, mediano: 1.2, grande: 1.6 },
+    rata: { pequeno: 0.3, mediano: 0.5, grande: 0.7 },
+    raton: { pequeno: 0.02, mediano: 0.03, grande: 0.04 },
+    erizo: { pequeno: 0.3, mediano: 0.5, grande: 0.7 },
+    huron: { pequeno: 0.8, mediano: 1.2, grande: 1.8 },
+    cerdo: { pequeno: 30, mediano: 60, grande: 100 },
+    caballo: { pequeno: 200, mediano: 450, grande: 700 },
+    vaca: { pequeno: 300, mediano: 500, grande: 800 },
+    oveja: { pequeno: 40, mediano: 60, grande: 80 },
+    cabra: { pequeno: 35, mediano: 55, grande: 75 },
+    gallina: { pequeno: 1.5, mediano: 2.5, grande: 3.5 },
+    pato: { pequeno: 2, mediano: 3, grande: 4 },
+    loro: { pequeno: 0.3, mediano: 0.5, grande: 1 },
+    tortuga: { pequeno: 1, mediano: 5, grande: 15 },
+    iguana: { pequeno: 1, mediano: 3, grande: 6 },
+    serpiente: { pequeno: 1, mediano: 5, grande: 20 },
+    pez: { pequeno: 0.05, mediano: 0.2, grande: 0.5 },
+    otro: { pequeno: 1, mediano: 5, grande: 10 }
+};
+
+// ============================================================
+// CARGAR MASCOTAS EN EL SELECTOR
+// ============================================================
+
+function cargarMascotasEnSelector() {
+    if (!iccMascotaSelect) return;
+    
+    iccMascotaSelect.innerHTML = '<option value="">-- Seleccione una mascota --</option>';
+    
+    if (mascotas && mascotas.length > 0) {
+        mascotas.forEach((mascota) => {
+            const option = document.createElement("option");
+            option.value = mascota.Id;
+            option.textContent = `${mascota.Nombre} - ${mascota.Propietario} (${mascota.Nombre_Especie || "Especie"})`;
+            iccMascotaSelect.appendChild(option);
+        });
+    }
+}
+
+// ============================================================
+// MOSTRAR INFORMACIÓN DE LA MASCOTA
+// ============================================================
+function configurarSelectorMascotas() {
+    if (!iccMascotaSelect) return;
+    
+    iccMascotaSelect.addEventListener("change", function() {
+        const mascotaId = this.value;
+        
+        if (!mascotaId) {
+            iccInfoMascota.style.display = "none";
+            mascotaICCActual = null;
+            return;
+        }
+        
+        const mascota = mascotas.find((m) => String(m.Id) === String(mascotaId));
+        
+        if (mascota) {
+            mascotaICCActual = mascota;
+            
+            // Limpiar y mostrar información de forma ordenada
+            iccMascotaNombre.textContent = mascota.Nombre || "-";
+            
+            // Especie y raza en una sola línea limpia
+            const especieTexto = mascota.Nombre_Especie || "Especie";
+            const razaTexto = mascota.Nombre_Raza || "Raza no especificada";
+            iccMascotaEspecie.textContent = `${especieTexto} · ${razaTexto}`;
+            
+            // Propietario y peso en líneas separadas y más limpias
+            const propietarioTexto = mascota.Propietario || "No registrado";
+            const pesoTexto = mascota.Peso ? `${mascota.Peso} lbs` : "No registrado";
+            
+            iccMascotaPropietario.innerHTML = `
+                <span>👤 Propietario: ${propietarioTexto}</span><br>
+                <span>⚖️ Peso registrado: ${pesoTexto}</span>
+            `;
+            
+            iccInfoMascota.style.display = "block";
+        }
+    });
+}
+// ============================================================
+// CONFIGURAR CAMPOS POR ESPECIE
+// ============================================================
+
+function configurarCamposPorEspecie() {
+    if (!iccEspecieSelect) return;
+    
+    iccEspecieSelect.addEventListener("change", function() {
+        const especie = this.value;
+        
+        if (grupoTamanio) grupoTamanio.style.display = "none";
+        if (grupoRango) grupoRango.style.display = "none";
+        
+        if (especie === "perro") {
+            if (grupoTamanio) grupoTamanio.style.display = "block";
+            if (iccTamanioSelect) iccTamanioSelect.value = "";
+        } else if (especie !== "") {
+            if (grupoRango) grupoRango.style.display = "block";
+            if (iccRangoSelect) iccRangoSelect.value = "";
+        }
+    });
+}
+
+// ============================================================
+// CALCULAR ICC
+// ============================================================
+
+function calcularICCManual(especie, tamanio, pesoLibras) {
+    const pesoKg = pesoLibras * 0.453592;
+    let pesoIdeal = 5;
+    
+    if (especie === "perro") {
+        const tamaños = {
+            mini: pesosIdeales.perro.mini,
+            pequeno: pesosIdeales.perro.pequeno,
+            mediano: pesosIdeales.perro.mediano,
+            grande: pesosIdeales.perro.grande,
+            gigante: pesosIdeales.perro.gigante
+        };
+        pesoIdeal = tamaños[tamanio] || pesosIdeales.perro.mediano;
+    } else if (pesosIdeales[especie]) {
+        const rangos = {
+            pequeno: pesosIdeales[especie].pequeno,
+            mediano: pesosIdeales[especie].mediano,
+            grande: pesosIdeales[especie].grande
+        };
+        pesoIdeal = rangos[tamanio] || pesosIdeales[especie].mediano;
+    }
+    
+    const porcentaje = pesoKg / pesoIdeal;
+    let puntuacion = 5;
+    
+    if (porcentaje <= 0.5) puntuacion = 1;
+    else if (porcentaje <= 0.6) puntuacion = 2;
+    else if (porcentaje <= 0.7) puntuacion = 3;
+    else if (porcentaje <= 0.85) puntuacion = 4;
+    else if (porcentaje <= 1.15) puntuacion = 5;
+    else if (porcentaje <= 1.3) puntuacion = 6;
+    else if (porcentaje <= 1.5) puntuacion = 7;
+    else if (porcentaje <= 1.8) puntuacion = 8;
+    else puntuacion = 9;
+    
+    let categoria = "";
+    if (puntuacion <= 2) categoria = "🔴 EMACIADO (Desnutrición severa)";
+    else if (puntuacion <= 3) categoria = "🟠 MUY DELGADO";
+    else if (puntuacion === 4) categoria = "🟡 DELGADO";
+    else if (puntuacion === 5) categoria = "🟢 IDEAL - Peso saludable";
+    else if (puntuacion === 6) categoria = "🟡 SOBREPESO LEVE";
+    else if (puntuacion === 7) categoria = "🟠 SOBREPESO";
+    else if (puntuacion === 8) categoria = "🔴 OBESO";
+    else categoria = "⚫ OBESO MÓRBIDO";
+    
+    const estado = puntuacion === 5 ? "PESO IDEAL" :
+                   puntuacion <= 3 ? "BAJO PESO SEVERO" :
+                   puntuacion === 4 ? "LIGERAMENTE BAJO" :
+                   puntuacion <= 6 ? "LIGERO SOBREPESO" :
+                   puntuacion <= 7 ? "SOBREPESO" : "OBESIDAD";
+    
+    let descripcion = `🐾 Peso actual: ${pesoKg.toFixed(1)} kg | Peso ideal: ${pesoIdeal.toFixed(1)} kg\n`;
+    descripcion += `📊 Estado: ${estado}\n`;
+    descripcion += `📈 Porcentaje: ${((pesoKg / pesoIdeal) * 100).toFixed(0)}%\n\n`;
+    
+    if (puntuacion === 5) descripcion += "✅ El paciente se encuentra en su peso ideal.";
+    else if (puntuacion <= 3) descripcion += "⚠️ Bajo peso severo. Requiere intervención urgente.";
+    else if (puntuacion === 4) descripcion += "📈 Ligeramente bajo de peso. Aumentar alimentación.";
+    else if (puntuacion <= 6) descripcion += "⚠️ Ligero sobrepeso. Monitorear alimentación.";
+    else if (puntuacion <= 7) descripcion += "⚠️ Sobrepeso. Requiere control de porciones.";
+    else descripcion += "🚨 Obesidad. Requiere intervención veterinaria urgente.";
+    
+    let recomendaciones = "";
+    if (puntuacion <= 3) {
+        recomendaciones = "🔴 RECOMENDACIONES URGENTES:\n✓ Consultar al veterinario INMEDIATAMENTE\n✓ Aumentar ración en 30-40%\n✓ Alimento de alta calidad\n✓ Desparasitar\n✓ Control de peso 2 veces por semana";
+    } else if (puntuacion === 4) {
+        recomendaciones = "🟡 RECOMENDACIONES:\n✓ Aumentar ración en 10-15%\n✓ Agregar snacks saludables\n✓ Control de peso quincenal";
+    } else if (puntuacion === 5) {
+        recomendaciones = "🟢 RECOMENDACIONES - MANTENER:\n✓ Dieta balanceada actual\n✓ Ejercicio regular diario\n✓ Control de peso mensual\n✓ Agua fresca siempre disponible";
+    } else if (puntuacion === 6) {
+        recomendaciones = "🟡 RECOMENDACIONES:\n✓ Reducir ración en 5-10%\n✓ Aumentar ejercicio diario\n✓ Reducir premios y golosinas";
+    } else if (puntuacion === 7) {
+        recomendaciones = "🟠 RECOMENDACIONES:\n✓ Reducir ración en 15-20%\n✓ Ejercicio intensivo diario\n✓ Eliminar premios calóricos\n✓ Dieta baja en grasas";
+    } else {
+        recomendaciones = "🔴 RECOMENDACIONES URGENTES:\n✓ Dieta estricta supervisada por veterinario\n✓ Programa de ejercicio diario\n✓ Evaluación metabólica completa\n✓ Prohibido dar premios\n✓ Control de peso semanal";
+    }
+    
+    return { puntuacion, categoria, descripcion, recomendaciones, pesoKg, pesoLibras, pesoIdeal };
+}
+
+// ============================================================
+// CALCULAR Y MOSTRAR
+// ============================================================
+
+function calcularYMostrarICC(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const especie = iccEspecieSelect ? iccEspecieSelect.value : "";
+    if (!especie) {
+        mostrarErrorCampoICC(iccEspecieSelect, "Seleccione una especie");
+        return;
+    }
+    
+    let tamanio = "";
+    if (especie === "perro") {
+        tamanio = iccTamanioSelect ? iccTamanioSelect.value : "";
+        if (!tamanio) {
+            mostrarErrorCampoICC(iccTamanioSelect, "Seleccione el tamaño del perro");
+            return;
+        }
+    } else {
+        tamanio = iccRangoSelect ? iccRangoSelect.value : "";
+        if (!tamanio) {
+            mostrarErrorCampoICC(iccRangoSelect, "Seleccione el rango de tamaño");
+            return;
+        }
+    }
+    
+    if (!iccPesoInput || !iccPesoInput.value) {
+        mostrarErrorCampoICC(iccPesoInput, "Ingrese el peso actual");
+        return;
+    }
+    
+    const peso = parseFloat(iccPesoInput.value);
+    if (isNaN(peso) || peso <= 0) {
+        mostrarErrorCampoICC(iccPesoInput, "Ingrese un peso válido");
+        return;
+    }
+    
+    const resultado = calcularICCManual(especie, tamanio, peso);
+    iccCalculadoActual = resultado;
+    
+    if (iccPuntuacionSpan) iccPuntuacionSpan.textContent = resultado.puntuacion;
+    
+    if (iccCategoriaDiv) {
+        iccCategoriaDiv.textContent = resultado.categoria;
+        if (resultado.categoria.includes("IDEAL")) {
+            iccCategoriaDiv.style.background = "#d4edda";
+            iccCategoriaDiv.style.color = "#155724";
+        } else if (resultado.categoria.includes("SOBREPESO") || resultado.categoria.includes("OBESO")) {
+            iccCategoriaDiv.style.background = "#f8d7da";
+            iccCategoriaDiv.style.color = "#721c24";
+        } else {
+            iccCategoriaDiv.style.background = "#fff3cd";
+            iccCategoriaDiv.style.color = "#856404";
+        }
+    }
+    
+    if (iccDescripcionDiv) iccDescripcionDiv.innerHTML = resultado.descripcion.replace(/\n/g, '<br>');
+    if (iccRecomendacionesDiv) iccRecomendacionesDiv.innerHTML = resultado.recomendaciones.replace(/\n/g, '<br>');
+    
+    if (iccFechaCalculo) {
+        const ahora = new Date();
+        iccFechaCalculo.textContent = `📅 ${ahora.toLocaleDateString()} ${ahora.toLocaleTimeString()}`;
+    }
+    
+    if (iccResultadoDiv) {
+        iccResultadoDiv.style.display = "block";
+        iccResultadoDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    mostrarNotificacion("✅ ICC calculado correctamente");
+}
+
+function mostrarErrorCampoICC(input, mensaje) {
+    if (!input) return;
+    const formGroup = input.closest(".form-group");
+    if (!formGroup) return;
+    formGroup.classList.add("error");
+    let errorMsg = formGroup.querySelector(".error-msg");
+    if (!errorMsg) {
+        errorMsg = document.createElement("small");
+        errorMsg.className = "error-msg";
+        formGroup.appendChild(errorMsg);
+    }
+    errorMsg.textContent = mensaje;
+    setTimeout(() => {
+        formGroup.classList.remove("error");
+        if (errorMsg) errorMsg.textContent = "";
+    }, 3000);
+}
+
+// ============================================================
+// ABRIR Y CERRAR MODAL
+// ============================================================
+
+function abrirModalICC() {
+    if (!mascotas || mascotas.length === 0) {
+        mostrarNotificacion("❌ No hay mascotas registradas.");
+        return;
+    }
+    
+    cargarMascotasEnSelector();
+    
+    if (iccMascotaSelect) iccMascotaSelect.value = "";
+    if (iccInfoMascota) iccInfoMascota.style.display = "none";
+    if (iccResultadoDiv) iccResultadoDiv.style.display = "none";
+    if (formICC) formICC.reset();
+    if (grupoTamanio) grupoTamanio.style.display = "none";
+    if (grupoRango) grupoRango.style.display = "none";
+    
+    mascotaICCActual = null;
+    iccCalculadoActual = null;
+    
+    if (modalICC) modalICC.classList.add("show");
+}
+
+function cerrarModalICC() {
+    if (modalICC) modalICC.classList.remove("show");
+}
+
+// ============================================================
+// CONFIGURACIÓN PRINCIPAL
+// ============================================================
+
+function configurarModalICC() {
+    if (!btnICCHeader) return;
+    
+    btnICCHeader.addEventListener("click", abrirModalICC);
+    if (btnCerrarModalICC) btnCerrarModalICC.addEventListener("click", cerrarModalICC);
+    
+    if (modalICC) {
+        modalICC.addEventListener("click", (e) => {
+            if (e.target === modalICC) cerrarModalICC();
+        });
+    }
+    
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modalICC && modalICC.classList.contains("show")) {
+            cerrarModalICC();
+        }
+    });
+    
+    configurarSelectorMascotas();
+    configurarCamposPorEspecie();
+    
+    if (formICC) formICC.addEventListener("submit", calcularYMostrarICC);
+}
 // ============================================================
 // Inicio
 // ============================================================
@@ -2018,4 +2401,5 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarBotonVacunacion();
     configurarModalCartilla();
     cargarMascotas();
+    configurarModalICC();
 });
