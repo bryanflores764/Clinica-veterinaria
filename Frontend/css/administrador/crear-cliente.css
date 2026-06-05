@@ -1,0 +1,588 @@
+/* =========================
+RESET GENERAL
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Baloo Da 2', sans-serif;
+    overflow-x: hidden;
+    background-color: #f4f8f7;
+    color: #111;
+}
+
+/* =========================
+LAYOUT PRINCIPAL
+========================= */
+
+.layout {
+    display: grid;
+    grid-template-columns: 330px 1fr;
+    min-height: 100vh;
+}
+
+/* =========================
+SIDEBAR
+========================= */
+
+.sidebar {
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 10px 25px;
+    overflow-y: auto;
+    border-right: 1px solid #e4e4e4;
+    position: sticky;
+    top: 0;
+    z-index: 1001;
+}
+
+/* =========================
+LOGO
+========================= */
+
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    margin-bottom: 50px;
+    text-decoration: none;
+}
+
+.logo-img {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    display: block;
+}
+
+/* =========================
+MENÚ LATERAL
+========================= */
+
+.menu-lateral {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.menu-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.item {
+    width: 100%;
+    min-height: 58px;
+    padding: 8px;
+    border: 1px solid rgb(165, 165, 165);
+    border-radius: 8px;
+    background-color: #ffffff;
+
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    align-items: center;
+    column-gap: 18px;
+
+    color: #000000;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.15;
+
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+.item:hover {
+    background-color: #42AB49;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.item.active {
+    background-color: #42AB49;
+    border-color: #42AB49;
+    color: #ffffff;
+}
+
+.menu-icon {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    justify-self: center;
+    flex-shrink: 0;
+}
+
+/* =========================
+SUBMENÚ
+========================= */
+
+.submenu {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 58px;
+}
+
+.submenu .sub-item {
+    display: block;
+    color: #222;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 8px 12px;
+    border-left: 3px solid transparent;
+    border-radius: 6px;
+    transition: all 0.25s ease;
+}
+
+.submenu .sub-item:hover {
+    background-color: #f1fff2;
+    border-left-color: #42AB49;
+    color: #42AB49;
+}
+
+.sub-item.active {
+    background-color: #f1fff2;
+    border-left-color: #42AB49;
+    color: #42AB49;
+}
+
+.menu-grupo.open .submenu {
+    display: flex;
+}
+
+.menu-grupo.open .item {
+    border-color: #42AB49;
+    background-color: #42AB49;
+    color: #ffffff;
+}
+
+/* =========================
+CONTENIDO PRINCIPAL
+========================= */
+
+.main-container {
+    padding: 34px 42px;
+    background-color: #f4f8f7;
+    min-width: 0;
+}
+
+/* =========================
+TOPBAR
+========================= */
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 26px;
+}
+
+.topbar h1 {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #111;
+}
+
+.descripcion-panel {
+    margin-top: 4px;
+    font-size: 19px;
+    font-weight: 500;
+    color: #666;
+}
+
+/* =========================
+BOTÓN CERRAR SESIÓN
+========================= */
+
+.btn-cerrar-sesion {
+    min-height: 52px;
+    padding: 10px 22px;
+    border: 1.5px solid #a8a8a8;
+    border-radius: 8px;
+    background-color: #ffffff;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+
+    color: #111;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: 800;
+
+    transition: all 0.25s ease;
+}
+
+.btn-cerrar-sesion:hover {
+    background: #ffecec;
+    border-color: #ffb3b3;
+    transform: translateY(-1px);
+}
+
+.btn-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+/* =========================
+FORMULARIO CREAR CLIENTE
+========================= */
+
+.form-container {
+    width: 100%;
+    max-width: 950px;
+    padding: 32px;
+    background-color: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.form-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.nombre-componente,
+.telefono-componente,
+.correo-componente,
+.direccion-componente {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nombre-componente label,
+.telefono-componente label,
+.correo-componente label,
+.direccion-componente label {
+    font-weight: 800;
+    font-size: 18px;
+    color: #111;
+}
+
+.nombre-componente input,
+.telefono-componente input,
+.correo-componente input,
+.direccion-componente input {
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 12px;
+
+    border: 1.5px solid #d6d6d6;
+    border-radius: 10px;
+    outline: none;
+
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 500;
+
+    background-color: #ffffff;
+    color: #111;
+
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.nombre-componente input:focus,
+.telefono-componente input:focus,
+.correo-componente input:focus,
+.direccion-componente input:focus {
+    border-color: #42AB49;
+    box-shadow: 0 0 0 3px rgba(66, 171, 73, 0.15);
+}
+
+.btn-crear {
+    grid-column: 1 / -1;
+    justify-self: center;
+
+    min-width: 200px;
+    min-height: 48px;
+    margin-top: 10px;
+    padding: 10px 24px;
+
+    border: 1.5px solid #a8a8a8;
+    border-radius: 10px;
+    background-color: #ffffff;
+
+    color: #111;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 800;
+
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-crear:hover {
+    background-color: #42AB49;
+    color: #ffffff;
+    border-color: #42AB49;
+    transform: translateY(-1px);
+}
+
+.btn-crear:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* =========================
+BOTÓN HAMBURGUESA
+========================= */
+
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 18px;
+    right: 18px;
+
+    width: 48px;
+    height: 48px;
+
+    border: none;
+    border-radius: 10px;
+    background-color: #42AB49;
+    color: #ffffff;
+
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 1100;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.35);
+    z-index: 1000;
+}
+
+/* =========================
+TABLET
+========================= */
+
+@media (max-width: 1024px) {
+    .layout {
+        grid-template-columns: 300px 1fr;
+    }
+
+    .main-container {
+        padding: 28px;
+    }
+
+    .topbar h1 {
+        font-size: 36px;
+    }
+
+    .form-container {
+        padding: 26px;
+    }
+}
+
+/* =========================
+TABLET Y MÓVIL
+========================= */
+
+@media (max-width: 768px) {
+    .layout {
+        display: block;
+        min-height: 100vh;
+    }
+
+    .menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+
+        width: 300px;
+        max-width: 85%;
+        height: 100vh;
+
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+    }
+
+    body.menu-open .sidebar {
+        transform: translateX(0);
+    }
+
+    body.menu-open .sidebar-backdrop {
+        display: block;
+    }
+
+    .logo-container {
+        margin-bottom: 35px;
+    }
+
+    .logo-img {
+        width: 150px;
+        height: 150px;
+    }
+
+    .menu-lateral {
+        gap: 18px;
+    }
+
+    .item {
+        font-size: 18px;
+        min-height: 54px;
+        grid-template-columns: 38px 1fr;
+        column-gap: 14px;
+    }
+
+    .menu-icon {
+        width: 28px;
+        height: 28px;
+    }
+
+    .submenu {
+        padding-left: 52px;
+    }
+
+    .submenu .sub-item {
+        font-size: 16px;
+    }
+
+    .main-container {
+        padding: 82px 20px 28px;
+    }
+
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .topbar h1 {
+        font-size: 32px;
+    }
+
+    .descripcion-panel {
+        font-size: 17px;
+    }
+
+    .btn-cerrar-sesion {
+        width: 100%;
+        justify-content: center;
+        font-size: 18px;
+    }
+
+    .form-container {
+        padding: 24px;
+    }
+
+    .form-group {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .btn-crear {
+        width: 100%;
+        justify-self: stretch;
+    }
+}
+
+/* =========================
+CELULARES PEQUEÑOS
+========================= */
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 270px;
+        padding: 10px 20px;
+    }
+
+    .menu-toggle {
+        top: 14px;
+        right: 14px;
+        width: 44px;
+        height: 44px;
+        font-size: 24px;
+    }
+
+    .logo-container {
+        margin-bottom: 28px;
+    }
+
+    .logo-img {
+        width: 130px;
+        height: 130px;
+    }
+
+    .item {
+        font-size: 17px;
+        min-height: 52px;
+        grid-template-columns: 36px 1fr;
+        column-gap: 12px;
+    }
+
+    .menu-icon {
+        width: 26px;
+        height: 26px;
+    }
+
+    .submenu {
+        padding-left: 48px;
+    }
+
+    .submenu .sub-item {
+        font-size: 15px;
+        padding: 7px 10px;
+    }
+
+    .main-container {
+        padding: 78px 16px 24px;
+    }
+
+    .topbar h1 {
+        font-size: 28px;
+    }
+
+    .form-container {
+        padding: 18px;
+        border-radius: 14px;
+    }
+
+    .nombre-componente label,
+    .telefono-componente label,
+    .correo-componente label,
+    .direccion-componente label {
+        font-size: 16px;
+    }
+
+    .nombre-componente input,
+    .telefono-componente input,
+    .correo-componente input,
+    .direccion-componente input {
+        font-size: 15px;
+        min-height: 40px;
+    }
+
+    .btn-crear {
+        font-size: 16px;
+        min-height: 44px;
+    }
+}
