@@ -83,10 +83,6 @@ async function cargarHistorialAcciones() {
 
         const params = new URLSearchParams();
 
-        if (filtroUsuario && filtroUsuario.value.trim() !== "") {
-            params.append("usuario_id", filtroUsuario.value.trim());
-        }
-
         if (filtroModulo && filtroModulo.value !== "") {
             params.append("modulo", normalizarModulo(filtroModulo.value));
         }
@@ -153,14 +149,26 @@ function filtrarDatosLocalmente(datos) {
         datosFiltrados = datosFiltrados.filter((item) => {
             const usuario = String(
                 item.usuario_nombre ||
-                item.usuario ||
-                item.Nombre_Usuario ||
                 item.nombre_usuario ||
-                item.usuario_id ||
+                item.Nombre_Usuario ||
+                item.usuario ||
+                item.Usuario ||
+                item.user_name ||
+                item.username ||
+                item.nombre ||
+                item.Nombre ||
                 ""
             ).toLowerCase();
 
-            return usuario.includes(usuarioFiltro);
+            const usuarioId = String(
+                item.usuario_id ||
+                item.UsuarioId ||
+                item.id_usuario ||
+                item.IdUsuario ||
+                ""
+            ).toLowerCase();
+
+            return usuario.includes(usuarioFiltro) || usuarioId.includes(usuarioFiltro);
         });
     }
 
