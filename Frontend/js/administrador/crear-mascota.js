@@ -2,7 +2,7 @@
 // Archivo: js/administrador/crear-mascota.js
 // ============================================================
 
-const URL_API = "http://localhost:3000";
+const URL_API = "https://clinica-veterinaria-79jk.onrender.com";
 
 // Formulario
 const formularioNuevaMascota = document.getElementById("formNuevaMascota");

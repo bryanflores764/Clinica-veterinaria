@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function(){
         }
 
         try {
-            const respuesta = await fetch("http://localhost:3000/api/auth/login", {
+            const respuesta = await fetch("https://clinica-veterinaria-79jk.onrender.com/api/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

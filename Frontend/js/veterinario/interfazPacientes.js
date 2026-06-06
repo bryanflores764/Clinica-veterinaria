@@ -3,7 +3,7 @@
 // Vista: Pacientes del veterinario
 // ============================================================
 
-const URL_API = "http://localhost:3000";
+const URL_API = "https://clinica-veterinaria-79jk.onrender.com";
 
 // Elementos del DOM
 const tbody = document.getElementById("users-tbody");

@@ -2,7 +2,7 @@
 //  Archivo: js/administrador/crear-usuario.js
 // ============================================================
 
-const API_URL = "http://localhost:3000";
+const API_URL = "https://clinica-veterinaria-79jk.onrender.com";
 
 const form               = document.getElementById("crearUsuarioForm");
 const nombreUsuarioInput = document.getElementById("nombreUsuario");

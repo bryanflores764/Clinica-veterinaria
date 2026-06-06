@@ -1,5 +1,5 @@
 // URL base de la API
-const URL_API = "http://localhost:3000";
+const URL_API = "https://clinica-veterinaria-79jk.onrender.com";
 
 // Botones y elementos del modal
 const btnNuevoPaciente = document.getElementById("btn-nuevoPaciente");

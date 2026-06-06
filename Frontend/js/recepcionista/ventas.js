@@ -2,7 +2,7 @@
 //  Archivo: js/recepcionista/ventas.js
 // ============================================================
 
-const API_BASE        = "http://localhost:3000";
+const API_BASE        = "https://clinica-veterinaria-79jk.onrender.com";
 const API_PRODUCTOS   = `${API_BASE}/api/productos`;
 const API_VENTAS      = `${API_BASE}/api/ventas`;
 const API_PROPIETARIOS = `${API_BASE}/api/propietarios`;

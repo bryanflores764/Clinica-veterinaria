@@ -2,7 +2,7 @@
 //  Archivo: js/administrador/ver-usuario.js
 // ============================================================
 
-const API_URL = "http://localhost:3000";
+const API_URL = "https://clinica-veterinaria-79jk.onrender.com";
 
 const tbody      = document.getElementById("users-tbody");
 const emptyMsg   = document.getElementById("empty-msg");

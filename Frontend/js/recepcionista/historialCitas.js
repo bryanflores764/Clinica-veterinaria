@@ -1,5 +1,5 @@
 (() => {
-    const API_URL = "http://localhost:3000/api/citas";
+    const API_URL = "https://clinica-veterinaria-79jk.onrender.com/api/citas";
 
     let todasLasCitas = [];
 

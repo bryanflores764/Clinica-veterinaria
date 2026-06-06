@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
         sessionStorage.clear();
 
         try {
-            await fetch("http://localhost:3000/api/auth/logout", {
+            await fetch("https://clinica-veterinaria-79jk.onrender.com/api/auth/logout", {
                 method: "POST",
             });
         } catch (error) {
