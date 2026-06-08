@@ -1,6 +1,7 @@
 // ============================================================
 //  UTILS: Envío de correos reales (Diseño VetCare Profesional)
 //  Archivo: utils/emailSender.js
+//  MODIFICADO: Mejora visual de productos y servicios
 // ============================================================
 
 const nodemailer = require('nodemailer');
@@ -18,7 +19,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// ── Enviar factura por correo ─────────────────────────────────────────────────
+// ── Enviar factura por correo (INCLUYE PRODUCTOS Y SERVICIOS MEJORADO) ──
 const enviarFacturaPorCorreo = async (correoDestino, facturaData) => {
   try {
     const fechaEmision = facturaData.fechaEmision
@@ -37,48 +38,98 @@ const enviarFacturaPorCorreo = async (correoDestino, facturaData) => {
       return metodos[metodo?.toLowerCase()] || metodo || 'No especificado';
     };
 
-    // Tabla de productos usando <table> anidado (compatibilidad email)
-    const filasProductos = facturaData.productos.map(p => `
-      <tr>
-        <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#1e293b;font-family:Arial,sans-serif;">${p.nombre}</td>
-        <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#475569;text-align:center;font-family:Arial,sans-serif;">${p.cantidad}</td>
-        <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#475569;text-align:right;font-family:Arial,sans-serif;">$${(p.precio_unitario ?? (p.subtotal / p.cantidad)).toFixed(2)}</td>
-        <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#0071BC;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">$${p.subtotal.toFixed(2)}</td>
-      </tr>
-    `).join('');
-
-    const filaPago = facturaData.metodoPago ? `
-      <tr>
-        <td colspan="4" style="padding:0;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0fdf4;border-radius:10px;margin-top:16px;">
+    // ── TABLA DE PRODUCTOS ──────────────────────────────────────
+    const productos = facturaData.productos || [];
+    const tieneProductos = productos.length > 0;
+    
+    const tablaProductos = tieneProductos ? `
+      <p style="margin:20px 0 10px 0;font-size:14px;font-weight:bold;color:#1e293b;font-family:Arial,sans-serif;">📦 Productos</p>
+      <table class="prod-table" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+        <thead>
+          <tr style="background:#f8fafc;">
+            <th style="padding:10px 8px;text-align:left;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">Producto</th>
+            <th style="padding:10px 8px;text-align:center;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">Cant.</th>
+            <th style="padding:10px 8px;text-align:right;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">P. Unit.</th>
+            <th style="padding:10px 8px;text-align:right;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${productos.map(p => `
             <tr>
-              <td style="padding:16px 20px;">
-                <p style="margin:0 0 10px 0;font-size:11px;font-weight:bold;color:#166534;text-transform:uppercase;letter-spacing:0.5px;font-family:Arial,sans-serif;">Informacion de pago</p>
-                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                  <tr>
-                    <td style="padding:4px 0;font-size:13px;color:#374151;font-family:Arial,sans-serif;">Metodo:</td>
-                    <td style="padding:4px 0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">${getMetodoPagoTexto(facturaData.metodoPago)}</td>
-                  </tr>
-                  ${facturaData.metodoPago === 'efectivo' ? `
-                  <tr>
-                    <td style="padding:4px 0;font-size:13px;color:#374151;font-family:Arial,sans-serif;">Recibido:</td>
-                    <td style="padding:4px 0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">$${facturaData.montoRecibido?.toFixed(2) || '0.00'}</td>
-                  </tr>
-                  <tr>
-                    <td style="padding:4px 0;font-size:13px;color:#374151;font-family:Arial,sans-serif;">Cambio:</td>
-                    <td style="padding:4px 0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">$${facturaData.cambio?.toFixed(2) || '0.00'}</td>
-                  </tr>
-                  ` : ''}
-                  <tr>
-                    <td style="padding:4px 0;font-size:13px;color:#374151;font-family:Arial,sans-serif;">Total pagado:</td>
-                    <td style="padding:4px 0;font-size:14px;color:#0071BC;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">$${facturaData.total?.toFixed(2) || '0.00'}</td>
-                  </tr>
-                </table>
-              </td>
+              <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#1e293b;font-family:Arial,sans-serif;">${p.nombre}</td>
+              <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#475569;text-align:center;font-family:Arial,sans-serif;">${p.cantidad}</td>
+              <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#475569;text-align:right;font-family:Arial,sans-serif;">$${(p.precio_unitario ?? (p.subtotal / p.cantidad)).toFixed(2)}</td>
+              <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#0071BC;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">$${p.subtotal.toFixed(2)}</td>
             </tr>
-          </table>
-        </td>
-      </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    ` : '';
+
+    // ── TABLA DE SERVICIOS ──────────────────────────────────────
+    const servicios = facturaData.servicios || [];
+    const tieneServicios = servicios.length > 0;
+    
+    const tablaServicios = tieneServicios ? `
+      <p style="margin:20px 0 10px 0;font-size:14px;font-weight:bold;color:#1e293b;font-family:Arial,sans-serif;">💊 Servicios</p>
+      <table class="prod-table" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+        <thead>
+          <tr style="background:#f8fafc;">
+            <th style="padding:10px 8px;text-align:left;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">Servicio</th>
+            <th style="padding:10px 8px;text-align:center;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">Cant.</th>
+            <th style="padding:10px 8px;text-align:right;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">P. Unit.</th>
+            <th style="padding:10px 8px;text-align:right;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${servicios.map(s => `
+            <tr>
+              <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#1e293b;font-family:Arial,sans-serif;">${s.nombre}</td>
+              <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#475569;text-align:center;font-family:Arial,sans-serif;">${s.cantidad}</td>
+              <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#475569;text-align:right;font-family:Arial,sans-serif;">$${(s.precio_unitario ?? (s.subtotal / s.cantidad)).toFixed(2)}</td>
+              <td style="padding:10px 8px;border-bottom:1px solid #e8ecf0;font-size:13px;color:#0071BC;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">$${s.subtotal.toFixed(2)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    ` : '';
+
+    // Mensaje cuando no hay nada
+    const noItemsMsg = (!tieneProductos && !tieneServicios) ? `
+      <p style="text-align:center;padding:20px;color:#94a3b8;font-family:Arial,sans-serif;">
+        No hay productos ni servicios registrados en esta venta.
+      </p>
+    ` : '';
+
+    // ── SECCIÓN DE PAGO ─────────────────────────────────────────
+    const filaPago = facturaData.metodoPago ? `
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0fdf4;border-radius:10px;margin-top:20px;">
+        <tr>
+          <td style="padding:16px 20px;">
+            <p style="margin:0 0 10px 0;font-size:11px;font-weight:bold;color:#166534;text-transform:uppercase;letter-spacing:0.5px;font-family:Arial,sans-serif;">Informacion de pago</p>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="padding:4px 0;font-size:13px;color:#374151;font-family:Arial,sans-serif;">Metodo:</td>
+                <td style="padding:4px 0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">${getMetodoPagoTexto(facturaData.metodoPago)}</td>
+              </tr>
+              ${facturaData.metodoPago === 'efectivo' ? `
+              <tr>
+                <td style="padding:4px 0;font-size:13px;color:#374151;font-family:Arial,sans-serif;">Recibido:</td>
+                <td style="padding:4px 0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">$${facturaData.montoRecibido?.toFixed(2) || '0.00'}</td>
+              </tr>
+              <tr>
+                <td style="padding:4px 0;font-size:13px;color:#374151;font-family:Arial,sans-serif;">Cambio:</td>
+                <td style="padding:4px 0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">$${facturaData.cambio?.toFixed(2) || '0.00'}</td>
+              </tr>
+              ` : ''}
+              <tr>
+                <td style="padding:4px 0;font-size:13px;color:#374151;font-family:Arial,sans-serif;">Total pagado:</td>
+                <td style="padding:4px 0;font-size:14px;color:#0071BC;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">$${facturaData.total?.toFixed(2) || '0.00'}</td>
+              </tr>
+            </table>
+           </td>
+         </tr>
+       </table>
     ` : '';
 
     const htmlContent = `<!DOCTYPE html>
@@ -88,11 +139,6 @@ const enviarFacturaPorCorreo = async (correoDestino, facturaData) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Factura VetCare</title>
-  <!--[if mso]>
-  <noscript>
-    <xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
-  </noscript>
-  <![endif]-->
   <style>
     body, table, td, p, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
     table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
@@ -114,12 +160,10 @@ const enviarFacturaPorCorreo = async (correoDestino, facturaData) => {
 </head>
 <body style="margin:0;padding:0;background-color:#f0f2f5;">
 
-  <!-- Wrapper -->
   <table class="wrapper" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f0f2f5;padding:24px 16px;">
     <tr>
       <td align="center">
 
-        <!-- Container (max 560px) -->
         <table class="container" width="560" cellpadding="0" cellspacing="0" border="0"
           style="max-width:560px;width:100%;background:#ffffff;border-radius:18px;overflow:hidden;">
 
@@ -128,8 +172,8 @@ const enviarFacturaPorCorreo = async (correoDestino, facturaData) => {
             <td class="header-cell" align="center" style="background-color:#0071BC;padding:32px 28px;">
               <p class="header-title" style="margin:0 0 4px 0;font-size:28px;font-weight:bold;color:#ffffff;font-family:Arial,sans-serif;">VetCare</p>
               <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.85);font-family:Arial,sans-serif;">Comprobante de Venta Electronico</p>
-            </td>
-          </tr>
+             </td>
+           </tr>
 
           <!-- BODY -->
           <tr>
@@ -147,9 +191,9 @@ const enviarFacturaPorCorreo = async (correoDestino, facturaData) => {
                       <strong style="color:#0071BC;">VetCare Clinica Veterinaria</strong><br>
                       <span style="color:#6b7280;font-size:12px;">${EMAIL_USER}</span>
                     </p>
-                  </td>
-                </tr>
-              </table>
+                   </td>
+                 </tr>
+               </table>
 
               <!-- Info de factura -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8fafc;border-radius:12px;margin-bottom:20px;">
@@ -160,53 +204,42 @@ const enviarFacturaPorCorreo = async (correoDestino, facturaData) => {
                       <tr>
                         <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#475569;font-family:Arial,sans-serif;">N° de control</td>
                         <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;text-align:right;font-family:Arial,sans-serif;">#${facturaData.numeroFactura}</td>
-                      </tr>
+                       </tr>
                       ${facturaData.codigoGeneracion ? `
                       <tr>
                         <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#475569;font-family:Arial,sans-serif;">Codigo generacion</td>
                         <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;text-align:right;word-break:break-all;font-family:Arial,sans-serif;">${facturaData.codigoGeneracion}</td>
-                      </tr>
+                       </tr>
                       ` : ''}
                       <tr>
                         <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#475569;font-family:Arial,sans-serif;">Fecha de emision</td>
                         <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;text-align:right;font-family:Arial,sans-serif;">${fechaEmision}</td>
-                      </tr>
+                       </tr>
                       <tr>
                         <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#475569;font-family:Arial,sans-serif;">Cliente</td>
                         <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;text-align:right;font-family:Arial,sans-serif;">${facturaData.cliente}</td>
-                      </tr>
+                       </tr>
                       ${facturaData.correoCliente || correoDestino ? `
                       <tr>
                         <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#475569;font-family:Arial,sans-serif;">Correo</td>
                         <td style="padding:7px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;text-align:right;word-break:break-all;font-family:Arial,sans-serif;">${facturaData.correoCliente || correoDestino}</td>
-                      </tr>
+                       </tr>
                       ` : ''}
                       <tr>
                         <td style="padding:7px 0;font-size:13px;font-weight:bold;color:#475569;font-family:Arial,sans-serif;">Estado</td>
                         <td style="padding:7px 0;text-align:right;font-family:Arial,sans-serif;">
                           <span style="display:inline-block;padding:3px 10px;background:#dcfce7;color:#166534;border-radius:20px;font-size:12px;font-weight:bold;font-family:Arial,sans-serif;">Confirmada</span>
                         </td>
-                      </tr>
+                       </tr>
                     </table>
                   </td>
                 </tr>
               </table>
 
-              <!-- Productos -->
-              <p style="margin:0 0 10px 0;font-size:14px;font-weight:bold;color:#1e293b;font-family:Arial,sans-serif;">Detalle de productos</p>
-              <table class="prod-table" width="100%" cellpadding="0" cellspacing="0" border="0">
-                <thead>
-                  <tr style="background:#f8fafc;">
-                    <th style="padding:10px 8px;text-align:left;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">Producto</th>
-                    <th style="padding:10px 8px;text-align:center;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">Cant.</th>
-                    <th style="padding:10px 8px;text-align:right;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">P. Unit.</th>
-                    <th style="padding:10px 8px;text-align:right;font-size:11px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid #e2e8f0;font-family:Arial,sans-serif;">Subtotal</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${filasProductos}
-                </tbody>
-              </table>
+              <!-- PRODUCTOS Y SERVICIOS -->
+              ${tablaProductos}
+              ${tablaServicios}
+              ${noItemsMsg}
 
               <!-- Total -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8fafc;border-radius:12px;margin:20px 0;">
@@ -219,11 +252,7 @@ const enviarFacturaPorCorreo = async (correoDestino, facturaData) => {
               </table>
 
               <!-- Pago -->
-              ${facturaData.metodoPago ? `
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>${filaPago}</tr>
-              </table>
-              ` : ''}
+              ${filaPago}
 
             </td>
           </tr>
@@ -258,33 +287,34 @@ const enviarFacturaPorCorreo = async (correoDestino, facturaData) => {
     return { success: true, message: `Factura enviada a ${correoDestino}` };
 
   } catch (error) {
+    console.error("Error al enviar factura:", error);
     return { success: false, message: error.message, error: error.message };
   }
 };
 
 // ── Enviar notificación de vacuna ─────────────────────────────────────────────
 const enviarNotificacionVacuna = async (destino, vacunaData) => {
-  const mascota       = vacunaData.mascotaNombre   || vacunaData.mascota   || 'la mascota';
-  const vacuna        = vacunaData.vacunaNombre     || vacunaData.vacuna    || 'la vacuna';
-  const proximaDosis  = vacunaData.proximaDosis;
+  const mascota = vacunaData.mascotaNombre || vacunaData.mascota || 'la mascota';
+  const vacuna = vacunaData.vacunaNombre || vacunaData.vacuna || 'la vacuna';
+  const proximaDosis = vacunaData.proximaDosis;
   const diasRestantes = vacunaData.diasRestantes;
-  const propietario   = vacunaData.propietarioNombre || vacunaData.propietario || null;
+  const propietario = vacunaData.propietarioNombre || vacunaData.propietario || null;
 
-  const esUrgente  = diasRestantes <= 7;
+  const esUrgente = diasRestantes <= 7;
   const esModerado = diasRestantes > 7 && diasRestantes <= 15;
 
-  const alertaBgColor  = esUrgente ? '#fef2f2' : esModerado ? '#fff7ed' : '#fffbeb';
-  const alertaBoColor  = esUrgente ? '#fecaca' : esModerado ? '#fed7aa' : '#fde68a';
-  const alertaTxColor  = esUrgente ? '#991b1b' : esModerado ? '#9a3412' : '#92400e';
-  const alertaMensaje  = esUrgente
+  const alertaBgColor = esUrgente ? '#fef2f2' : esModerado ? '#fff7ed' : '#fffbeb';
+  const alertaBoColor = esUrgente ? '#fecaca' : esModerado ? '#fed7aa' : '#fde68a';
+  const alertaTxColor = esUrgente ? '#991b1b' : esModerado ? '#9a3412' : '#92400e';
+  const alertaMensaje = esUrgente
     ? 'Atencion: La vacuna vence en menos de una semana'
     : esModerado
     ? 'La vacuna esta proxima a vencer'
     : 'Recordatorio: Vacuna proxima a su fecha de aplicacion';
 
-  const diasBgColor  = esUrgente ? '#fef2f2' : esModerado ? '#fff7ed' : '#eff6ff';
-  const diasTxColor  = esUrgente ? '#dc2626' : esModerado ? '#ea580c' : '#1d4ed8';
-  const diasBoColor  = esUrgente ? '#fecaca' : esModerado ? '#fed7aa' : '#bfdbfe';
+  const diasBgColor = esUrgente ? '#fef2f2' : esModerado ? '#fff7ed' : '#eff6ff';
+  const diasTxColor = esUrgente ? '#dc2626' : esModerado ? '#ea580c' : '#1d4ed8';
+  const diasBoColor = esUrgente ? '#fecaca' : esModerado ? '#fed7aa' : '#bfdbfe';
 
   const fechaDosis = proximaDosis
     ? new Date(proximaDosis).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -333,7 +363,6 @@ const enviarNotificacionVacuna = async (destino, vacunaData) => {
           <tr>
             <td class="content-cell" style="padding:28px 24px;">
 
-              <!-- Carta formal -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
                 <tr>
                   <td class="carta-cell" style="background:#f8fafc;border-left:4px solid #0071BC;border-radius:0 10px 10px 0;padding:18px 20px;font-size:14px;color:#374151;font-family:Arial,sans-serif;line-height:1.7;">
@@ -350,7 +379,6 @@ const enviarNotificacionVacuna = async (destino, vacunaData) => {
                 </tr>
               </table>
 
-              <!-- Alerta dinámica -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
                 <tr>
                   <td align="center" style="background-color:${alertaBgColor};border:1px solid ${alertaBoColor};border-radius:10px;padding:12px 16px;">
@@ -359,7 +387,6 @@ const enviarNotificacionVacuna = async (destino, vacunaData) => {
                 </tr>
               </table>
 
-              <!-- Card mascota -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8fafc;border-radius:12px;margin-bottom:20px;">
                 <tr>
                   <td style="padding:18px 20px;">
@@ -368,21 +395,21 @@ const enviarNotificacionVacuna = async (destino, vacunaData) => {
                       <tr>
                         <td style="padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#64748b;font-family:Arial,sans-serif;">Mascota</td>
                         <td style="padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">${mascota}</td>
-                      </tr>
+                       </tr>
                       <tr>
                         <td style="padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#64748b;font-family:Arial,sans-serif;">Vacuna pendiente</td>
                         <td style="padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">${vacuna}</td>
-                      </tr>
+                       </tr>
                       <tr>
                         <td style="padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:bold;color:#64748b;font-family:Arial,sans-serif;">Proxima dosis</td>
                         <td style="padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#0f172a;font-weight:bold;text-align:right;font-family:Arial,sans-serif;">${fechaDosis}</td>
-                      </tr>
+                       </tr>
                       <tr>
                         <td style="padding:8px 0;font-size:13px;font-weight:bold;color:#64748b;font-family:Arial,sans-serif;">Dias restantes</td>
                         <td style="padding:8px 0;text-align:right;font-family:Arial,sans-serif;">
                           <span style="display:inline-block;background:${diasBgColor};color:${diasTxColor};border:1px solid ${diasBoColor};padding:3px 10px;border-radius:20px;font-size:12px;font-weight:bold;font-family:Arial,sans-serif;">${diasRestantes} dia${diasRestantes !== 1 ? 's' : ''}</span>
                         </td>
-                      </tr>
+                       </tr>
                     </table>
                   </td>
                 </tr>
@@ -410,12 +437,13 @@ const enviarNotificacionVacuna = async (destino, vacunaData) => {
 </html>`;
 
   try {
-    const info = await transporter.sendMail({
+    await transporter.sendMail({
       from: `"VetCare" <${EMAIL_USER}>`,
       to: destino,
       subject: `Recordatorio de vacunacion — ${mascota} (${diasRestantes} dias restantes)`,
       html: htmlContent
     });
+    return { success: true, message: "Notificación enviada" };
   } catch (error) {
     return { success: false, message: `Error: ${error.message}` };
   }

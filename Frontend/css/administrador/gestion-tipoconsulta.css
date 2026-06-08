@@ -1,0 +1,551 @@
+/* =========================
+ESTILOS PARA GESTIÓN DE TIPOS CONSULTA
+VetCare - Administrador
+========================= */
+
+/* Header con botón de acción */
+.header-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 28px;
+}
+
+.btn-primario {
+    background-color: #42AB49;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-family: 'Baloo Da 2', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+}
+
+.btn-primario:hover {
+    background-color: #358a3b;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(66, 171, 73, 0.3);
+}
+
+.btn-secundario {
+    background-color: #ffffff;
+    color: #111;
+    border: 1.5px solid #a8a8a8;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-family: 'Baloo Da 2', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-secundario:hover {
+    background-color: #f0f0f0;
+    border-color: #42AB49;
+}
+
+.btn-peligro {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-family: 'Baloo Da 2', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-peligro:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+}
+
+.btn-editar {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: 'Baloo Da 2', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    margin-right: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-editar:hover {
+    background-color: #357abd;
+    transform: translateY(-1px);
+}
+
+.btn-eliminar {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: 'Baloo Da 2', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-eliminar:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+}
+
+/* Tabla de tipos de consulta */
+.table-container {
+    background-color: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    overflow-x: auto;
+}
+
+.tabla-tipos-consulta {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Baloo Da 2', sans-serif;
+}
+
+.tabla-tipos-consulta thead {
+    background-color: #f4f8f7;
+    border-bottom: 2px solid #e4e4e4;
+}
+
+.tabla-tipos-consulta th {
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 800;
+    font-size: 16px;
+    color: #111;
+}
+
+.tabla-tipos-consulta td {
+    padding: 14px 20px;
+    border-bottom: 1px solid #e4e4e4;
+    font-weight: 500;
+    font-size: 15px;
+    color: #333;
+}
+
+.tabla-tipos-consulta tbody tr:hover {
+    background-color: #f9fdf9;
+}
+
+.fila-vacia td {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-weight: 600;
+}
+
+/* MODAL */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 550px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalFadeIn 0.3s ease;
+}
+
+.modal-small {
+    max-width: 450px;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e4e4e4;
+}
+
+.modal-header h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #111;
+    margin: 0;
+}
+
+.modal-close,
+.modal-close-eliminar {
+    background: none;
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.2s ease;
+    line-height: 1;
+}
+
+.modal-close:hover,
+.modal-close-eliminar:hover {
+    color: #dc3545;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-body p {
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+.texto-advertencia {
+    color: #dc3545;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#formTipoConsulta {
+    padding: 24px;
+}
+
+.form-group-modal {
+    margin-bottom: 20px;
+}
+
+.form-group-modal label {
+    display: block;
+    font-weight: 800;
+    font-size: 15px;
+    margin-bottom: 8px;
+    color: #111;
+}
+
+.form-group-modal input,
+.form-group-modal textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #d6d6d6;
+    border-radius: 10px;
+    font-family: 'Baloo Da 2', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+}
+
+.form-group-modal input:focus,
+.form-group-modal textarea:focus {
+    outline: none;
+    border-color: #42AB49;
+    box-shadow: 0 0 0 3px rgba(66, 171, 73, 0.15);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+/* Toast personalizado (opcional) */
+.toast-message {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-family: 'Baloo Da 2', sans-serif;
+    font-weight: 600;
+    z-index: 2100;
+    animation: slideIn 0.3s ease;
+}
+
+.toast-success {
+    background-color: #42AB49;
+    color: white;
+}
+
+.toast-error {
+    background-color: #dc3545;
+    color: white;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* =========================
+RESPONSIVE PARA GESTIÓN DE TIPOS CONSULTA (ADMIN)
+(Usando los mismos breakpoints que tu interfaz)
+========================= */
+
+/* Laptop / pantallas medianas */
+@media (max-width: 1300px) {
+    .header-actions {
+        margin-bottom: 24px;
+    }
+    
+    .btn-primario {
+        padding: 10px 20px;
+        font-size: 15px;
+    }
+    
+    .table-container {
+        border-radius: 12px;
+    }
+    
+    .tabla-tipos-consulta th,
+    .tabla-tipos-consulta td {
+        padding: 14px 18px;
+        font-size: 15px;
+    }
+    
+    .btn-editar,
+    .btn-eliminar {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+}
+
+/* Tablet */
+@media (max-width: 1100px) and (min-width: 601px) {
+    .header-actions {
+        margin-bottom: 20px;
+    }
+    
+    .btn-primario {
+        padding: 9px 18px;
+        font-size: 14px;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        border-radius: 12px;
+    }
+    
+    .tabla-tipos-consulta {
+        min-width: 600px;
+    }
+    
+    .tabla-tipos-consulta th,
+    .tabla-tipos-consulta td {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+    
+    .btn-editar,
+    .btn-eliminar {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+    
+    .modal-content {
+        max-width: 500px;
+    }
+    
+    .modal-header h2 {
+        font-size: 22px;
+    }
+    
+    .form-group-modal input,
+    .form-group-modal textarea {
+        font-size: 14px;
+    }
+}
+
+/* Móvil */
+@media (max-width: 600px) {
+    .header-actions {
+        margin-bottom: 18px;
+    }
+    
+    .btn-primario {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+    
+    .table-container {
+        border-radius: 12px;
+        overflow-x: auto;
+    }
+    
+    .tabla-tipos-consulta {
+        min-width: 550px;
+    }
+    
+    .tabla-tipos-consulta th,
+    .tabla-tipos-consulta td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    .tabla-tipos-consulta th {
+        font-size: 13px;
+    }
+    
+    .btn-editar,
+    .btn-eliminar {
+        padding: 4px 8px;
+        font-size: 10px;
+        margin-right: 4px;
+    }
+    
+    /* Modal responsive */
+    .modal-content {
+        width: 95%;
+        max-width: none;
+        margin: 16px;
+        border-radius: 16px;
+    }
+    
+    .modal-header {
+        padding: 16px 20px;
+    }
+    
+    .modal-header h2 {
+        font-size: 20px;
+    }
+    
+    .modal-close,
+    .modal-close-eliminar {
+        font-size: 28px;
+    }
+    
+    #formTipoConsulta {
+        padding: 20px;
+    }
+    
+    .form-group-modal {
+        margin-bottom: 16px;
+    }
+    
+    .form-group-modal label {
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+    
+    .form-group-modal input,
+    .form-group-modal textarea {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    
+    .modal-buttons {
+        margin-top: 20px;
+        gap: 10px;
+    }
+    
+    .modal-buttons button {
+        flex: 1;
+        justify-content: center;
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+    
+    /* Modal pequeño (eliminar) */
+    .modal-small {
+        max-width: 90%;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .modal-body p {
+        font-size: 14px;
+    }
+    
+    .texto-advertencia {
+        font-size: 12px;
+    }
+    
+    .fila-vacia td {
+        padding: 30px;
+        font-size: 14px;
+    }
+}
+
+/* Celulares muy pequeños */
+@media (max-width: 380px) {
+    .tabla-tipos-consulta {
+        min-width: 480px;
+    }
+    
+    .tabla-tipos-consulta th,
+    .tabla-tipos-consulta td {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+    
+    .btn-editar,
+    .btn-eliminar {
+        padding: 3px 7px;
+        font-size: 9px;
+    }
+    
+    .modal-header {
+        padding: 14px 16px;
+    }
+    
+    .modal-header h2 {
+        font-size: 18px;
+    }
+    
+    #formTipoConsulta {
+        padding: 16px;
+    }
+    
+    .form-group-modal {
+        margin-bottom: 14px;
+    }
+    
+    .form-group-modal label {
+        font-size: 13px;
+    }
+    
+    .modal-buttons button {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+}

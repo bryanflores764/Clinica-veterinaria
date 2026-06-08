@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../../css/recepcionista/interfazRecepcionista.css">
+    <link rel="stylesheet" href="../../css/recepcionista/ver-tiposervicio.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
+    <title>Tipos de Servicio - Recepcionista</title>
+</head>
+<body>
+
+<div class="sidebar-backdrop"></div>
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">
+            <img id="logo" src="../../assets/img/Logo de clínica Veterinaria azul.png" alt="logo">
+        </div>
+        <ul>
+            <li>
+                <a href="interfazRecepcionista.html" id="btnVerCitas">
+                    <img src="../../assets/icons/icon-citas.svg" alt="citas">
+                    Citas
+                </a>
+            </li>
+            <li>
+                <a href="recepcionistaMascotas.html">
+                    <img src="../../assets/icons/icon-pacientes.svg" alt="pacientes">
+                    Pacientes
+                </a>
+            </li>
+            <li>
+                <a href="propetario.html">
+                    <img src="../../assets/icons/icon-user.svg" alt="Cliente">
+                    Clientes
+                </a>
+            </li>
+            <li>
+                <a href="tienda.html">
+                    <img src="../../assets/icons/shop.svg" alt="pagos">
+                    Tienda
+                </a>
+            </li>
+            <li>
+                <a href="ventas.html">
+                    <img src="../../assets/icons/ico-sale.svg" alt="ventas">
+                    Ventas
+                </a>
+            </li>
+            <li>
+                <a href="historialCitas.html">
+                    <img src="../../assets/icons/icon-historial.svg" alt="historial">
+                    Historial Citas
+                </a>
+            </li>
+            <li>
+            <a href="ver-tiposervicio.html">
+              <img
+                src="../../assets/icons/icon-pacientes.svg"
+                alt="servicios"
+              />
+              Tipos Servicio
+            </a>
+          </li>
+        </ul>
+    </aside>
+
+    <!-- HEADER PRINCIPAL -->
+    <header class="header">
+        <h1>Tipos de Servicio</h1>
+        <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">☰</button>
+        <div class="header-actions">
+            <a class="btn-logout" id="cerrar-sesion" href="../../index.html">
+                <img src="../../assets/icons/icon-sesion.svg" alt="cerrar-sesion">
+                Cerrar Sesión
+            </a>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        <header class="header-main">
+            <h1>Lista de Servicios</h1>
+            <span>Recepción | Consulta de precios y descripciones</span>
+
+            <!-- Badde de solo lectura -->
+            <div class="badge-readonly">
+                <span>🔍</span> Modo consulta - Solo visualización
+            </div>
+
+            <!-- Buscador -->
+            <div class="filtro-busqueda">
+                <input type="text" id="buscadorServicios" class="buscador-input" 
+                       placeholder="🔎 Buscar por tipo de servicio o descripción...">
+                <div class="info-resultados" id="infoResultados"></div>
+            </div>
+
+            <!-- Contenedor de tarjetas -->
+            <div id="serviciosContainer" class="servicios-container">
+                <div class="loading-container">
+                    <div class="spinner"></div>
+                    <p>Cargando servicios disponibles...</p>
+                </div>
+            </div>
+        </header>
+    </main>
+
+</div><!-- cierre div.layout -->
+
+<script src="../../js/recepcionista/ver-tiposervicio.js"></script>
+<script src="../../js/recepcionista/logout.js"></script>
+
+</body>
+</html>

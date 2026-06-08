@@ -1,34 +1,27 @@
 const { Router } = require('express');
 const ventasController = require('../controllers/ventas.controller');
-const { verifyToken } = require('../middlewares/usuarioRecepcionista.middleware'); // ✅ Tu middleware
+const { verifyToken } = require('../middlewares/usuarioRecepcionista.middleware');
 
 const router = Router();
 
-// ── Ventas (protegidas con token) ─────────────────────────────
-router.get('/',                      verifyToken, ventasController.getAllVentas);
-router.get('/:id',                   verifyToken, ventasController.getVentaById);
-router.post('/',                     verifyToken, ventasController.createVenta);
-router.patch('/:id/anular',          verifyToken, ventasController.anularVenta);
-router.patch('/:id/confirmar',       verifyToken, ventasController.confirmarVenta);
+// ── Ventas ────────────────────────────────────────────────────
+router.get('/', verifyToken, ventasController.getAllVentas);
+router.get('/:id', verifyToken, ventasController.getVentaById);
+router.post('/', verifyToken, ventasController.createVenta);
+router.patch('/:id/anular', verifyToken, ventasController.anularVenta);
+router.patch('/:id/confirmar', verifyToken, ventasController.confirmarVenta);
+router.get('/:id/total', verifyToken, ventasController.getTotalVenta);
 
-// ── Detalle (protegidas con token) ────────────────────────────
-router.post('/:id/detalle',          verifyToken, ventasController.addDetalle);
-router.get('/:id/total',             verifyToken, ventasController.getTotalVenta);
+// ── Productos ─────────────────────────────────────────────────
+router.post('/:id/detalle', verifyToken, ventasController.addDetalleProducto);
 
+// ── Servicios ─────────────────────────────────────────────────
+router.get('/servicios', verifyToken, ventasController.getAllServicios);
+router.post('/:id/detalle-servicio', verifyToken, ventasController.addDetalleServicio);
 
-// Agregar al final del archivo, antes de module.exports
-
-// ============================================================
-//  RUTAS DE FACTURACIÓN
-// ============================================================
-
-// Generar factura para una venta
+// ── Facturación ───────────────────────────────────────────────
 router.post('/:id/factura/generar', verifyToken, ventasController.generarFactura);
-
-// Enviar factura por correo
 router.post('/:id/factura/enviar', verifyToken, ventasController.enviarFactura);
-
-// Obtener factura de una venta
 router.get('/:id/factura', verifyToken, ventasController.getFacturaByVenta);
 
 module.exports = router;

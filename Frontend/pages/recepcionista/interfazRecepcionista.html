@@ -1,270 +1,346 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico" type="image/x-icon">
-    <link rel="stylesheet" href="../../css/recepcionista/interfazRecepcionista.css">
-    <link rel="stylesheet" href="../../css/recepcionista/interfazCitas.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico"
+      type="image/x-icon"
+    />
+    <link
+      rel="stylesheet"
+      href="../../css/recepcionista/interfazRecepcionista.css"
+    />
+    <link rel="stylesheet" href="../../css/recepcionista/interfazCitas.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400..800&display=swap"
+      rel="stylesheet"
+    />
     <title>RECEPCIONISTA</title>
-</head>
-<body>
-<div class="sidebar-backdrop"></div>
+  </head>
+  <body>
+    <div class="sidebar-backdrop"></div>
     <div class="layout">
+      <aside class="sidebar">
+        <div class="logo">
+          <img
+            id="logo"
+            src="../../assets/img/Logo de clínica Veterinaria azul.png"
+            alt="logo"
+          />
+        </div>
+        <ul>
+          <li>
+            <a href="interfazRecepcionista.html" id="btnVerCitas">
+              <img src="../../assets/icons/icon-citas.svg" alt="citas" />
+              Citas
+            </a>
+          </li>
+          <li>
+            <a href="recepcionistaMascotas.html">
+              <img
+                src="../../assets/icons/icon-pacientes.svg"
+                alt="pacientes"
+              />
+              Pacientes
+            </a>
+          </li>
+          <li>
+            <a href="propetario.html">
+              <img src="../../assets/icons/icon-user.svg" alt="Cliente" />
+              Clientes
+            </a>
+          </li>
+          <li>
+            <a href="tienda.html">
+              <img src="../../assets/icons/shop.svg" alt="pagos" />
+              Tienda
+            </a>
+          </li>
+          <li>
+            <a href="ventas.html">
+              <img src="../../assets/icons/ico-sale.svg" alt="ventas" />
+              Ventas
+            </a>
+          </li>
+          <li>
+            <a href="historialCitas.html">
+              <img
+                src="../../assets/icons/icon-historial.svg"
+                alt="historial"
+              />
+              Historial Citas
+            </a>
+          </li>
 
-        <aside class="sidebar">
-            <div class="logo">
-                <img id="logo" src="../../assets/img/Logo de clínica Veterinaria azul.png" alt="logo">
-            </div>
-            <ul>
-                <li>
-                    <a href="interfazRecepcionista.html" id="btnVerCitas">
-                        <img src="../../assets/icons/icon-citas.svg" alt="citas">
-                        Citas
-                    </a>
-                </li>
-                <li>
-                    <a href="recepcionistaMascotas.html">
-                        <img src="../../assets/icons/icon-pacientes.svg" alt="pacientes">
-                        Pacientes
-                    </a>
-                </li>
-                <li>
-                    <a href="propetario.html">
-                        <img src="../../assets/icons/icon-user.svg" alt="Cliente">
-                        Clientes
-                    </a>
-                </li>
-                <li>
-                    <a href="tienda.html">
-                        <img src="../../assets/icons/shop.svg" alt="pagos">
-                        Tienda
-                    </a>
-                </li>
-                <li>
-                    <a href="ventas.html">
-                        <img src="../../assets/icons/ico-sale.svg" alt="ventas">
-                        Ventas
-                    </a>
-                </li>
-                <li>
-                    <a href="historialCitas.html">
-                        <img src="../../assets/icons/icon-historial.svg" alt="historial">
-                        Historial Citas
-                    </a>
-                </li>
-            </ul>                    
-        </aside>
+          <li>
+            <a href="ver-tiposervicio.html">
+              <img
+                src="../../assets/icons/icon-pacientes.svg"
+                alt="servicios"
+              />
+              Tipos Servicio
+            </a>
+          </li>
+        </ul>
+      </aside>
 
-        <header class="header">
-            <h1>Citas</h1>
-            <button class="menu-toggle" aria-label="Abrir-menu" aria-expanded="false">☰</button>
-            <div class="header-actions">
-                <a class="btn-new" id="btnNuevaCita" href="#">
-                    <img src="../../assets/icons/icon-newcita.svg" alt="">
-                    Nueva Cita
-                </a>
-                <a class="btn-logout" id="cerrar-sesion" href="#">
-                    <img src="../../assets/icons/icon-sesion.svg" alt="cerrar-sesion">
-                    Cerrar Sesión
-                </a>
-            </div>
+      <header class="header">
+        <h1>Citas</h1>
+        <button
+          class="menu-toggle"
+          aria-label="Abrir-menu"
+          aria-expanded="false"
+        >
+          ☰
+        </button>
+        <div class="header-actions">
+          <a class="btn-new" id="btnNuevaCita" href="#">
+            <img src="../../assets/icons/icon-newcita.svg" alt="" />
+            Nueva Cita
+          </a>
+          <a class="btn-logout" id="cerrar-sesion" href="#">
+            <img src="../../assets/icons/icon-sesion.svg" alt="cerrar-sesion" />
+            Cerrar Sesión
+          </a>
+        </div>
+      </header>
+
+      <main class="main">
+        <header class="header-main">
+          <h1>Citas Programadas</h1>
+          <span>Recepción | Control de agenda diaria</span>
+
+          <!-- FILTRO -->
+          <div style="margin: 15px 0">
+            <label>Filtrar por Estado: </label>
+            <select id="filtroEstado">
+              <option value="todos">Todos</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="En Curso">En Curso</option>
+              <option value="Cancelada">Cancelada</option>
+              <option value="Completada">Completada</option>
+            </select>
+          </div>
+
+          <table class="tabla-citas hidden" id="contenedorTabla">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Mascota</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaCitas"></tbody>
+          </table>
         </header>
+      </main>
 
-        <main class="main">
-            <header class="header-main">
-                <h1>Citas Programadas</h1>
-                <span>Recepción | Control de agenda diaria</span>
-
-                <!-- FILTRO -->
-                <div style="margin: 15px 0;">
-                    <label>Filtrar por Estado: </label>
-                    <select id="filtroEstado">
-                        <option value="todos">Todos</option>
-                        <option value="Pendiente">Pendiente</option>
-                        <option value="En Curso">En Curso</option>
-                        <option value="Cancelada">Cancelada</option>
-                        <option value="Completada">Completada</option>
-                    </select>
-                </div>
-
-                <table class="tabla-citas hidden" id="contenedorTabla">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Mascota</th>
-                            <th>Fecha</th>
-                            <th>Hora</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                            
-
-                        </tr>
-                    </thead>
-                    <tbody id="tablaCitas"></tbody>
-                </table>
-            </header>
-        </main>
-
-        <!-- ══════════════════════════════════════════
+      <!-- ══════════════════════════════════════════
              MODAL NUEVA CITA
         ══════════════════════════════════════════ -->
-        <<div id="modalCita" class="modal hidden">
-  <div class="modal-content modal-compact">
+      <
+      <div id="modalCita" class="modal hidden">
+        <div class="modal-content modal-compact">
+          <div class="modal-header-blue">
+            <div class="modal-header-icon">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                stroke-width="2.2"
+                stroke-linecap="round"
+              >
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            </div>
+            <div>
+              <p class="modal-title-white">Nueva cita</p>
+              <p class="modal-subtitle-white">
+                Completa los datos para agendar
+              </p>
+            </div>
+            <button class="btn-close-white" id="cerrarModal" type="button">
+              ✕
+            </button>
+          </div>
 
-    <div class="modal-header-blue">
-      <div class="modal-header-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      </div>
-      <div>
-        <p class="modal-title-white">Nueva cita</p>
-        <p class="modal-subtitle-white">Completa los datos para agendar</p>
-      </div>
-      <button class="btn-close-white" id="cerrarModal" type="button">✕</button>
-    </div>
+          <form id="formCita">
+            <div class="form-group">
+              <label>Mascota <span class="req">*</span></label>
+              <select id="mascota" required>
+                <option value="">Seleccionar mascota...</option>
+              </select>
+            </div>
 
-    <form id="formCita">
-      <div class="form-group">
-        <label>Mascota <span class="req">*</span></label>
-        <select id="mascota" required>
-          <option value="">Seleccionar mascota...</option>
-        </select>
-      </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Fecha <span class="req">*</span></label>
+                <input type="date" id="fecha" required />
+              </div>
+              <div class="form-group">
+                <label>Hora <span class="req">*</span></label>
+                <input type="time" id="hora" required />
+              </div>
+            </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Fecha <span class="req">*</span></label>
-          <input type="date" id="fecha" required>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Veterinario <span class="req">*</span></label>
+                <select id="veterinario" required>
+                  <option value="">Seleccionar...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Tipo de Consulta <span class="req">*</span></label>
+                <select id="tipoConsulta" required>
+                  <option value="">Seleccionar...</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="modal-actions">
+              <button type="submit" class="btn-primary">✓ Guardar cita</button>
+              <button type="button" id="cerrarModalBtn" class="btn-secondary">
+                Cancelar
+              </button>
+            </div>
+          </form>
         </div>
-        <div class="form-group">
-          <label>Hora <span class="req">*</span></label>
-          <input type="time" id="hora" required>
-        </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Veterinario <span class="req">*</span></label>
-          <select id="veterinario" required>
-            <option value="">Seleccionar...</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Tipo de Consulta <span class="req">*</span></label>
-          <select id="tipoConsulta" required>
-            <option value="">Seleccionar...</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="modal-actions">
-        <button type="submit" class="btn-primary">✓ Guardar cita</button>
-        <button type="button" id="cerrarModalBtn" class="btn-secondary">Cancelar</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-        <!-- ══════════════════════════════════════════
+      <!-- ══════════════════════════════════════════
              MODAL EDITAR CITA
         ══════════════════════════════════════════ -->
-        <div id="modalEditarCita" class="modal hidden">
-            <div class="modal-content modal-compact">
-                <div class="modal-header">
-                    <h2>Editar Cita</h2>
-                    <button class="btn-close-x" id="cerrarEditarModal" type="button">✕</button>
-                </div>
-                <form id="formEditarCita">
-                    <input type="hidden" id="editIdCita">
+      <div id="modalEditarCita" class="modal hidden">
+        <div class="modal-content modal-compact">
+          <div class="modal-header">
+            <h2>Editar Cita</h2>
+            <button class="btn-close-x" id="cerrarEditarModal" type="button">
+              ✕
+            </button>
+          </div>
+          <form id="formEditarCita">
+            <input type="hidden" id="editIdCita" />
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Mascota <span class="req">*</span></label>
-                            <select id="editMascota" required></select>
-                        </div>
-                        <div class="form-group">
-                            <label>Estado <span class="req">*</span></label>
-                            <select id="editEstado" required>
-                                <option value="1">Pendiente</option>
-                                <option value="2">En Curso</option>
-                                <option value="3">Cancelada</option>
-                                <option value="4">Completada</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Fecha <span class="req">*</span></label>
-                            <input type="date" id="editFecha" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Hora <span class="req">*</span></label>
-                            <input type="time" id="editHora" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Veterinario <span class="req">*</span></label>
-                            <select id="editVeterinario" required></select>
-                        </div>
-                        <div class="form-group">
-                            <label>Tipo de Consulta <span class="req">*</span></label>
-                            <select id="editTipoConsulta" required></select>
-                        </div>
-                    </div>
-
-                    <div class="modal-actions">
-                        <button type="submit" class="btn-success">Actualizar</button>
-                        <button type="button" id="cerrarEditarModalBtn" class="btn-secondary">Cancelar</button>
-                    </div>
-                </form>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Mascota <span class="req">*</span></label>
+                <select id="editMascota" required></select>
+              </div>
+              <div class="form-group">
+                <label>Estado <span class="req">*</span></label>
+                <select id="editEstado" required>
+                  <option value="1">Pendiente</option>
+                  <option value="2">En Curso</option>
+                  <option value="3">Cancelada</option>
+                  <option value="4">Completada</option>
+                </select>
+              </div>
             </div>
-        </div>
 
-        <!-- ══════════════════════════════════════════
+            <div class="form-row">
+              <div class="form-group">
+                <label>Fecha <span class="req">*</span></label>
+                <input type="date" id="editFecha" required />
+              </div>
+              <div class="form-group">
+                <label>Hora <span class="req">*</span></label>
+                <input type="time" id="editHora" required />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Veterinario <span class="req">*</span></label>
+                <select id="editVeterinario" required></select>
+              </div>
+              <div class="form-group">
+                <label>Tipo de Consulta <span class="req">*</span></label>
+                <select id="editTipoConsulta" required></select>
+              </div>
+            </div>
+
+            <div class="modal-actions">
+              <button type="submit" class="btn-success">Actualizar</button>
+              <button
+                type="button"
+                id="cerrarEditarModalBtn"
+                class="btn-secondary"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
              MODAL CANCELAR CITA
         ══════════════════════════════════════════ -->
-        <div id="modalCancelar" class="modal hidden">
-            <div class="modal-content modal-compact modal-sm">
-                <div class="modal-header">
-                    <h2>Cancelar Cita</h2>
-                    <button class="btn-close-x" id="cerrarCancelar" type="button">✕</button>
-                </div>
-                <p style="font-size:13px; color: var(--text-muted, #666); margin-bottom: 12px;">
-                    ¿Estás seguro de que deseas cancelar esta cita?
-                </p>
-                <div class="form-group">
-                    <label>Motivo (opcional)</label>
-                    <input type="text" id="motivoCancelacion" placeholder="Ej: Cliente no asistirá">
-                </div>
-                <div class="modal-actions">
-                    <button type="button" id="confirmarCancelar" class="btn-danger">Confirmar</button>
-                    <button type="button" id="cerrarCancelarBtn" class="btn-secondary">Cerrar</button>
-                </div>
-            </div>
+      <div id="modalCancelar" class="modal hidden">
+        <div class="modal-content modal-compact modal-sm">
+          <div class="modal-header">
+            <h2>Cancelar Cita</h2>
+            <button class="btn-close-x" id="cerrarCancelar" type="button">
+              ✕
+            </button>
+          </div>
+          <p
+            style="
+              font-size: 13px;
+              color: var(--text-muted, #666);
+              margin-bottom: 12px;
+            "
+          >
+            ¿Estás seguro de que deseas cancelar esta cita?
+          </p>
+          <div class="form-group">
+            <label>Motivo (opcional)</label>
+            <input
+              type="text"
+              id="motivoCancelacion"
+              placeholder="Ej: Cliente no asistirá"
+            />
+          </div>
+          <div class="modal-actions">
+            <button type="button" id="confirmarCancelar" class="btn-danger">
+              Confirmar
+            </button>
+            <button type="button" id="cerrarCancelarBtn" class="btn-secondary">
+              Cerrar
+            </button>
+          </div>
         </div>
+      </div>
 
-        <!-- ══════════════════════════════════════════
+      <!-- ══════════════════════════════════════════
              MODAL ÉXITO
         ══════════════════════════════════════════ -->
-        <div id="modalExito" class="modal hidden">
-            <div class="modal-content modal-compact modal-sm modal-exito">
-                <h3 id="exitoTitulo">✅ Éxito</h3>
-                <p id="exitoMensaje">Operación realizada correctamente.</p>
-                <button id="cerrarExito">Aceptar</button>
-            </div>
+      <div id="modalExito" class="modal hidden">
+        <div class="modal-content modal-compact modal-sm modal-exito">
+          <h3 id="exitoTitulo">✅ Éxito</h3>
+          <p id="exitoMensaje">Operación realizada correctamente.</p>
+          <button id="cerrarExito">Aceptar</button>
         </div>
-
-    </div><!-- cierre div.layout -->
+      </div>
+    </div>
+    <!-- cierre div.layout -->
 
     <script src="../../js/recepcionista/interfazRecepcionista.js"></script>
     <script src="../../js/recepcionista/nueva-cita.js"></script>
     <script src="../../js/recepcionista/logout.js"></script>
     <script src="../../js/recepcionista/citas.js"></script>
-</body>
+  </body>
 </html>
