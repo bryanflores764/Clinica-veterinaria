@@ -168,23 +168,24 @@ if (buscadorInput) {
 // INICIALIZACIÓN
 // =========================
 
+// =========================
+// INICIALIZACIÓN
+// =========================
+
 document.addEventListener('DOMContentLoaded', () => {
     fetchServicios();
     
-    // Manejar el menú hamburguesa (si existe en tu interfaz)
+    // Manejar el menú hamburguesa
     const menuToggle = document.querySelector('.menu-toggle');
-    const sidebar = document.querySelector('.sidebar');
     const backdrop = document.querySelector('.sidebar-backdrop');
     
-    if (menuToggle && sidebar && backdrop) {
+    if (menuToggle && backdrop) {
         menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-            backdrop.classList.toggle('show');
+            document.body.classList.toggle('menu-open');
         });
         
         backdrop.addEventListener('click', () => {
-            sidebar.classList.remove('open');
-            backdrop.classList.remove('show');
+            document.body.classList.remove('menu-open');
         });
     }
 });
