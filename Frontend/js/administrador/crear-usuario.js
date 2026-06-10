@@ -2,7 +2,7 @@
 //  Archivo: js/administrador/crear-usuario.js
 // ============================================================
 
-const API_URL = "http://localhost:3000";
+const API_URL = window.API_URL;
 
 const form               = document.getElementById("crearUsuarioForm");
 const nombreUsuarioInput = document.getElementById("nombreUsuario");

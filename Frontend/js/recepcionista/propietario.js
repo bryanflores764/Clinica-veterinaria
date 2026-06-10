@@ -1,5 +1,5 @@
 (() => {
-    const API_URL = "http://localhost:3000/api/propietarios";
+    const API_URL = `${window.API_URL}/api/propietarios`;
     const token = localStorage.getItem("token");
 
     let propietarios = [];

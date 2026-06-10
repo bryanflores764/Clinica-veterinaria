@@ -1,5 +1,5 @@
-const API_REPORTES_VENTAS = 'http://localhost:3000/api/reportes/ventas';
-const API_PRODUCTOS_MAS_VENDIDOS = 'http://localhost:3000/api/reportes/productos-mas-vendidos';
+const API_REPORTES_VENTAS = `${window.API_URL}/api/reportes/ventas`;
+const API_PRODUCTOS_MAS_VENDIDOS = `${window.API_URL}/api/reportes/productos-mas-vendidos`;
 
 const tablaReportesVentas = document.getElementById('tablaReportesVentas');
 const tablaProductosMasVendidos = document.getElementById('tablaProductosMasVendidos');

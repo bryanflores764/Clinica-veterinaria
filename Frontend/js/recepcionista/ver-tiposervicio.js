@@ -3,7 +3,7 @@
 // Solo lectura - VetCare
 // =========================
 
-const API_BASE_URL = 'http://localhost:3000/api/tipoconsulta';
+const API_BASE_URL = `${window.API_URL}/api/tipoconsulta`;
 
 // Elementos DOM
 const serviciosContainer = document.getElementById('serviciosContainer');

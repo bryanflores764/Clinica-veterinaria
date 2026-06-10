@@ -3,7 +3,7 @@
 //  Versión: DEFINITIVA - Dos botones + Búsqueda en tiempo real
 // ============================================================
 
-const API_BASE = "http://localhost:3000";
+const API_BASE = window.API_URL;
 const API_PRODUCTOS = `${API_BASE}/api/productos`;
 const API_SERVICIOS = `${API_BASE}/api/tipoConsulta`;
 const API_VENTAS = `${API_BASE}/api/ventas`;

@@ -3,7 +3,7 @@
 // ============================================================
 
 (() => {
-    const API_URL = "http://localhost:3000/api/propietarios";
+    const API_URL = `${window.API_URL}/api/propietarios`;
 
     let propietarios = [];
     let modoModal = "ver";

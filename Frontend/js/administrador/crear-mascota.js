@@ -2,7 +2,7 @@
 // Archivo: js/administrador/crear-mascota.js
 // ============================================================
 
-const URL_API = "http://localhost:3000";
+const URL_API = window.API_URL;
 
 // Formulario
 const formularioNuevaMascota = document.getElementById("formNuevaMascota");

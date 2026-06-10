@@ -1,7 +1,7 @@
-const API_MASCOTAS      = "http://localhost:3000/api/mascotas";
-const API_VETERINARIOS  = "http://localhost:3000/api/usuarios/veterinarios";
-const API_TIPOS         = "http://localhost:3000/api/tipoConsulta";
-const API_CITAS_POST    = "http://localhost:3000/api/citas";
+const API_MASCOTAS      = `${window.API_URL}/api/mascotas`  ;
+const API_VETERINARIOS  = `${window.API_URL}/api/usuarios/veterinarios`;
+const API_TIPOS         = `${window.API_URL}/api/tipoConsulta`;
+const API_CITAS_POST    = `${window.API_URL}/api/citas`;
 
 // ── Abrir modal Nueva Cita ────────────────────────────────────
 async function abrirNuevaCita() {

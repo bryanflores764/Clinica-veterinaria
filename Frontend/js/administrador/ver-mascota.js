@@ -2,7 +2,7 @@
 // Archivo: js/administrador/ver-mascota.js
 // ============================================================
 
-const URL_API = "http://localhost:3000";
+const URL_API = window.API_URL;
 
 // Tabla y búsqueda
 const tbody = document.getElementById("users-tbody");

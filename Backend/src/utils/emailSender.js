@@ -6,8 +6,8 @@
 
 const nodemailer = require('nodemailer');
 
-const EMAIL_USER = 'vetcareclinica7@gmail.com';
-const EMAIL_PASS = 'ddrx xlhw mcqe xouh';
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASS = process.env.EMAIL_PASS;
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',

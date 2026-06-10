@@ -12,8 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "../../index.html"; /*Redirige el usuario a otra pagina como Frontend/index.html que es el login*/
 
     // 2 Notifica al backend SIN esperar respuesta (no bloquea)
-    fetch("http://localhost:3000/api/auth/logout", {/*Envia solicitud al backend para avisar que usuario cerro sesion*/
-      method: "POST", /*Se esta enviando una accion a logout*/
+    fetch(`${window.API_URL}/api/auth/logout`, {
+      method: "POST",
     }).catch(() => {});
   });
 });
