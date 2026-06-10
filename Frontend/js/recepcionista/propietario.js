@@ -305,18 +305,18 @@ const textoBotonToggle = esMovil
         const claseToggle = estadoClase === "activo" ? "btn-desactivar" : "btn-activar";
 
         tr.innerHTML = `
-            <td>${prop.Nombre || ""}</td>
-            <td>${prop.Telefono || ""}</td>
-            <td class="col-correo">${prop.Correo || ""}</td>
-            <td class="col-direccion" title="${prop.Direccion || ""}">
+            <td data-label="Nombre">${prop.Nombre || ""}</td>
+            <td data-label="Teléfono">${prop.Telefono || ""}</td>
+            <td data-label="Correo" class="col-correo">${prop.Correo || ""}</td>
+            <td data-label="Dirección" class="col-direccion" title="${prop.Direccion || ""}">
                 ${truncarTexto(prop.Direccion || "", 20)}
             </td>
-            <td class="col-estado">
+            <td data-label="Estado" class="col-estado">
                 <span class="badge ${estadoClase}">
                     ${prop.Estado || ""}
                 </span>
             </td>
-            <td>
+            <td data-label="Acciones">
                 <div class="acciones-propietario">
                     <button type="button" class="btn-ver" data-id="${prop.id}">Ver</button>
                     <button type="button" class="btn-editar" data-id="${prop.id}">Editar</button>

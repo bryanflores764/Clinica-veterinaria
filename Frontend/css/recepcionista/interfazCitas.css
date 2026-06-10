@@ -433,16 +433,26 @@ body {
 ======================= */
 @media (max-width: 600px) {
 
-  /* CENTRAR TODO */
   .main {
-    display: flex;
-    justify-content: center;
+    display: block;
   }
 
   .header-main {
     width: 100%;
-    max-width: 480px;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     text-align: center;
+  }
+
+  #contenedorTabla {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    width: 100%;
   }
 
   /* FILTRO */

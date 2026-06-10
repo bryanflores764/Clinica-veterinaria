@@ -274,16 +274,16 @@ function renderizarCitas() {
         const fila = document.createElement("tr");
 
         fila.innerHTML = `
-            <td>${cita.id || "-"}</td>
-            <td>${cita.mascota || "-"}</td>
-            <td>${formatearFecha(cita.fecha)}</td>
-            <td>${formatearHora(cita.hora)}</td>
-            <td>
+            <td data-label="ID">${cita.id || "-"}</td>
+            <td data-label="Mascota">${cita.mascota || "-"}</td>
+            <td data-label="Fecha">${formatearFecha(cita.fecha)}</td>
+            <td data-label="Hora">${formatearHora(cita.hora)}</td>
+            <td data-label="Estado">
                 <span class="${obtenerClaseEstado(cita.estado)}">
                     ${cita.estado}
                 </span>
             </td>
-            <td>
+            <td data-label="Acciones">
                 <div class="acciones-cita-veterinario">
                     <button
                         type="button"
