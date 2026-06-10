@@ -46,12 +46,12 @@ function renderUsuarios(lista) {
       const esActivo = Number(u.activo) === 1;
       return `
         <tr class="${esActivo ? "" : "inactive"}">
-          <td>${escapeHtml(u.id)}</td>
-          <td>${escapeHtml(u.Nombre_Usuario)}</td>
-          <td>${escapeHtml(u.Correo)}</td>
-          <td>${escapeHtml(u.Nombre_Rol)}</td>
-          <td>${estadoBadge(u.activo)}</td>
-          <td class="actions-col">
+          <td data-label="ID">${escapeHtml(u.id)}</td>
+          <td data-label="Usuario">${escapeHtml(u.Nombre_Usuario)}</td>
+          <td data-label="Correo">${escapeHtml(u.Correo)}</td>
+          <td data-label="Rol">${escapeHtml(u.Nombre_Rol)}</td>
+          <td data-label="Estado">${estadoBadge(u.activo)}</td>
+          <td data-label="Acciones" class="actions-col">
             <button class="btn btn-edit btn-open-edit" type="button"
               data-id="${escapeHtml(u.id)}"
               data-usuario="${escapeHtml(u.Nombre_Usuario)}"

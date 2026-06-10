@@ -361,3 +361,65 @@
         width: 100%;
     }
 }
+
+@media (max-width: 480px) {
+    .tarjetas-resumen {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .filtros-reportes {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-exportar-pdf {
+        grid-column: unset;
+    }
+
+    /* ── Tablas → tarjetas ────────────────────── */
+    .tabla-contenedor {
+        padding: 0;
+        background: transparent;
+        box-shadow: none;
+        border-radius: 0;
+        overflow: visible;
+    }
+
+    .tabla-reportes {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .tabla-reportes thead { display: none; }
+
+    .tabla-reportes tbody tr {
+        display: block;
+        background: #fff;
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+    }
+
+    .tabla-reportes tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px;
+        text-align: right;
+    }
+
+    .tabla-reportes tbody td:last-child { border-bottom: none; }
+
+    .tabla-reportes tbody td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #888;
+        font-size: 12px;
+        text-align: left;
+        flex-shrink: 0;
+        margin-right: 10px;
+    }
+}

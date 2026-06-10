@@ -744,15 +744,67 @@ body {
         font-size: 20px;
     }
 
-    .users-table thead th,
+    /* ── Tabla → tarjetas ─────────────────────── */
+    .table-wrapper {
+        overflow: visible;
+        background: transparent;
+        padding: 0;
+        border-radius: 0;
+    }
+
+    .users-table {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .users-table thead { display: none; }
+
+    .users-table tbody tr {
+        display: block;
+        background: #fff;
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+    }
+
     .users-table tbody td {
-        font-size: 13px;
-        padding: 12px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px;
+        text-align: right;
+    }
+
+    .users-table tbody td:last-child { border-bottom: none; }
+
+    .users-table tbody td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #888;
+        font-size: 12px;
+        text-align: left;
+        flex-shrink: 0;
+        margin-right: 10px;
+    }
+
+    .users-table tbody td[data-label="Acciones"] {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+
+    .users-table tbody td[data-label="Acciones"]::before {
+        margin-bottom: 2px;
     }
 
     .btn {
+        width: 100%;
+        margin-right: 0;
         font-size: 13px;
-        padding: 8px 10px;
+        padding: 9px 6px;
     }
 
     .badge {

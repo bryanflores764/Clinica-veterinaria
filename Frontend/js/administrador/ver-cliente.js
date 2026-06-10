@@ -435,18 +435,18 @@
         const tr = document.createElement("tr");
 
         tr.innerHTML = `
-            <td>${escaparHTML(nombre)}</td>
-            <td>${escaparHTML(telefono)}</td>
-            <td class="col-correo">${escaparHTML(correo)}</td>
-            <td class="col-direccion" title="${escaparHTML(direccion)}">
+            <td data-label="Nombre">${escaparHTML(nombre)}</td>
+            <td data-label="Teléfono">${escaparHTML(telefono)}</td>
+            <td data-label="Correo" class="col-correo">${escaparHTML(correo)}</td>
+            <td data-label="Dirección" class="col-direccion" title="${escaparHTML(direccion)}">
                 ${escaparHTML(truncarTexto(direccion, 20))}
             </td>
-            <td class="col-estado">
+            <td data-label="Estado" class="col-estado">
                 <span class="badge ${escaparHTML(estadoClase)}">
                     ${escaparHTML(estado)}
                 </span>
             </td>
-            <td>
+            <td data-label="Acciones">
                 <div class="acciones-propietario">
                     <button type="button" class="btn-ver" data-id="${escaparHTML(id)}">Ver</button>
                     <button type="button" class="btn-editar" data-id="${escaparHTML(id)}">Editar</button>
