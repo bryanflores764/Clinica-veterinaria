@@ -210,13 +210,13 @@ function renderizarMascotas(listaMascotas) {
         const fila = document.createElement("tr");
 
         fila.innerHTML = `
-            <td style="text-align: center;">${escapeHtml(mascota.Nombre)}</td>
-            <td style="text-align: center;">${escapeHtml(mascota.Nombre_Especie)}</td>
-            <td style="text-align: center;">${escapeHtml(mascota.Nombre_Raza)}</td>
-            <td style="text-align: center;">${formatearPeso(mascota.Peso)}</td>
-            <td style="text-align: center;">${formatearFecha(mascota.Fecha_Nacimiento)}</td>
-            <td style="text-align: center;">${escapeHtml(mascota.Propietario)}</td>
-            <td style="text-align: center;">
+            <td data-label="Nombre" style="text-align: center;">${escapeHtml(mascota.Nombre)}</td>
+            <td data-label="Especie" style="text-align: center;">${escapeHtml(mascota.Nombre_Especie)}</td>
+            <td data-label="Raza" style="text-align: center;">${escapeHtml(mascota.Nombre_Raza)}</td>
+            <td data-label="Peso (lbs)" style="text-align: center;">${formatearPeso(mascota.Peso)}</td>
+            <td data-label="Nacimiento" style="text-align: center;">${formatearFecha(mascota.Fecha_Nacimiento)}</td>
+            <td data-label="Propietario" style="text-align: center;">${escapeHtml(mascota.Propietario)}</td>
+            <td data-label="Acciones" style="text-align: center;">
                 <button 
                     type="button"
                     class="btn-accion btn-historial"
