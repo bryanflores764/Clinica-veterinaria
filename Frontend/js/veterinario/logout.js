@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "../../index.html"; /*Redirige el usuario a otra pagina como Frontend/index.html que es el login*/
 
     // 2 Notifica al backend SIN esperar respuesta (no bloquea)
-    fetch("https://clinica-veterinaria-79jk.onrender.com/api/auth/logout", {/*Envia solicitud al backend para avisar que usuario cerro sesion*/
+    fetch("https://clinica-veterinaria-backend-m3mf.onrender.com/api/auth/logout", {/*Envia solicitud al backend para avisar que usuario cerro sesion*/
       method: "POST", /*Se esta enviando una accion a logout*/
     }).catch(() => {});
   });

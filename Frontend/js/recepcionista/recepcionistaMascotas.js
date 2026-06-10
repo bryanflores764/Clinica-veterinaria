@@ -1,5 +1,5 @@
 // URL base de la API
-const URL_API = "https://clinica-veterinaria-79jk.onrender.com";
+const URL_API = "https://clinica-veterinaria-backend-m3mf.onrender.com";
 
 // Botones y elementos del modal
 const btnNuevoPaciente = document.getElementById("btn-nuevoPaciente");

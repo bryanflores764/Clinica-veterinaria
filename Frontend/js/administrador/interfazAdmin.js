@@ -31,7 +31,7 @@ if (cerrarSesion) {
 
         try {
             if (tokenActual) {
-                await fetch("https://clinica-veterinaria-79jk.onrender.com/api/auth/logout", {
+                await fetch("https://clinica-veterinaria-backend-m3mf.onrender.com/api/auth/logout", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

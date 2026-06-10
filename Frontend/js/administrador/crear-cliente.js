@@ -2,7 +2,7 @@
 // Archivo: js/administrador/crear-cliente.js
 // ============================================================
 
-const API_URL = "https://clinica-veterinaria-79jk.onrender.com";
+const API_URL = "https://clinica-veterinaria-backend-m3mf.onrender.com";
 
 const form = document.getElementById("crearClienteForm");
 

@@ -1,4 +1,4 @@
-const API_URL = "https://clinica-veterinaria-79jk.onrender.com/api/citas";
+const API_URL = "https://clinica-veterinaria-backend-m3mf.onrender.com/api/citas";
 
 // Variable para controlar envíos simultáneos
 let enviando = false;
@@ -150,9 +150,9 @@ async function abrirEditarCita(id) {
         document.getElementById("editHora").value  = fechaHora.toTimeString().slice(0, 5);
 
         await Promise.all([
-            cargarSelect("editMascota",      "https://clinica-veterinaria-79jk.onrender.com/api/mascotas",       "Seleccionar...", cita.Id_Mascota),
-            cargarSelect("editVeterinario",  "https://clinica-veterinaria-79jk.onrender.com/api/veterinarios",   "Seleccionar...", cita.Id_Veterinario, fallbackVets),
-            cargarSelect("editTipoConsulta", "https://clinica-veterinaria-79jk.onrender.com/api/tipos-consulta", "Seleccionar...", cita.IdTipoConsulta, fallbackTipos),
+            cargarSelect("editMascota",      "https://clinica-veterinaria-backend-m3mf.onrender.com/api/mascotas",       "Seleccionar...", cita.Id_Mascota),
+            cargarSelect("editVeterinario",  "https://clinica-veterinaria-backend-m3mf.onrender.com/api/veterinarios",   "Seleccionar...", cita.Id_Veterinario, fallbackVets),
+            cargarSelect("editTipoConsulta", "https://clinica-veterinaria-backend-m3mf.onrender.com/api/tipos-consulta", "Seleccionar...", cita.IdTipoConsulta, fallbackTipos),
         ]);
 
         const selectEstado = document.getElementById("editEstado");

@@ -1,6 +1,6 @@
 console.log("historial-acciones.js cargado correctamente");
 
-const API_HISTORIAL = "https://clinica-veterinaria-79jk.onrender.com](https://clinica-veterinaria-79jk.onrender.com/api/auditoria";
+const API_HISTORIAL = "https://clinica-veterinaria-backend-m3mf.onrender.com/api/auditoria";
 
 const tablaHistorialAcciones = document.getElementById("tablaHistorialAcciones");
 

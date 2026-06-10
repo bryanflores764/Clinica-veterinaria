@@ -93,7 +93,7 @@ function configurarCerrarSesion() {
         const token = localStorage.getItem("token");
 
         try {
-            await fetch("https://clinica-veterinaria-79jk.onrender.com/api/auth/logout", {
+            await fetch("https://clinica-veterinaria-backend-m3mf.onrender.com/api/auth/logout", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

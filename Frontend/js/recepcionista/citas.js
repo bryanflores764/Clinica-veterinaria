@@ -9,7 +9,7 @@
 //    4. Headers de autorización incluidos en todos los fetch.
 // ============================================================
 
-const API_URL = "https://clinica-veterinaria-79jk.onrender.com/api/citas";
+const API_URL = "https://clinica-veterinaria-backend-m3mf.onrender.com/api/citas";
 
 function obtenerToken() {
     return localStorage.getItem("token") || "";
@@ -190,7 +190,7 @@ async function abrirEditarCita(id) {
         await Promise.all([
             cargarSelectConValor(
                 "editVeterinario",
-                "https://clinica-veterinaria-79jk.onrender.com/api/usuarios/veterinarios",
+                "https://clinica-veterinaria-backend-m3mf.onrender.com/api/usuarios/veterinarios",
                 "Id",            // campo id
                 "Nombre_Usuario", // campo texto  ← FIX: era "Nombre"
                 "Seleccione Veterinario",
@@ -198,7 +198,7 @@ async function abrirEditarCita(id) {
             ),
             cargarSelectConValor(
                 "editTipoConsulta",
-                "https://clinica-veterinaria-79jk.onrender.com/api/tipoConsulta",
+                "https://clinica-veterinaria-backend-m3mf.onrender.com/api/tipoConsulta",
                 "Id",
                 "Tipo_Consulta",
                 "Seleccione Tipo",
@@ -206,7 +206,7 @@ async function abrirEditarCita(id) {
             ),
             cargarSelectConValor(
                 "editEstado",
-                "https://clinica-veterinaria-79jk.onrender.com/api/estadocita",
+                "https://clinica-veterinaria-backend-m3mf.onrender.com/api/estadocita",
                 "Id",
                 "Estado",
                 "Seleccione Estado",

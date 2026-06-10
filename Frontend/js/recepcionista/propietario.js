@@ -1,5 +1,5 @@
 (() => {
-    const API_URL = "https://clinica-veterinaria-79jk.onrender.com/api/propietarios";
+    const API_URL = "https://clinica-veterinaria-backend-m3mf.onrender.com/api/propietarios";
     const token = localStorage.getItem("token");
 
     let propietarios = [];

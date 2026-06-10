@@ -1,5 +1,5 @@
-const API_REPORTES_VENTAS = 'https://clinica-veterinaria-79jk.onrender.com/api/reportes/ventas';
-const API_PRODUCTOS_MAS_VENDIDOS = 'https://clinica-veterinaria-79jk.onrender.com/api/reportes/productos-mas-vendidos';
+const API_REPORTES_VENTAS = 'https://clinica-veterinaria-backend-m3mf.onrender.com/api/reportes/ventas';
+const API_PRODUCTOS_MAS_VENDIDOS = 'https://clinica-veterinaria-backend-m3mf.onrender.com/api/reportes/productos-mas-vendidos';
 
 const tablaReportesVentas = document.getElementById('tablaReportesVentas');
 const tablaProductosMasVendidos = document.getElementById('tablaProductosMasVendidos');

@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarCitasVeterinario();
 });
 
-const API_BASE_URL = "https://clinica-veterinaria-79jk.onrender.com/api";
+const API_BASE_URL = "https://clinica-veterinaria-backend-m3mf.onrender.com/api";
 
 let citasVeterinario = [];
 

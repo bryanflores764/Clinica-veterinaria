@@ -1,4 +1,4 @@
-const API_BASE       = "https://clinica-veterinaria-79jk.onrender.com";
+const API_BASE       = "https://clinica-veterinaria-backend-m3mf.onrender.com";
 const API_PRODUCTOS  = `${API_BASE}/api/productos`;
 const API_CATEGORIAS = `${API_BASE}/api/categorias`;
 
