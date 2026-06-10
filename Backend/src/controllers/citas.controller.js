@@ -72,7 +72,6 @@ const CitasController = {
       data: result
     });
   } catch (err) {
-    console.error(`❌ [Controller PUT /citas] Error:`, err);
     res.status(err.status || 500).json({
       success: false,
       message: err.message || 'Error interno del servidor.'
