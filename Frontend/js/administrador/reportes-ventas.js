@@ -275,12 +275,12 @@ function renderizarReportes(reportes) {
         const fila = document.createElement('tr');
 
         fila.innerHTML = `
-            <td>${formatearFecha(reporte.fecha)}</td>
-            <td>${reporte.numVentas}</td>
-            <td>${formatearDinero(reporte.totalIngresos)}</td>
-            <td>${formatearDinero(reporte.promedioVenta)}</td>
-            <td>${reporte.confirmadas}</td>
-            <td>${reporte.anuladas}</td>
+            <td data-label="Fecha">${formatearFecha(reporte.fecha)}</td>
+            <td data-label="Ventas">${reporte.numVentas}</td>
+            <td data-label="Total ingresos">${formatearDinero(reporte.totalIngresos)}</td>
+            <td data-label="Promedio">${formatearDinero(reporte.promedioVenta)}</td>
+            <td data-label="Confirmadas">${reporte.confirmadas}</td>
+            <td data-label="Anuladas">${reporte.anuladas}</td>
         `;
 
         tablaReportesVentas.appendChild(fila);
@@ -463,9 +463,9 @@ function renderizarProductosMasVendidos(productos) {
         const fila = document.createElement('tr');
 
         fila.innerHTML = `
-            <td>${producto.nombre}</td>
-            <td>${producto.cantidad}</td>
-            <td>${formatearDinero(producto.total)}</td>
+            <td data-label="Producto">${producto.nombre}</td>
+            <td data-label="Cantidad vendida">${producto.cantidad}</td>
+            <td data-label="Total generado">${formatearDinero(producto.total)}</td>
         `;
 
         tablaProductosMasVendidos.appendChild(fila);

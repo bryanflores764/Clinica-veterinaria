@@ -320,14 +320,14 @@ function renderizarMascotas(lista) {
         const fila = document.createElement("tr");
 
         fila.innerHTML = `
-            <td style="text-align: center;">${escapeHtml(id)}</td>
-            <td style="text-align: center;">${escapeHtml(nombre)}</td>
-            <td style="text-align: center;">${escapeHtml(getMascotaEspecie(mascota))}</td>
-            <td style="text-align: center;">${escapeHtml(getMascotaRaza(mascota))}</td>
-            <td style="text-align: center;">${escapeHtml(formatearPeso(getMascotaPeso(mascota)))}</td>
-            <td style="text-align: center;">${escapeHtml(formatearFecha(getMascotaFechaNacimiento(mascota)))}</td>
-            <td style="text-align: center;">${escapeHtml(getMascotaPropietario(mascota))}</td>
-            <td style="text-align: center;">
+            <td data-label="ID" style="text-align: center;">${escapeHtml(id)}</td>
+            <td data-label="Nombre" style="text-align: center;">${escapeHtml(nombre)}</td>
+            <td data-label="Especie" style="text-align: center;">${escapeHtml(getMascotaEspecie(mascota))}</td>
+            <td data-label="Raza" style="text-align: center;">${escapeHtml(getMascotaRaza(mascota))}</td>
+            <td data-label="Peso (lbs)" style="text-align: center;">${escapeHtml(formatearPeso(getMascotaPeso(mascota)))}</td>
+            <td data-label="Nacimiento" style="text-align: center;">${escapeHtml(formatearFecha(getMascotaFechaNacimiento(mascota)))}</td>
+            <td data-label="Propietario" style="text-align: center;">${escapeHtml(getMascotaPropietario(mascota))}</td>
+            <td data-label="Acciones" style="text-align: center;">
                 <button type="button" class="btn-accion btn-editar" data-id="${escapeHtml(id)}">
                     Editar
                 </button>

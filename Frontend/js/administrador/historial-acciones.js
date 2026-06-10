@@ -253,15 +253,15 @@ function mostrarHistorial(datos) {
         const fila = document.createElement("tr");
 
         fila.innerHTML = `
-            <td>${usuario}</td>
-            <td>
+            <td data-label="Usuario">${usuario}</td>
+            <td data-label="Acción">
                 <span class="badge-accion ${String(accion).toLowerCase()}">
                     ${formatearAccion(accion)}
                 </span>
             </td>
-            <td>${formatearModulo(modulo)}</td>
-            <td>${descripcion}</td>
-            <td>${formatearFecha(fecha)}</td>
+            <td data-label="Módulo">${formatearModulo(modulo)}</td>
+            <td data-label="Descripción">${descripcion}</td>
+            <td data-label="Fecha">${formatearFecha(fecha)}</td>
         `;
 
         tablaHistorialAcciones.appendChild(fila);

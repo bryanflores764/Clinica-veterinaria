@@ -292,6 +292,28 @@
     gap: 10px;
   }
 
+  /* Mensaje de bienvenida: reducir y truncar si es largo */
+  .header h1{
+    font-size: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Botón logout: solo icono (igual que interfazPacientes) */
+  .header a.btn-logout{
+    font-size: 0;
+    padding: 8px 10px;
+    flex-shrink: 0;
+  }
+
+  .header a.btn-logout img{
+    width: 24px;
+    height: 24px;
+  }
+
   /* Sidebar como panel */
   .sidebar{
     position: fixed;
@@ -629,43 +651,90 @@
 
 @media (max-width: 600px) {
     .citas-card {
-        padding: 16px;
+        padding: 25px;
         border-radius: 10px;
     }
 
-    .citas-header h2 {
-        font-size: 24px;
-    }
+    .citas-header h2 { font-size: 24px; }
+    .citas-header p  { font-size: 14px; }
 
-    .citas-header p {
-        font-size: 14px;
-    }
-
+    /* ── Tabla → tarjetas ─────────────────────────── */
     .table-wrapper {
-        padding: 8px;
+        padding: 0;
+        background: transparent;
+        overflow: visible;
     }
+
+    .tabla-citas thead { display: none; }
 
     .tabla-citas {
-        min-width: 950px;
+        min-width: unset;
+        width: 100%;
     }
 
-    .tabla-citas th,
-    .tabla-citas td {
-        padding: 10px;
-        font-size: 13px;
+    .tabla-citas tbody tr {
+        display: block;
+        background: #fff;
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+    }
+
+    .tabla-citas tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px;
+        text-align: right;
+    }
+
+    .tabla-citas tbody td:last-child {
+        border-bottom: none;
+    }
+
+    .tabla-citas tbody td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #888;
+        font-size: 12px;
+        text-align: left;
+        flex-shrink: 0;
+        margin-right: 10px;
+    }
+
+    /* Acciones: grilla 2×2 de botones */
+    .tabla-citas tbody td[data-label="Acciones"] {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .tabla-citas tbody td[data-label="Acciones"]::before {
+        margin-bottom: 2px;
+    }
+
+    .acciones-cita-veterinario {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        width: 100%;
     }
 
     .btn-estado {
-        padding: 6px 10px;
+        padding: 9px 6px;
         font-size: 12px;
+        width: 100%;
     }
 
     .estado-pendiente,
     .estado-en-curso,
     .estado-completada,
     .estado-cancelada {
-        min-width: 90px;
-        padding: 6px 10px;
+        min-width: unset;
+        padding: 5px 8px;
         font-size: 13px;
     }
 }

@@ -205,10 +205,57 @@
     }
 
     .tabla-contenedor {
-        padding: 14px;
+        padding: 0;
+        background: transparent;
+        box-shadow: none;
+        border-radius: 0;
+        overflow: visible;
     }
 
+    /* ── Tabla → tarjetas ─────────────────────── */
     .tabla-historial {
-        min-width: 760px;
+        min-width: unset;
+        width: 100%;
+    }
+
+    .tabla-historial thead { display: none; }
+
+    .tabla-historial tbody tr {
+        display: block;
+        background: #fff;
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+    }
+
+    .tabla-historial tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px;
+        text-align: right;
+    }
+
+    .tabla-historial tbody td:last-child { border-bottom: none; }
+
+    .tabla-historial tbody td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #888;
+        font-size: 12px;
+        text-align: left;
+        flex-shrink: 0;
+        margin-right: 10px;
+        padding-top: 2px;
+    }
+
+    .tabla-historial tbody td[data-label="Descripción"] {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        text-align: left;
     }
 }
