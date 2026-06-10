@@ -1,5 +1,5 @@
 (() => {
-    const API_URL = "http://localhost:3000/api/citas";
+    const API_URL = `${window.API_URL}/api/citas`;
 
     let todasLasCitas = [];
 

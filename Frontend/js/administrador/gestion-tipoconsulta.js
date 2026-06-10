@@ -2,7 +2,8 @@
 // GESTIÓN DE TIPOS DE CONSULTA - VetCare
 // =========================
 
-const API_BASE_URL = 'http://localhost:3000/api/tipoconsulta'; // Ajusta según tu backend
+const API_URL = window.API_URL;
+const API_BASE_URL = `${API_URL}/api/tipoconsulta`; 
 
 // Elementos DOM
 const tablaBody = document.getElementById('tabla-body');

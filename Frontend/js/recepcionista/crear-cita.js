@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api/citas";
+const API_URL = `${window.API_URL}/api/citas`;
 
 // Variable para controlar envíos simultáneos
 let enviando = false;
@@ -150,9 +150,9 @@ async function abrirEditarCita(id) {
         document.getElementById("editHora").value  = fechaHora.toTimeString().slice(0, 5);
 
         await Promise.all([
-            cargarSelect("editMascota",      "http://localhost:3000/api/mascotas",       "Seleccionar...", cita.Id_Mascota),
-            cargarSelect("editVeterinario",  "http://localhost:3000/api/veterinarios",   "Seleccionar...", cita.Id_Veterinario, fallbackVets),
-            cargarSelect("editTipoConsulta", "http://localhost:3000/api/tipos-consulta", "Seleccionar...", cita.IdTipoConsulta, fallbackTipos),
+            cargarSelect("editMascota",      `${window.API_URL}/api/mascotas`,       "Seleccionar...", cita.Id_Mascota),
+            cargarSelect("editVeterinario",  `${window.API_URL}/api/veterinarios`,   "Seleccionar...", cita.Id_Veterinario, fallbackVets),
+            cargarSelect("editTipoConsulta", `${window.API_URL}/api/tipos-consulta`, "Seleccionar...", cita.IdTipoConsulta, fallbackTipos),
         ]);
 
         const selectEstado = document.getElementById("editEstado");

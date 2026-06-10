@@ -1,6 +1,6 @@
 console.log("historial-acciones.js cargado correctamente");
 
-const API_HISTORIAL = "http://localhost:3000/api/auditoria";
+const API_HISTORIAL = `${window.API_URL}/api/auditoria`;
 
 const tablaHistorialAcciones = document.getElementById("tablaHistorialAcciones");
 

@@ -2,7 +2,7 @@
 //  Archivo: js/administrador/ver-usuario.js
 // ============================================================
 
-const API_URL = "http://localhost:3000";
+const API_URL = window.API_URL;
 
 const tbody      = document.getElementById("users-tbody");
 const emptyMsg   = document.getElementById("empty-msg");

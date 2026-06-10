@@ -93,7 +93,7 @@ function configurarCerrarSesion() {
         const token = localStorage.getItem("token");
 
         try {
-            await fetch("http://localhost:3000/api/auth/logout", {
+            await fetch(`${window.API_URL}/api/auth/logout`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
