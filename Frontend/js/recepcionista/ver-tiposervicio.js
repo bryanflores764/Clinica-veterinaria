@@ -167,9 +167,6 @@ if (buscadorInput) {
 // =========================
 // INICIALIZACIÓN
 // =========================
-// =========================
-// INICIALIZACIÓN
-// =========================
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchServicios();
