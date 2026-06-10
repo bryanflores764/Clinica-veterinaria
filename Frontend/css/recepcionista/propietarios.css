@@ -309,12 +309,6 @@
     padding: 15px 12px;
   }
 
-  .col-correo,
-  .col-direccion,
-  .col-estado {
-    display: none;
-  }
-
   .owners-toolbar {
     gap: 12px;
     margin-bottom: 15px;
@@ -339,33 +333,72 @@
     padding: 9px 12px;
   }
 
+  /* ── Tabla → tarjetas ────────────────────────────────── */
+  .owners-table-wrapper {
+    overflow: visible;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+  }
+
   .owners-table {
-    min-width: 100%;
+    min-width: unset;
+    width: 100%;
   }
 
-  .owners-table th,
-  .owners-table td {
-    padding: 8px 6px;
-    font-size: 13px;
+  .owners-table thead { display: none; }
+
+  .owners-table tbody tr {
+    display: block;
+    background: #fff;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
   }
 
-  .owners-table td span.badge {
-    min-width: 65px;
-    font-size: 13px;
+  .owners-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    text-align: right;
   }
+
+  .owners-table tbody td:last-child { border-bottom: none; }
+
+  .owners-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #888;
+    font-size: 12px;
+    text-align: left;
+    flex-shrink: 0;
+    margin-right: 10px;
+  }
+
+  .owners-table tbody td[data-label="Acciones"] {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .owners-table tbody td[data-label="Acciones"]::before { margin-bottom: 2px; }
 
   .acciones-propietario {
-    gap: 4px;
+    flex-direction: column;
+    gap: 6px;
   }
 
   .owners-table button {
-    padding: 5px 8px;
-    font-size: 12px;
+    width: 100%;
+    padding: 9px 6px;
+    font-size: 13px;
   }
 
-  .btn-toggle {
-    min-width: 55px;
-  }
+  .btn-toggle { min-width: unset; }
 
   .notificacion {
     min-width: unset;

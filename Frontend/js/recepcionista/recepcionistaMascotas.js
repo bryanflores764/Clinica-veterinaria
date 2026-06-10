@@ -675,22 +675,20 @@ function renderizarMascotas(lista) {
         const fila = document.createElement("tr");
 
         fila.innerHTML = `
-            <td style="text-align: center;">${mascota.Id ?? ""}</td>
-            <td style="text-align: center;">${escapeHtml(mascota.Nombre ?? "")}</td>
-            <td style="text-align: center;">${escapeHtml(mascota.Nombre_Especie ?? "")}</td>
-            <td style="text-align: center;">${escapeHtml(mascota.Nombre_Raza ?? "")}</td>
-            <td style="text-align: center;">${formatearPeso(mascota.Peso)}</td>
-            <td style="text-align: center;">${formatearFecha(mascota.Fecha_Nacimiento)}</td>
-            <td style="text-align: center;">${escapeHtml(mascota.Propietario ?? "")}</td>
-            <td style="text-align: center;">
-                
-                <button type="button" 
-                class="btn-accion btn-editar" 
+            <td data-label="ID" style="text-align: center;">${mascota.Id ?? ""}</td>
+            <td data-label="Nombre" style="text-align: center;">${escapeHtml(mascota.Nombre ?? "")}</td>
+            <td data-label="Especie" style="text-align: center;">${escapeHtml(mascota.Nombre_Especie ?? "")}</td>
+            <td data-label="Raza" style="text-align: center;">${escapeHtml(mascota.Nombre_Raza ?? "")}</td>
+            <td data-label="Peso" style="text-align: center;">${formatearPeso(mascota.Peso)}</td>
+            <td data-label="Nacimiento" style="text-align: center;">${formatearFecha(mascota.Fecha_Nacimiento)}</td>
+            <td data-label="Propietario" style="text-align: center;">${escapeHtml(mascota.Propietario ?? "")}</td>
+            <td data-label="Acciones" style="text-align: center;">
+                <button type="button"
+                class="btn-accion btn-editar"
                 data-id="${mascota.Id}">
                 Editar
                 </button>
-                
-                <button type="button" class="btn-accion btn-eliminar" 
+                <button type="button" class="btn-accion btn-eliminar"
                 data-id="${mascota.Id}" data-nombre="${escapeHtml(mascota.Nombre ?? "")}">
                 Eliminar
                 </button>

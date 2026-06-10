@@ -171,17 +171,17 @@ async function cargarVentas() {
             const anulada      = estado?.toLowerCase() === "anulada";
 
             tr.innerHTML = `
-                <td>${fecha}</td>
-                <td>${propietario}</td>
-                <td>$${total}</td>
-                <td>
+                <td data-label="Fecha">${fecha}</td>
+                <td data-label="Propietario">${propietario}</td>
+                <td data-label="Total">$${total}</td>
+                <td data-label="Método">
                     ${metodo
                         ? `<span class="venta-metodo">${formatearMetodoPago(metodo)}</span>`
                         : "—"
                     }
                 </td>
-                <td><span class="venta-estado ${claseEstado}">${estado}</span></td>
-                <td>
+                <td data-label="Estado"><span class="venta-estado ${claseEstado}">${estado}</span></td>
+                <td data-label="Acciones">
                     <div class="ventas-actions">
                         <button type="button" class="btn-detalle-venta" data-id="${idVenta}">Detalle</button>
                         <button type="button" class="btn-factura-venta"

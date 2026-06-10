@@ -743,69 +743,82 @@
         width: calc(100% - 24px);
         padding: 12px;
         border-radius: 12px;
-
-        /* Cuadro estático */
-        min-height: 620px;
-        max-height: 620px;
-
-        /* Evita que el contenido rompa el cuadro */
-        overflow: hidden;
         box-sizing: border-box;
     }
 
     .ventas-table-card {
         width: 100%;
-        height: 100%;
-        min-height: 590px;
-        max-height: 590px;
-
         padding: 10px;
         border-radius: 14px;
         box-sizing: border-box;
-
-        display: flex;
-        flex-direction: column;
-
-        overflow: hidden;
     }
 
     .table-responsive {
         width: 100%;
-        flex: 1;
-
-        overflow-x: auto;
-        overflow-y: auto;
-
-        border-radius: 10px;
-        -webkit-overflow-scrolling: touch;
+        overflow: visible;
     }
 
+    /* ── Tabla → tarjetas ────────────────────────────── */
     .ventas-table {
-        width: max-content;
-        min-width: 620px;
+        min-width: unset;
+        width: 100%;
         border-collapse: collapse;
     }
 
-    .ventas-table th,
-    .ventas-table td {
-        padding: 10px 12px;
-        font-size: 12px;
-        white-space: nowrap;
+    .ventas-table thead { display: none; }
+
+    .ventas-table tbody tr {
+        display: block;
+        background: #fff;
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
     }
 
-    .ventas-table th {
-        font-size: 11px;
+    .ventas-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px;
+        text-align: right;
+        white-space: normal;
     }
+
+    .ventas-table tbody td:last-child { border-bottom: none; }
+
+    .ventas-table tbody td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #888;
+        font-size: 12px;
+        text-align: left;
+        flex-shrink: 0;
+        margin-right: 10px;
+    }
+
+    .ventas-table tbody td[data-label="Acciones"] {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+
+    .ventas-table tbody td[data-label="Acciones"]::before { margin-bottom: 2px; }
 
     .ventas-actions {
+        flex-direction: column;
         gap: 6px;
         flex-wrap: nowrap;
     }
 
     .btn-detalle-venta,
+    .btn-factura-venta,
     .btn-anular-venta {
-        padding: 7px 10px;
-        font-size: 12px;
+        width: 100%;
+        padding: 9px 12px;
+        font-size: 13px;
         border-radius: 8px;
     }
 
@@ -877,31 +890,15 @@
         margin: 10px;
         width: calc(100% - 20px);
         padding: 10px;
-
-        min-height: 620px;
-        max-height: 620px;
     }
 
     .ventas-table-card {
-        min-height: 590px;
-        max-height: 590px;
         padding: 8px;
     }
 
     .header-main h1,
     .header-main .title {
         font-size: 20px;
-    }
-
-    .ventas-table {
-        width: max-content;
-        min-width: 600px;
-    }
-
-    .ventas-table th,
-    .ventas-table td {
-        padding: 9px 10px;
-        font-size: 12px;
     }
 
     .venta-tabla {
