@@ -326,44 +326,13 @@ CREATE TABLE `reportes_generados` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-INSERT INTO `roles` VALUES (1,'Administrador'),(3,'Recepcionista'),(2,'Veterinario');
-
-INSERT INTO `categorias` VALUES (4,'ACcesorios'),(3,'Alimentos'),(5,'Higiene y Cuidado'),(1,'Medicamentos'),(2,'Vacunas');
-
-INSERT INTO `permisos` (`RolId`, `Modulo`, `Puede_Crear`, `Puede_Leer`, `Puede_Editar`, `Puede_Eliminar`) VALUES
--- Administrador (RolId = 1) - todo
-(1, 'usuarios',        1, 1, 1, 1),
-(1, 'roles',           1, 1, 1, 1),
-(1, 'permisos',        1, 1, 1, 1),
-(1, 'propietarios',    1, 1, 1, 1),
-(1, 'mascotas',        1, 1, 1, 1),
-(1, 'citas',           1, 1, 1, 1),
-(1, 'historial',       1, 1, 1, 1),
-(1, 'consultas',       1, 1, 1, 1),
-(1, 'vacunas',         1, 1, 1, 1),
-(1, 'productos',       1, 1, 1, 1),
-(1, 'categorias',      1, 1, 1, 1),
-(1, 'ventas',          1, 1, 1, 1),
-(1, 'facturas',        1, 1, 1, 1),
-(1, 'reportes',        1, 1, 1, 1),
-(1, 'auditoria',       0, 1, 0, 0),
-
--- Veterinario (RolId = 2)
-(2, 'propietarios',    1, 1, 1, 0),
-(2, 'mascotas',        1, 1, 1, 0),
-(2, 'citas',           1, 1, 1, 0),
-(2, 'historial',       1, 1, 1, 0),
-(2, 'consultas',       1, 1, 1, 0),
-(2, 'vacunas',         1, 1, 1, 0),
-(2, 'productos',       0, 1, 0, 0),
-(2, 'reportes',        0, 1, 0, 0),
-
--- Recepcionista (RolId = 3)
-(3, 'propietarios',    1, 1, 1, 0),
-(3, 'mascotas',        1, 1, 1, 0),
-(3, 'citas',           1, 1, 1, 0),
-(3, 'historial',       0, 1, 0, 0),
-(3, 'vacunas',         0, 1, 0, 0),
-(3, 'productos',       0, 1, 0, 0),
-(3, 'ventas',          1, 1, 0, 0),
-(3, 'facturas',        0, 1, 0, 0);
+INSERT INTO permisos (
+    RolId,
+    Modulo,
+    Puede_Crear,
+    Puede_Leer,
+    Puede_Editar,
+    Puede_Eliminar
+)
+VALUES 
+(1, 'Permisos', 1, 1, 1, 1);
