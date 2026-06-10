@@ -82,7 +82,7 @@ function renderTabla(tipos) {
             <td>${tipo.Id}</td>
             <td><strong>${escapeHtml(tipo.Tipo_Consulta)}</strong></td>
             <td>${escapeHtml(tipo.Descripcion || '-')}</td>
-            <td>💰 € ${parseFloat(tipo.Precio).toFixed(2)}</td>
+            <td>💰 $ ${parseFloat(tipo.Precio).toFixed(2)}</td>
             <td>
                 <button class="btn-editar" onclick="editarTipo(${tipo.Id})">✏️ Editar</button>
                 <button class="btn-eliminar" onclick="confirmarEliminar(${tipo.Id}, '${escapeHtml(tipo.Tipo_Consulta).replace(/'/g, "\\'")}')">🗑️ Eliminar</button>
