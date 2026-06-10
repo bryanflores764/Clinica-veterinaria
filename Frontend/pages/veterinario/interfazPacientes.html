@@ -45,7 +45,14 @@
                 ☰
             </button>
 
+
             <div class="header-actions">
+
+
+                <button class="btn-icc-header" id="btn-icc-header">
+                    <img src="../../assets/icons/Logo-de-clínica-Veterinaria-azul.ico" alt="Calcular ICC">
+                    Calcular ICC
+                </button>
                 <a href="../../index.html" class="btn-logout" id="cerrar-sesion">
                     <img src="../../assets/icons/icon-sesion.svg" alt="Cerrar sesión">
                     Cerrar Sesión
@@ -524,6 +531,128 @@
         </div>
     </div>
 
+
+    <<!-- Modal Calcular ICC - CORREGIDO -->
+<!-- Modal Calcular ICC - Versión Manual con todas las especies -->
+<<!-- Modal Calcular ICC -->
+<div class="modal" id="modal-icc">
+    <div class="modal-content modal-content-icc">
+        <div class="modal-header">
+            <h2>🐾 Índice de Condición Corporal (ICC)</h2>
+            <button type="button" class="btn-cerrar-modal" id="cerrar-modal-icc">×</button>
+        </div>
+
+        <div class="icc-container">
+            <!-- Selector de mascota -->
+            <div class="form-group">
+                <label>🔍 Seleccionar mascota</label>
+                <select id="icc-mascota-select" class="icc-mascota-select">
+                    <option value="">-- Seleccione una mascota --</option>
+                </select>
+            </div>
+
+            <!-- Información de la mascota seleccionada (SOLO PARA MOSTRAR) -->
+            <div class="icc-info-mascota" id="icc-info-mascota" style="display:none;">
+                <h3 id="icc-mascota-nombre">-</h3>
+                <p id="icc-mascota-especie">-</p>
+                <p id="icc-mascota-propietario">-</p>
+            </div>
+
+            <!-- FORMULARIO MANUAL (igual que antes) -->
+            <form id="form-icc" class="form-icc">
+                <h3 style="margin-bottom: 15px; color: #333;">📋 Datos para el cálculo</h3>
+                
+                <!-- Especie -->
+                <div class="form-group">
+                    <label>🐕 Especie *</label>
+                    <select id="icc-especie" class="icc-select" required>
+                        <option value="">-- Seleccione una especie --</option>
+                        <option value="perro">🐕 Perro (Canino)</option>
+                        <option value="gato">🐱 Gato (Felino)</option>
+                        <option value="conejo">🐇 Conejo</option>
+                        <option value="hamster">🐹 Hámster</option>
+                        <option value="cobaya">🐹 Cobaya / Cuy</option>
+                        <option value="rata">🐀 Rata</option>
+                        <option value="raton">🐭 Ratón</option>
+                        <option value="erizo">🦔 Erizo</option>
+                        <option value="hurón">🦫 Hurón</option>
+                        <option value="cerdo">🐷 Cerdo / Chancho</option>
+                        <option value="caballo">🐴 Caballo / Equino</option>
+                        <option value="vaca">🐮 Vaca / Bovino</option>
+                        <option value="oveja">🐑 Oveja / Ovino</option>
+                        <option value="cabra">🐐 Cabra / Caprino</option>
+                        <option value="gallina">🐔 Gallina / Ave</option>
+                        <option value="pato">🦆 Pato</option>
+                        <option value="loro">🦜 Loro / Ave exótica</option>
+                        <option value="tortuga">🐢 Tortuga / Reptil</option>
+                        <option value="iguana">🦎 Iguana / Reptil</option>
+                        <option value="serpiente">🐍 Serpiente</option>
+                        <option value="pez">🐠 Pez</option>
+                        <option value="otro">🦄 Otro</option>
+                    </select>
+                    <small class="error-msg"></small>
+                </div>
+
+                <!-- Tamaño/Complexión (solo para perros) -->
+                <div class="form-group" id="grupo-tamanio" style="display:none;">
+                    <label>📏 Tamaño / Complexión *</label>
+                    <select id="icc-tamanio" class="icc-select">
+                        <option value="">-- Seleccione tamaño --</option>
+                        <option value="mini">🐕 Mini / Juguete (menos de 5 kg)</option>
+                        <option value="pequeno">🐕 Pequeño (5-10 kg)</option>
+                        <option value="mediano">🐕 Mediano (10-25 kg)</option>
+                        <option value="grande">🐕 Grande (25-45 kg)</option>
+                        <option value="gigante">🐕 Gigante (más de 45 kg)</option>
+                    </select>
+                    <small class="error-msg"></small>
+                </div>
+
+                <!-- Rango de peso ideal (para otras especies) -->
+                <div class="form-group" id="grupo-rango" style="display:none;">
+                    <label>📏 Rango de tamaño *</label>
+                    <select id="icc-rango" class="icc-select">
+                        <option value="">-- Seleccione rango --</option>
+                        <option value="pequeno">Pequeño</option>
+                        <option value="mediano">Mediano</option>
+                        <option value="grande">Grande</option>
+                    </select>
+                    <small class="error-msg"></small>
+                </div>
+
+                <!-- Peso actual -->
+                <div class="form-group">
+                    <label>⚖️ Peso actual (lbs) *</label>
+                    <input type="number" id="icc-peso" step="0.01" min="0" placeholder="Ej: 12.5" required>
+                    <small class="error-msg"></small>
+                </div>
+
+                <button type="submit" class="btn-calcular-icc">
+                    🔍 Calcular ICC
+                </button>
+            </form>
+
+            <!-- Resultados -->
+            <div id="icc-resultado" class="icc-resultado" style="display:none;">
+                <div class="icc-resultado-header">
+                    <h3>📋 Resultado del ICC</h3>
+                    <span class="icc-fecha" id="icc-fecha-calculo"></span>
+                </div>
+                
+                <div class="icc-puntuacion">
+                    <span class="icc-label">Puntuación:</span>
+                    <span class="icc-valor" id="icc-puntuacion">-</span>
+                    <span class="icc-escala">/ 9</span>
+                </div>
+
+                <div class="icc-categoria" id="icc-categoria"></div>
+                
+                <div class="icc-descripcion" id="icc-descripcion"></div>
+                
+                <div class="icc-recomendaciones" id="icc-recomendaciones"></div>
+            </div>
+        </div>
+    </div>
+</div>
     <div id="toast-container" class="toast-container"></div>
 
     <script src="../../js/veterinario/logout.js"></script>

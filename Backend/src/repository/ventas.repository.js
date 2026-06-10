@@ -1,13 +1,11 @@
 // ============================================================
-//  CAPA: Repository
-//  Archivo: ventas.repository.js
+//  REPOSITORY: ventas.repository.js
 // ============================================================
 
-const connection   = require('../database/connection');
+const connection = require('../database/connection');
 const VentasQueries = require('../models/ventas.models');
 
 // ── VENTAS ────────────────────────────────────────────────────
-
 const createVenta = async (idPropietario) => {
   const [result] = await connection.execute(VentasQueries.CREATE_VENTA, [idPropietario]);
   return { id: result.insertId, Id_Propietario: idPropietario };
@@ -28,17 +26,23 @@ const findDetalleByVenta = async (idVenta) => {
   return rows;
 };
 
-// ── DETALLE ───────────────────────────────────────────────────
-
-const createDetalle = async (idVenta, idProducto, cantidad, precioUnitario) => {
-  const [result] = await connection.execute(VentasQueries.CREATE_DETALLE, [
+// ── DETALLE PRODUCTOS ─────────────────────────────────────────
+const createDetalleProducto = async (idVenta, idProducto, cantidad, precioUnitario) => {
+  const [result] = await connection.execute(VentasQueries.CREATE_DETALLE_PRODUCTO, [
     idVenta, idProducto, cantidad, precioUnitario,
   ]);
   return { id: result.insertId, Id_Venta: idVenta, Id_Producto: idProducto, Cantidad: cantidad, Precio_Unitario: precioUnitario };
 };
 
-// ── STOCK ─────────────────────────────────────────────────────
+// ── DETALLE SERVICIOS ─────────────────────────────────────────
+const createDetalleServicio = async (idVenta, idServicio, cantidad, precioUnitario) => {
+  const [result] = await connection.execute(VentasQueries.CREATE_DETALLE_SERVICIO, [
+    idVenta, idServicio, cantidad, precioUnitario,
+  ]);
+  return { id: result.insertId, Id_Venta: idVenta, Id_Servicio: idServicio, Cantidad: cantidad, Precio_Unitario: precioUnitario };
+};
 
+// ── STOCK ─────────────────────────────────────────────────────
 const getStockProducto = async (idProducto) => {
   const [rows] = await connection.execute(VentasQueries.GET_STOCK_PRODUCTO, [idProducto]);
   return rows[0] || null;
@@ -55,7 +59,6 @@ const actualizarStock = async (idProducto, nuevoStock) => {
 };
 
 // ── MOVIMIENTOS ───────────────────────────────────────────────
-
 const registrarMovimientoStock = async (idProducto, idVenta, idUsuario, tipo, cantidad, stockAntes, stockDespues) => {
   const [result] = await connection.execute(VentasQueries.REGISTRAR_MOVIMIENTO, [
     idProducto, idVenta, idUsuario, tipo, cantidad, stockAntes, stockDespues,
@@ -64,18 +67,17 @@ const registrarMovimientoStock = async (idProducto, idVenta, idUsuario, tipo, ca
 };
 
 // ── TOTAL ─────────────────────────────────────────────────────
-
-const calcularTotal = async (idVenta) => {
-  const [rows] = await connection.execute(VentasQueries.CALCULAR_TOTAL, [idVenta]);
-  return rows[0]?.Total ?? 0;
+const calcularTotalCompleto = async (idVenta) => {
+  const [rows] = await connection.execute(
+    `SELECT COALESCE(SUM(Cantidad * Precio_Unitario), 0) as Total 
+     FROM detalleventa 
+     WHERE Id_Venta = ?`,
+    [idVenta]
+  );
+  return rows[0]?.Total || 0;
 };
 
 // ── ESTADOS ───────────────────────────────────────────────────
-
-/**
- * Confirma la venta y guarda de una sola vez: total, método de pago,
- * monto recibido y cambio.
- */
 const confirmarVentaConPago = async (idVenta, total, metodoPago, montoRecibido, cambio) => {
   const [result] = await connection.execute(VentasQueries.CONFIRMAR_VENTA_CON_PAGO, [
     total, metodoPago, montoRecibido, cambio, idVenta,
@@ -88,8 +90,18 @@ const anularVentaConDatos = async (idVenta, idUsuario) => {
   return result.affectedRows;
 };
 
-// ── FACTURACIÓN ───────────────────────────────────────────────
+// ── SERVICIOS ─────────────────────────────────────────────────
+const findAllServicios = async () => {
+  const [rows] = await connection.execute(VentasQueries.FIND_ALL_SERVICIOS);
+  return rows;
+};
 
+const findServicioById = async (id) => {
+  const [rows] = await connection.execute(VentasQueries.FIND_SERVICIO_BY_ID, [id]);
+  return rows[0] || null;
+};
+
+// ── FACTURACIÓN ───────────────────────────────────────────────
 const getFacturaByVenta = async (idVenta) => {
   const [rows] = await connection.execute(VentasQueries.GET_FACTURA_BY_VENTA, [idVenta]);
   return rows[0] || null;
@@ -112,6 +124,7 @@ const createFactura = async (data) => {
   
   return { id: result.insertId, codigoGeneracion };
 };
+
 const updateFacturaEnvio = async (idVenta, estadoEnvio, fechaEnvio, mensajeError) => {
   const [result] = await connection.execute(VentasQueries.UPDATE_FACTURA_ENVIO, [
     estadoEnvio, fechaEnvio, mensajeError || null, idVenta,
@@ -126,22 +139,6 @@ const updateVentaFactura = async (idVenta, data) => {
   return result.affectedRows;
 };
 
-const findClienteFacturacionByPropietario = async (idPropietario) => {
-  const [rows] = await connection.execute(
-    'SELECT * FROM clientesfacturacion WHERE Id_Propietario = ? LIMIT 1',
-    [idPropietario]
-  );
-  return rows[0] || null;
-};
-
-const findClienteFacturacionById = async (id) => {
-  const [rows] = await connection.execute(
-    'SELECT * FROM clientesfacturacion WHERE Id = ?',
-    [id]
-  );
-  return rows[0] || null;
-};
-
 const findPropietarioById = async (id) => {
   const [rows] = await connection.execute(
     'SELECT Id, Nombre, Correo, Telefono FROM propietarios WHERE Id = ?',
@@ -151,37 +148,34 @@ const findPropietarioById = async (id) => {
 };
 
 const getUltimoCodigoFactura = async () => {
-  // Contar cuántas facturas existen en total
   const [rows] = await connection.execute(
     "SELECT COUNT(*) as total FROM facturaelectronica"
   );
-
-  
   const numero = rows[0].total + 1;
   return `VC${numero.toString().padStart(4, '0')}`;
 };
 
 // ── EXPORTAR ──────────────────────────────────────────────────
-
 module.exports = {
   createVenta,
   findAllVentas,
   findVentaById,
   findDetalleByVenta,
-  createDetalle,
+  createDetalleProducto,
+  createDetalleServicio,
   getStockProducto,
   descontarStock,
   actualizarStock,
   registrarMovimientoStock,
-  calcularTotal,
+  calcularTotalCompleto,
   confirmarVentaConPago,
   anularVentaConDatos,
+  findAllServicios,
+  findServicioById,
   getFacturaByVenta,
   createFactura,
   updateFacturaEnvio,
   updateVentaFactura,
-  findClienteFacturacionByPropietario,
-  findClienteFacturacionById,
   findPropietarioById,
-  getUltimoCodigoFactura
+  getUltimoCodigoFactura,
 };

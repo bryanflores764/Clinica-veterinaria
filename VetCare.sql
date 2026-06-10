@@ -1,17 +1,35 @@
-CREATE DATABASE IF NOT EXISTS `vetcare2` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
-
-USE `vetcare2`;
-
--- ============================================
--- TABLAS
--- ============================================
+CREATE DATABASE IF NOT EXISTS `vetcare3` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+USE `vetcare3`;
 
 CREATE TABLE `roles` (
   `id` int NOT NULL AUTO_INCREMENT,
   `Nombre_Rol` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `Nombre_Rol` (`Nombre_Rol`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `categorias` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `Nombre_Categoria` varchar(100) NOT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `Nombre_Categoria` (`Nombre_Categoria`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `especies` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `Nombre_Especie` varchar(50) NOT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `Nombre_Especie` (`Nombre_Especie`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `razas` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `Id_Especie` int NOT NULL,
+  `Nombre_Raza` varchar(100) NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `razas_ibfk_1` (`Id_Especie`),
+  CONSTRAINT `razas_ibfk_1` FOREIGN KEY (`Id_Especie`) REFERENCES `especies` (`Id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `usuarios` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -24,23 +42,20 @@ CREATE TABLE `usuarios` (
   UNIQUE KEY `Correo` (`Correo`),
   KEY `RolId` (`RolId`),
   CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`RolId`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `especies` (
-  `Id` int NOT NULL AUTO_INCREMENT,
-  `Nombre_Especie` varchar(50) NOT NULL,
-  PRIMARY KEY (`Id`),
-  UNIQUE KEY `Nombre_Especie` (`Nombre_Especie`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `razas` (
-  `Id` int NOT NULL AUTO_INCREMENT,
-  `Id_Especie` int NOT NULL,
-  `Nombre_Raza` varchar(100) NOT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `razas_ibfk_1` (`Id_Especie`),
-  CONSTRAINT `razas_ibfk_1` FOREIGN KEY (`Id_Especie`) REFERENCES `especies` (`Id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE `permisos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `RolId` int NOT NULL,
+  `Modulo` varchar(100) NOT NULL,
+  `Puede_Crear` tinyint(1) DEFAULT '0',
+  `Puede_Leer` tinyint(1) DEFAULT '0',
+  `Puede_Editar` tinyint(1) DEFAULT '0',
+  `Puede_Eliminar` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `RolId` (`RolId`),
+  CONSTRAINT `permisos_ibfk_1` FOREIGN KEY (`RolId`) REFERENCES `roles` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `propietarios` (
   `Id` int NOT NULL AUTO_INCREMENT,
@@ -51,7 +66,7 @@ CREATE TABLE `propietarios` (
   `Estado` enum('activo','inactivo') NOT NULL DEFAULT 'activo',
   PRIMARY KEY (`Id`),
   UNIQUE KEY `Correo` (`Correo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `mascotas` (
   `Id` int NOT NULL AUTO_INCREMENT,
@@ -66,21 +81,23 @@ CREATE TABLE `mascotas` (
   KEY `mascotas_ibfk_2` (`Id_Raza`),
   CONSTRAINT `mascotas_ibfk_1` FOREIGN KEY (`Id_Propietario`) REFERENCES `propietarios` (`Id`) ON DELETE CASCADE,
   CONSTRAINT `mascotas_ibfk_2` FOREIGN KEY (`Id_Raza`) REFERENCES `razas` (`Id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `tipoconsulta` (
-  `Id` int NOT NULL AUTO_INCREMENT,
-  `Tipo_Consulta` varchar(100) NOT NULL,
-  PRIMARY KEY (`Id`),
-  UNIQUE KEY `Tipo_Consulta` (`Tipo_Consulta`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `estadocita` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `Estado` varchar(50) NOT NULL,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `Estado` (`Estado`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `tipoconsulta` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `Tipo_Consulta` varchar(100) NOT NULL,
+  `Descripcion` varchar(2000) DEFAULT NULL,
+  `Precio` decimal(10,2) NOT NULL DEFAULT '0.00',
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `Tipo_Consulta` (`Tipo_Consulta`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `citas` (
   `IdCita` int NOT NULL AUTO_INCREMENT,
@@ -98,76 +115,7 @@ CREATE TABLE `citas` (
   CONSTRAINT `citas_ibfk_2` FOREIGN KEY (`Id_Veterinario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `citas_ibfk_3` FOREIGN KEY (`IdEstadoCita`) REFERENCES `estadocita` (`Id`) ON DELETE CASCADE,
   CONSTRAINT `citas_ibfk_4` FOREIGN KEY (`IdTipoConsulta`) REFERENCES `tipoconsulta` (`Id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `categorias` (
-  `Id` int NOT NULL AUTO_INCREMENT,
-  `Nombre_Categoria` varchar(100) NOT NULL,
-  PRIMARY KEY (`Id`),
-  UNIQUE KEY `Nombre_Categoria` (`Nombre_Categoria`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `productos` (
-  `Id` int NOT NULL AUTO_INCREMENT,
-  `Id_Categoria` int NOT NULL,
-  `Nombre_Producto` varchar(150) NOT NULL,
-  `Descripcion` varchar(300) DEFAULT NULL,
-  `Precio` decimal(10,2) NOT NULL,
-  `Stock` int NOT NULL DEFAULT '0',
-  `Estado` enum('activo','inactivo') NOT NULL DEFAULT 'activo',
-  PRIMARY KEY (`Id`),
-  KEY `idx_productos_categoria` (`Id_Categoria`,`Estado`),
-  CONSTRAINT `productos_ibfk_1` FOREIGN KEY (`Id_Categoria`) REFERENCES `categorias` (`Id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `ventas` (
-  `Id` int NOT NULL AUTO_INCREMENT,
-  `Id_Propietario` int NOT NULL,
-  `Fecha_Venta` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `Total` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `Metodo_Pago` enum('efectivo','tarjeta','transferencia') NOT NULL,
-  `Monto_Recibido` decimal(10,2) DEFAULT NULL,
-  `Cambio` decimal(10,2) DEFAULT NULL,
-  `Estado` enum('activa','confirmada','anulada') NOT NULL DEFAULT 'activa',
-  `Anulado_Por` int DEFAULT NULL,
-  `Fecha_Anulacion` datetime DEFAULT NULL,
-  `requiere_factura` tinyint(1) DEFAULT '0',
-  `correo_factura` varchar(150) DEFAULT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `ventas_ibfk_1` (`Id_Propietario`),
-  KEY `fk_ventas_anulado_por` (`Anulado_Por`),
-  CONSTRAINT `fk_ventas_anulado_por` FOREIGN KEY (`Anulado_Por`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `ventas_ibfk_1` FOREIGN KEY (`Id_Propietario`) REFERENCES `propietarios` (`Id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `detalleventa` (
-  `Id` int NOT NULL AUTO_INCREMENT,
-  `Id_Venta` int NOT NULL,
-  `Id_Producto` int NOT NULL,
-  `Cantidad` int NOT NULL,
-  `Precio_Unitario` decimal(10,2) NOT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `detalleventa_ibfk_2` (`Id_Producto`),
-  KEY `idx_detalle_venta` (`Id_Venta`,`Id_Producto`),
-  CONSTRAINT `detalleventa_ibfk_1` FOREIGN KEY (`Id_Venta`) REFERENCES `ventas` (`Id`) ON DELETE CASCADE,
-  CONSTRAINT `detalleventa_ibfk_2` FOREIGN KEY (`Id_Producto`) REFERENCES `productos` (`Id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `auditoria_acciones` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `usuario_id` int NOT NULL,
-  `modulo` varchar(50) NOT NULL,
-  `accion` varchar(50) NOT NULL,
-  `descripcion` text,
-  `ip` varchar(45) DEFAULT NULL,
-  `referencia_id` int DEFAULT NULL,
-  `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `idx_usuario` (`usuario_id`),
-  KEY `idx_modulo` (`modulo`),
-  KEY `idx_fecha` (`fecha`),
-  CONSTRAINT `auditoria_acciones_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `historial_clinico` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -186,7 +134,7 @@ CREATE TABLE `historial_clinico` (
   KEY `idx_estado` (`estado`),
   CONSTRAINT `historial_clinico_ibfk_1` FOREIGN KEY (`mascota_id`) REFERENCES `mascotas` (`Id`) ON DELETE CASCADE,
   CONSTRAINT `historial_clinico_ibfk_2` FOREIGN KEY (`veterinario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `consultas_medicas` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -206,7 +154,7 @@ CREATE TABLE `consultas_medicas` (
   KEY `idx_fecha` (`fecha`),
   CONSTRAINT `consultas_medicas_ibfk_1` FOREIGN KEY (`historial_id`) REFERENCES `historial_clinico` (`id`) ON DELETE CASCADE,
   CONSTRAINT `consultas_medicas_ibfk_2` FOREIGN KEY (`veterinario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `vacunas_aplicadas` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -226,7 +174,7 @@ CREATE TABLE `vacunas_aplicadas` (
   KEY `idx_proxima_dosis` (`proxima_dosis`),
   CONSTRAINT `vacunas_aplicadas_ibfk_1` FOREIGN KEY (`mascota_id`) REFERENCES `mascotas` (`Id`) ON DELETE CASCADE,
   CONSTRAINT `vacunas_aplicadas_ibfk_2` FOREIGN KEY (`veterinario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `notificaciones_vacunas` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -240,7 +188,63 @@ CREATE TABLE `notificaciones_vacunas` (
   KEY `idx_notificado` (`notificado`),
   CONSTRAINT `notificaciones_vacunas_ibfk_1` FOREIGN KEY (`vacuna_id`) REFERENCES `vacunas_aplicadas` (`id`) ON DELETE CASCADE,
   CONSTRAINT `notificaciones_vacunas_ibfk_2` FOREIGN KEY (`propietario_id`) REFERENCES `propietarios` (`Id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `productos` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `Id_Categoria` int NOT NULL,
+  `Nombre_Producto` varchar(150) NOT NULL,
+  `Descripcion` varchar(300) DEFAULT NULL,
+  `Precio` decimal(10,2) NOT NULL,
+  `Stock` int NOT NULL DEFAULT '0',
+  `Estado` enum('activo','inactivo') NOT NULL DEFAULT 'activo',
+  PRIMARY KEY (`Id`),
+  KEY `idx_productos_categoria` (`Id_Categoria`,`Estado`),
+  CONSTRAINT `productos_ibfk_1` FOREIGN KEY (`Id_Categoria`) REFERENCES `categorias` (`Id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `tiposdocumento` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `Tipo_Documento` varchar(50) NOT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `Tipo_Documento` (`Tipo_Documento`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `ventas` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `Id_Propietario` int NOT NULL,
+  `Fecha_Venta` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `Total` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `Metodo_Pago` enum('efectivo','tarjeta','transferencia') NOT NULL,
+  `Monto_Recibido` decimal(10,2) DEFAULT NULL,
+  `Cambio` decimal(10,2) DEFAULT NULL,
+  `Estado` enum('activa','confirmada','anulada') NOT NULL DEFAULT 'activa',
+  `Anulado_Por` int DEFAULT NULL,
+  `Fecha_Anulacion` datetime DEFAULT NULL,
+  `requiere_factura` tinyint(1) DEFAULT '0',
+  `correo_factura` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `ventas_ibfk_1` (`Id_Propietario`),
+  KEY `fk_ventas_anulado_por` (`Anulado_Por`),
+  CONSTRAINT `fk_ventas_anulado_por` FOREIGN KEY (`Anulado_Por`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `ventas_ibfk_1` FOREIGN KEY (`Id_Propietario`) REFERENCES `propietarios` (`Id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `detalleventa` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `Id_Venta` int NOT NULL,
+  `Id_Producto` int DEFAULT NULL,
+  `Id_Servicio` int DEFAULT NULL,
+  `Cantidad` int NOT NULL,
+  `Precio_Unitario` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `detalleventa_ibfk_2` (`Id_Producto`),
+  KEY `idx_detalle_venta` (`Id_Venta`,`Id_Producto`),
+  KEY `idx_servicio` (`Id_Servicio`),
+  CONSTRAINT `detalleventa_ibfk_1` FOREIGN KEY (`Id_Venta`) REFERENCES `ventas` (`Id`) ON DELETE CASCADE,
+  CONSTRAINT `detalleventa_ibfk_2` FOREIGN KEY (`Id_Producto`) REFERENCES `productos` (`Id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_detalleventa_servicio` FOREIGN KEY (`Id_Servicio`) REFERENCES `tipoconsulta` (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `movimientosstock` (
   `Id` int NOT NULL AUTO_INCREMENT,
@@ -259,7 +263,7 @@ CREATE TABLE `movimientosstock` (
   CONSTRAINT `movimientosstock_ibfk_1` FOREIGN KEY (`Id_Producto`) REFERENCES `productos` (`Id`) ON DELETE CASCADE,
   CONSTRAINT `movimientosstock_ibfk_2` FOREIGN KEY (`Id_Venta`) REFERENCES `ventas` (`Id`) ON DELETE SET NULL,
   CONSTRAINT `movimientosstock_ibfk_3` FOREIGN KEY (`Id_Usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `facturaelectronica` (
   `Id` int NOT NULL AUTO_INCREMENT,
@@ -286,14 +290,23 @@ CREATE TABLE `facturaelectronica` (
   CONSTRAINT `facturaelectronica_ibfk_1` FOREIGN KEY (`Id_Venta`) REFERENCES `ventas` (`Id`) ON DELETE CASCADE,
   CONSTRAINT `facturaelectronica_ibfk_2` FOREIGN KEY (`Id_Cliente`) REFERENCES `propietarios` (`Id`),
   CONSTRAINT `facturaelectronica_ibfk_3` FOREIGN KEY (`Id_TipoDocumento`) REFERENCES `tiposdocumento` (`Id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `tiposdocumento` (
-  `Id` int NOT NULL AUTO_INCREMENT,
-  `Tipo_Documento` varchar(50) NOT NULL,
-  PRIMARY KEY (`Id`),
-  UNIQUE KEY `Tipo_Documento` (`Tipo_Documento`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE `auditoria_acciones` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `usuario_id` int NOT NULL,
+  `modulo` varchar(50) NOT NULL,
+  `accion` varchar(50) NOT NULL,
+  `descripcion` text,
+  `ip` varchar(45) DEFAULT NULL,
+  `referencia_id` int DEFAULT NULL,
+  `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_usuario` (`usuario_id`),
+  KEY `idx_modulo` (`modulo`),
+  KEY `idx_fecha` (`fecha`),
+  CONSTRAINT `auditoria_acciones_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=220 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `reportes_generados` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -310,59 +323,47 @@ CREATE TABLE `reportes_generados` (
   KEY `idx_fecha_generacion` (`fecha_generacion`),
   KEY `idx_tipo_reporte` (`tipo_reporte`),
   CONSTRAINT `reportes_generados_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `permisos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `RolId` int NOT NULL,
-  `Modulo` varchar(100) NOT NULL,
-  `Puede_Crear` tinyint(1) DEFAULT '0',
-  `Puede_Leer` tinyint(1) DEFAULT '0',
-  `Puede_Editar` tinyint(1) DEFAULT '0',
-  `Puede_Eliminar` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `RolId` (`RolId`),
-  CONSTRAINT `permisos_ibfk_1` FOREIGN KEY (`RolId`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================
--- DATOS INICIALES
--- ============================================
+INSERT INTO `roles` VALUES (1,'Administrador'),(3,'Recepcionista'),(2,'Veterinario');
 
-INSERT INTO `roles` (`id`, `Nombre_Rol`) VALUES 
-(1, 'Administrador'),
-(2, 'Veterinario'),
-(3, 'Recepcionista');
+INSERT INTO `categorias` VALUES (4,'ACcesorios'),(3,'Alimentos'),(5,'Higiene y Cuidado'),(1,'Medicamentos'),(2,'Vacunas');
 
-INSERT INTO `estadocita` (`Id`, `Estado`) VALUES 
-(1, 'Pendiente'),
-(2, 'En Curso'),
-(3, 'Cancelada'),
-(4, 'Completada');
+INSERT INTO `permisos` (`RolId`, `Modulo`, `Puede_Crear`, `Puede_Leer`, `Puede_Editar`, `Puede_Eliminar`) VALUES
+-- Administrador (RolId = 1) - todo
+(1, 'usuarios',        1, 1, 1, 1),
+(1, 'roles',           1, 1, 1, 1),
+(1, 'permisos',        1, 1, 1, 1),
+(1, 'propietarios',    1, 1, 1, 1),
+(1, 'mascotas',        1, 1, 1, 1),
+(1, 'citas',           1, 1, 1, 1),
+(1, 'historial',       1, 1, 1, 1),
+(1, 'consultas',       1, 1, 1, 1),
+(1, 'vacunas',         1, 1, 1, 1),
+(1, 'productos',       1, 1, 1, 1),
+(1, 'categorias',      1, 1, 1, 1),
+(1, 'ventas',          1, 1, 1, 1),
+(1, 'facturas',        1, 1, 1, 1),
+(1, 'reportes',        1, 1, 1, 1),
+(1, 'auditoria',       0, 1, 0, 0),
 
-INSERT INTO `tipoconsulta` (`Id`, `Tipo_Consulta`) VALUES 
-(1, 'Consulta General'),
-(2, 'Vacunación'),
-(3, 'Control'),
-(4, 'cirujia');
+-- Veterinario (RolId = 2)
+(2, 'propietarios',    1, 1, 1, 0),
+(2, 'mascotas',        1, 1, 1, 0),
+(2, 'citas',           1, 1, 1, 0),
+(2, 'historial',       1, 1, 1, 0),
+(2, 'consultas',       1, 1, 1, 0),
+(2, 'vacunas',         1, 1, 1, 0),
+(2, 'productos',       0, 1, 0, 0),
+(2, 'reportes',        0, 1, 0, 0),
 
-INSERT INTO `especies` (`Id`, `Nombre_Especie`) VALUES (1, 'Felino');
-
-INSERT INTO `razas` (`Id`, `Id_Especie`, `Nombre_Raza`) VALUES (1, 1, 'Cane corso');
-
-INSERT INTO `categorias` (`Id`, `Nombre_Categoria`) VALUES 
-(1, 'Medicamentos'),
-(2, 'Vacunas'),
-(3, 'Alimentos'),
-(4, 'Accesorios'),
-(5, 'Higiene y Cuidado');
-
-INSERT INTO `tiposdocumento` (`Id`, `Tipo_Documento`) VALUES (1, 'Factura Electronica');
--- Insertar usuario con contraseña en texto plano (temporal)
-INSERT INTO `usuarios` (`Nombre_Usuario`, `Correo`, `Contrasena`, `RolId`, `activo`) 
-VALUES ('Administrador', 'admin@vetcare.com', 'admin123', 1, 1);
-
--- ============================================
--- VERIFICAR ÍNDICE ÚNICO
--- ============================================
-SHOW INDEX FROM citas WHERE Key_name = 'idx_unique_vet_hora';
+-- Recepcionista (RolId = 3)
+(3, 'propietarios',    1, 1, 1, 0),
+(3, 'mascotas',        1, 1, 1, 0),
+(3, 'citas',           1, 1, 1, 0),
+(3, 'historial',       0, 1, 0, 0),
+(3, 'vacunas',         0, 1, 0, 0),
+(3, 'productos',       0, 1, 0, 0),
+(3, 'ventas',          1, 1, 0, 0),
+(3, 'facturas',        0, 1, 0, 0);

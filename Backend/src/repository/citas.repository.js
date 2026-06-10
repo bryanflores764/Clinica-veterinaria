@@ -64,7 +64,6 @@ async verificarVeterinarioHoraExacta(Id_Veterinario, FechaHora, excludeId = null
   const [rows] = await connection.query(query, params);
   
   if (rows.length > 0) {
-    console.log(`⚠️ [VetExacta] Encontrada cita ${rows[0].IdCita} a las ${rows[0].FechaHora}`);
     return rows[0];
   }
   

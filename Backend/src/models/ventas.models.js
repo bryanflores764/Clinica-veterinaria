@@ -1,11 +1,10 @@
 // ============================================================
-//  CAPA: Model
-//  Archivo: ventas.model.js
+//  MODELO: ventas.models.js
 // ============================================================
 
 const VentasQueries = {
 
-  // --- VENTAS ---
+  // ── VENTAS ────────────────────────────────────────────────────
   CREATE_VENTA: `
     INSERT INTO ventas (Id_Propietario, Fecha_Venta, Estado, Total)
     VALUES (?, NOW(), 'activa', 0.00)
@@ -45,27 +44,42 @@ const VentasQueries = {
     WHERE v.Id = ?
   `,
 
+  // ── DETALLE DE VENTA (UNIFICADO) ─────────────────────────────
   FIND_DETALLE_BY_VENTA: `
-    SELECT
+    SELECT 
       dv.Id,
       dv.Id_Venta,
       dv.Id_Producto,
-      pr.Nombre_Producto,
+      dv.Id_Servicio,
       dv.Cantidad,
       dv.Precio_Unitario,
-      (dv.Cantidad * dv.Precio_Unitario) AS Subtotal
+      (dv.Cantidad * dv.Precio_Unitario) as Subtotal,
+      p.Nombre_Producto,
+      tc.Tipo_Consulta as Nombre_Servicio,
+      CASE 
+        WHEN dv.Id_Producto IS NOT NULL THEN 'producto'
+        WHEN dv.Id_Servicio IS NOT NULL THEN 'servicio'
+      END as tipo_item
     FROM detalleventa dv
-    INNER JOIN productos pr ON pr.Id = dv.Id_Producto
+    LEFT JOIN productos p ON p.Id = dv.Id_Producto
+    LEFT JOIN tipoconsulta tc ON tc.Id = dv.Id_Servicio
     WHERE dv.Id_Venta = ?
+    ORDER BY dv.Id ASC
   `,
 
-  // --- DETALLE ---
-  CREATE_DETALLE: `
+  // ── CREAR DETALLE DE PRODUCTO ─────────────────────────────────
+  CREATE_DETALLE_PRODUCTO: `
     INSERT INTO detalleventa (Id_Venta, Id_Producto, Cantidad, Precio_Unitario)
     VALUES (?, ?, ?, ?)
   `,
 
-  // --- STOCK ---
+  // ── CREAR DETALLE DE SERVICIO ─────────────────────────────────
+  CREATE_DETALLE_SERVICIO: `
+    INSERT INTO detalleventa (Id_Venta, Id_Servicio, Cantidad, Precio_Unitario)
+    VALUES (?, ?, ?, ?)
+  `,
+
+  // ── STOCK ─────────────────────────────────────────────────────
   GET_STOCK_PRODUCTO: `
     SELECT Id, Nombre_Producto, Stock, Precio, Estado
     FROM productos
@@ -82,44 +96,47 @@ const VentasQueries = {
     UPDATE productos SET Stock = ? WHERE Id = ?
   `,
 
-  // --- TOTAL ---
-  CALCULAR_TOTAL: `
-    SELECT COALESCE(SUM(Cantidad * Precio_Unitario), 0) AS Total
-    FROM detalleventa
-    WHERE Id_Venta = ?
-  `,
-
-  // --- ESTADOS ---
-  CONFIRMAR_VENTA_CON_PAGO: `
-    UPDATE ventas
-    SET Estado         = 'confirmada',
-        Total          = ?,
-        Metodo_Pago    = ?,
-        Monto_Recibido = ?,
-        Cambio         = ?
-    WHERE Id = ?
-  `,
-
-  ANULAR_VENTA: `
-    UPDATE ventas
-    SET Estado         = 'anulada',
-        Anulado_Por    = ?,
-        Fecha_Anulacion = NOW()
-    WHERE Id = ?
-  `,
-
-  UPDATE_TOTAL: `
-    UPDATE ventas SET Total = ? WHERE Id = ?
-  `,
-
-  // --- MOVIMIENTOS STOCK ---
+  // ── MOVIMIENTOS STOCK ─────────────────────────────────────────
   REGISTRAR_MOVIMIENTO: `
     INSERT INTO movimientosstock
       (Id_Producto, Id_Venta, Id_Usuario, Tipo, Cantidad, Stock_Antes, Stock_Despues, Fecha)
     VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
   `,
 
-  // --- FACTURACIÓN ---
+  // ── ESTADOS ───────────────────────────────────────────────────
+  CONFIRMAR_VENTA_CON_PAGO: `
+    UPDATE ventas
+    SET Estado = 'confirmada',
+        Total = ?,
+        Metodo_Pago = ?,
+        Monto_Recibido = ?,
+        Cambio = ?
+    WHERE Id = ?
+  `,
+
+  ANULAR_VENTA: `
+    UPDATE ventas
+    SET Estado = 'anulada',
+        Anulado_Por = ?,
+        Fecha_Anulacion = NOW()
+    WHERE Id = ?
+  `,
+
+  // ── SERVICIOS DISPONIBLES ─────────────────────────────────────
+  FIND_ALL_SERVICIOS: `
+    SELECT Id, Tipo_Consulta as Nombre_Servicio, Descripcion, Precio
+    FROM tipoconsulta
+    WHERE Estado = 'activo'
+    ORDER BY Tipo_Consulta ASC
+  `,
+
+  FIND_SERVICIO_BY_ID: `
+    SELECT Id, Tipo_Consulta as Nombre_Servicio, Precio
+    FROM tipoconsulta
+    WHERE Id = ?
+  `,
+
+  // ── FACTURACIÓN ───────────────────────────────────────────────
   CREATE_FACTURA: `
     INSERT INTO facturaelectronica
       (Id_Venta, Id_Cliente, Id_TipoDocumento,
@@ -140,7 +157,7 @@ const VentasQueries = {
            p.Correo,
            td.Tipo_Documento
     FROM facturaelectronica f
-    INNER JOIN propietarios p  ON p.Id  = f.Id_Cliente
+    INNER JOIN propietarios p ON p.Id = f.Id_Cliente
     INNER JOIN tiposdocumento td ON td.Id = f.Id_TipoDocumento
     WHERE f.Id_Venta = ?
   `,

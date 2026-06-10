@@ -1,0 +1,422 @@
+/* =========================
+VER TIPOS DE SERVICIO - RECEPCIONISTA
+VetCare - Solo lectura
+========================= */
+
+/* Badge de solo lectura */
+.badge-readonly {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #e8f0fe;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2c5f8a;
+    margin: 15px 0;
+    border: 1px solid #c5d9ed;
+}
+
+/* Filtro de búsqueda */
+.filtro-busqueda {
+    margin: 20px 0 30px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.buscador-input {
+    flex: 1;
+    min-width: 250px;
+    padding: 12px 18px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 12px;
+    font-family: 'Baloo Da 2', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    background: white;
+}
+
+.buscador-input:focus {
+    outline: none;
+    border-color: #42AB49;
+    box-shadow: 0 0 0 3px rgba(66, 171, 73, 0.1);
+}
+
+.info-resultados {
+    font-size: 14px;
+    font-weight: 600;
+    color: #42AB49;
+    background: #f0f9f1;
+    padding: 8px 16px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+/* Contenedor de tarjetas */
+.servicios-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
+
+/* Tarjeta individual */
+.tarjeta-servicio {
+    background: white;
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    border: 1px solid #eaeaea;
+    overflow: hidden;
+}
+
+.tarjeta-servicio:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(66, 171, 73, 0.12);
+    border-color: #42AB49;
+}
+
+/* Header de la tarjeta */
+.card-header {
+    background: linear-gradient(135deg, #f8fbf8 0%, #f0f9f1 100%);
+    padding: 18px 20px;
+    border-bottom: 2px solid #42AB49;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.card-icon {
+    width: 45px;
+    height: 45px;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: #1a3a2a;
+    flex: 1;
+}
+
+/* Cuerpo de la tarjeta */
+.card-body {
+    padding: 20px;
+}
+
+.descripcion-servicio {
+    color: #555;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    min-height: 65px;
+}
+
+/* Precio */
+.precio-servicio {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-top: 15px;
+    border-top: 2px dashed #eaeaea;
+}
+
+.precio-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.precio-valor {
+    font-size: 28px;
+    font-weight: 800;
+    color: #42AB49;
+}
+
+.precio-valor small {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+}
+
+/* ID pequeña */
+.id-servicio {
+    background: #f5f5f5;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    display: inline-block;
+}
+
+/* Estados de carga y vacío */
+.loading-container, .empty-container {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    grid-column: 1 / -1;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #eaeaea;
+    border-top-color: #42AB49;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-container p, .empty-container p {
+    color: #888;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.empty-container span {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 16px;
+}
+
+/* =========================
+RESPONSIVE PARA VER TIPOS DE SERVICIO
+(Usando los mismos breakpoints que tu interfaz)
+========================= */
+
+/* Laptop / pantallas medianas */
+@media (max-width: 1300px) {
+    .filtro-busqueda {
+        gap: 12px;
+    }
+    
+    .buscador-input {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+    
+    .servicios-container {
+        gap: 20px;
+    }
+    
+    .card-header {
+        padding: 15px 18px;
+    }
+    
+    .card-header h3 {
+        font-size: 18px;
+    }
+    
+    .card-body {
+        padding: 18px;
+    }
+    
+    .precio-valor {
+        font-size: 24px;
+    }
+}
+
+/* Tablet */
+@media (max-width: 1100px) and (min-width: 601px) {
+    .badge-readonly {
+        margin: 12px 0;
+        font-size: 12px;
+    }
+    
+    .filtro-busqueda {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    .buscador-input {
+        min-width: 200px;
+        font-size: 14px;
+    }
+    
+    .info-resultados {
+        font-size: 13px;
+        padding: 6px 14px;
+    }
+    
+    .servicios-container {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 18px;
+    }
+    
+    .card-header {
+        padding: 14px 16px;
+    }
+    
+    .card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 22px;
+    }
+    
+    .card-header h3 {
+        font-size: 17px;
+    }
+    
+    .descripcion-servicio {
+        font-size: 13px;
+        min-height: 55px;
+    }
+    
+    .precio-valor {
+        font-size: 22px;
+    }
+    
+    .precio-label {
+        font-size: 12px;
+    }
+}
+
+/* Móvil */
+@media (max-width: 600px) {
+    .badge-readonly {
+        margin: 10px 0;
+        padding: 6px 12px;
+        font-size: 11px;
+        gap: 6px;
+    }
+    
+    .filtro-busqueda {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin: 15px 0 20px;
+    }
+    
+    .buscador-input {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+    
+    .info-resultados {
+        text-align: center;
+        white-space: normal;
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+    
+    .servicios-container {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    
+    .tarjeta-servicio {
+        border-radius: 14px;
+    }
+    
+    .card-header {
+        padding: 14px 16px;
+    }
+    
+    .card-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 20px;
+    }
+    
+    .card-header h3 {
+        font-size: 16px;
+    }
+    
+    .card-body {
+        padding: 16px;
+    }
+    
+    .id-servicio {
+        font-size: 10px;
+        padding: 3px 8px;
+        margin-bottom: 10px;
+    }
+    
+    .descripcion-servicio {
+        font-size: 13px;
+        min-height: auto;
+        margin-bottom: 15px;
+    }
+    
+    .precio-servicio {
+        padding-top: 12px;
+    }
+    
+    .precio-label {
+        font-size: 11px;
+    }
+    
+    .precio-valor {
+        font-size: 22px;
+    }
+    
+    .precio-valor small {
+        font-size: 10px;
+    }
+    
+    .loading-container, .empty-container {
+        padding: 40px 16px;
+    }
+    
+    .empty-container span {
+        font-size: 40px;
+    }
+    
+    .empty-container p {
+        font-size: 14px;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Celulares muy pequeños */
+@media (max-width: 380px) {
+    .card-header {
+        padding: 12px 14px;
+    }
+    
+    .card-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 18px;
+    }
+    
+    .card-header h3 {
+        font-size: 15px;
+    }
+    
+    .card-body {
+        padding: 14px;
+    }
+    
+    .precio-valor {
+        font-size: 20px;
+    }
+}
