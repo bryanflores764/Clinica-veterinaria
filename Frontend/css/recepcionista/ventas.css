@@ -750,8 +750,15 @@
     background: #0071BC;
     padding: 14px 20px;
     position: sticky;
-    top: 0;
     z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 16px 16px 0 0;
+}
+
+.modal-header-icon {
+    background: transparent;
 }
 
 .modal-title-white {
