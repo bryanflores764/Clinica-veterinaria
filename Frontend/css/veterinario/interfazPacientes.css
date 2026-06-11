@@ -13,44 +13,6 @@ body {
 }
 
 
-/* Botón ICC en header */
-.btn-icc-header {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: #17a2b8;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: background 0.3s;
-    text-decoration: none;
-    margin-right: 10px;
-}
-
-.btn-icc-header:hover {
-    background: #138496;
-}
-
-.btn-icc-header img {
-    width: 20px;
-    height: 20px;
-    filter: brightness(0) invert(1);
-}
-
-/* Ajustes responsive */
-@media (max-width: 768px) {
-    .btn-icc-header span {
-        display: none;
-    }
-    
-    .btn-icc-header {
-        padding: 8px 12px;
-    }
-}
 
 /* Selector de mascota en modal ICC */
 .icc-mascota-select {
@@ -496,31 +458,23 @@ body {
 .btn-icc-header {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 18px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
+    gap: 10px;
+    padding: 5px 16px;
+    background-color: #4bc953;
+    border: 1px solid rgb(165, 165, 165);
     border-radius: 10px;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    margin-right: 10px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #000000;
+    font-family: inherit;
+    transition: 0.3s ease;
 }
 
 .btn-icc-header:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.btn-icc-header:active {
-    transform: translateY(0);
-}
-
-.btn-icc-header img {
-    width: 18px;
-    height: 18px;
+    background-color: #0071bc;
+    border-color: #0071bc;
+    color: #ffffff;
 }
 
 /* Selectores ICC */
@@ -605,21 +559,13 @@ body {
         width: 95%;
         margin: 20px auto;
     }
-    
+
     .icc-valor {
         font-size: 48px;
     }
-    
+
     .icc-categoria {
         font-size: 16px;
-    }
-    
-    .btn-icc-header span {
-        display: none;
-    }
-    
-    .btn-icc-header {
-        padding: 8px 12px;
     }
 }
 
@@ -1833,6 +1779,11 @@ body {
         height: 22px;
     }
 
+    .btn-icc-header {
+        font-size: 16px;
+        padding: 6px 12px;
+    }
+
     .sidebar {
         flex-direction: row;
         align-items: center;
@@ -1972,6 +1923,12 @@ body {
     .header a.btn-logout img {
         width: 24px;
         height: 24px;
+    }
+
+    .btn-icc-header {
+        font-size: 13px;
+        padding: 8px 10px;
+        flex-shrink: 0;
     }
 
     .sidebar {
