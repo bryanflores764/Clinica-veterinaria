@@ -839,9 +839,8 @@
     border-radius: 8px;
     text-decoration: none;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 18px;
     transition: all 0.3s ease;
-    min-width: 180px;
     white-space: nowrap;
 }
 
@@ -851,8 +850,8 @@
 }
 
 .header-actions .btn-new img {
-    width: 18px;
-    height: 18px;
+    width: 25px;
+    height: 25px;
     filter: brightness(0) invert(1);
 }
 
@@ -876,10 +875,6 @@
     color: #d32f2f;
 }
 
-.header-actions .btn-logout img {
-    width: 18px;
-    height: 18px;
-}
 
 /* ─────────────────────────────────────────────────────────────
    13. RESPONSIVE
@@ -903,105 +898,148 @@
     .header-main {
         text-align: center;
         justify-content: center;
+        margin: 0;
+        padding: 0;
     }
     .header-main h1 {
         font-size: 22px;
     }
-    
+
+    /* Quitar la card blanca del contenedor en móvil */
     #contenedorVentas {
-        margin: 12px;
-        width: calc(100% - 24px);
-        padding: 12px;
-        min-height: 620px;
-        max-height: 620px;
-        overflow: hidden;
+        margin: 0;
+        width: 100%;
+        padding: 0;
+        min-height: unset;
+        max-height: unset;
+        background: transparent;
+        box-shadow: none;
+        border-radius: 0;
     }
-    
+
     .ventas-table-card {
-        min-height: 590px;
-        max-height: 590px;
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
+        min-height: unset;
+        max-height: unset;
+        padding: 0;
+        background: transparent;
+        box-shadow: none;
+        border-radius: 0;
+        overflow: visible;
     }
-    
+
     .table-responsive {
-        flex: 1;
-        overflow: auto;
+        overflow: visible;
     }
-    
-    .ventas-table {
-        min-width: 620px;
+
+    /* ── Tabla → tarjetas ──────────────────────────── */
+    .ventas-table { min-width: unset; width: 100%; }
+    .ventas-table thead { display: none; }
+
+    .ventas-table tbody tr {
+        display: block;
+        background: #fff;
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
     }
-    
-    .ventas-table th,
-    .ventas-table td {
-        padding: 10px 12px;
+
+    .ventas-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px;
+        text-align: right;
+        white-space: normal;
+    }
+
+    .ventas-table tbody td:last-child { border-bottom: none; }
+
+    .ventas-table tbody td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #888;
         font-size: 12px;
+        text-align: left;
+        flex-shrink: 0;
+        margin-right: 10px;
     }
-    
-    .venta-meta {
+
+    .ventas-table tbody td[data-label="Acciones"] {
         flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
     }
-    
-    .venta-meta-item {
-        min-width: 100%;
+
+    .ventas-table tbody td[data-label="Acciones"]::before { margin-bottom: 2px; }
+
+    .ventas-actions {
+        flex-direction: column;
+        gap: 6px;
+        justify-content: stretch;
     }
-    
+
+    .btn-detalle-venta,
+    .btn-factura-venta,
+    .btn-anular-venta {
+        width: 100%;
+        padding: 9px 12px;
+        font-size: 13px;
+    }
+
+    /* ── Modales ───────────────────────────────────── */
+    .venta-meta { flex-direction: column; }
+    .venta-meta-item { min-width: 100%; }
+
     .venta-productos-header {
         flex-direction: column;
         align-items: stretch;
     }
-    
-    .btn-agregar-producto {
-        width: 100%;
-    }
-    
+
+    .btn-agregar-producto { width: 100%; }
+
     .header-actions {
         width: 100%;
         justify-content: stretch;
     }
-    
+
     .header-actions .btn-new {
         flex: 1;
         justify-content: center;
-        font-size: 12px;
+        font-size: 13px;
         padding: 8px 12px;
         min-width: auto;
     }
-    
+
     .header-actions .btn-logout {
         flex: 1;
         justify-content: center;
-        font-size: 12px;
+        font-size: 13px;
         padding: 8px 12px;
     }
-    
+
     .modal-factura {
         width: 98%;
         max-height: 90vh;
     }
-    
-    .modal-factura .modal-actions {
-        flex-wrap: wrap;
-    }
-    
+
+    .modal-factura .modal-actions { flex-wrap: wrap; }
+
     .modal-factura .modal-actions button {
         flex: 1;
         min-width: auto;
         padding: 8px 12px;
         font-size: 12px;
     }
-    
+
     .factura-encabezado {
         flex-direction: column;
         text-align: center;
     }
-    
-    .factura-info {
-        text-align: center;
-    }
+
+    .factura-info { text-align: center; }
 }
 
 @media (max-width: 480px) {
@@ -1009,16 +1047,12 @@
         flex-direction: column;
         gap: 8px;
     }
-    
+
     .header-actions .btn-new,
     .header-actions .btn-logout {
         width: 100%;
     }
-    
-    .ventas-table {
-        min-width: 600px;
-    }
-    
+
     .modal-venta {
         width: 98vw;
     }

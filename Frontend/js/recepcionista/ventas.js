@@ -162,12 +162,12 @@ async function cargarVentas() {
             const anulada = estado?.toLowerCase() === "anulada";
 
             tr.innerHTML = `
-                <td>${formatearFecha(venta.Fecha_Venta ?? venta.fecha_venta)}</td>
-                <td>${venta.Propietario ?? venta.Nombre_Propietario ?? `Propietario #${venta.Id_Propietario ?? "N/A"}`}</td>
-                <td>$${parseFloat(venta.Total ?? venta.total ?? 0).toFixed(2)}</td>
-                <td>${venta.Metodo_Pago ? formatearMetodoPago(venta.Metodo_Pago) : "—"}</td>
-                <td><span class="venta-estado ${obtenerClaseEstado(estado)}">${estado}</span></td>
-                <td>
+                <td data-label="Fecha">${formatearFecha(venta.Fecha_Venta ?? venta.fecha_venta)}</td>
+                <td data-label="Cliente">${venta.Propietario ?? venta.Nombre_Propietario ?? `Propietario #${venta.Id_Propietario ?? "N/A"}`}</td>
+                <td data-label="Total">$${parseFloat(venta.Total ?? venta.total ?? 0).toFixed(2)}</td>
+                <td data-label="Método">${venta.Metodo_Pago ? `<span class="venta-metodo">${formatearMetodoPago(venta.Metodo_Pago)}</span>` : "—"}</td>
+                <td data-label="Estado"><span class="venta-estado ${obtenerClaseEstado(estado)}">${estado}</span></td>
+                <td data-label="Acciones">
                     <div class="ventas-actions">
                         <button type="button" class="btn-detalle-venta" data-id="${idVenta}">Detalle</button>
                         <button type="button" class="btn-factura-venta" data-id="${idVenta}" data-estado="${estado}" ${anulada ? "disabled" : ""}>Factura</button>
