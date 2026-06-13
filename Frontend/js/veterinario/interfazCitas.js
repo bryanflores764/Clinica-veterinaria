@@ -214,16 +214,16 @@ function normalizarCita(cita) {
             obtenerHoraDesdeFechaHora(fechaHora),
 
         estado: normalizarEstado(
-            cita.Estado ||
-            cita.estado ||
-            cita.estado_cita ||
-            cita.Estado_Cita ||
             cita.IdEstadoCita ||
             cita.idEstadoCita ||
             cita.IdEstado ||
             cita.idEstado ||
             cita.id_estado ||
             cita.Id_Estado ||
+            cita.Estado ||
+            cita.estado ||
+            cita.estado_cita ||
+            cita.Estado_Cita ||
             "Pendiente"
         )
     };
