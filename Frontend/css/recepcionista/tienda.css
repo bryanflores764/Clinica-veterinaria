@@ -82,11 +82,11 @@
     display: inline-block;
 }
 
-.badge-cat-medicamento { background: #fce4ec; color: #880e4f; }
-.badge-cat-alimento    { background: #e8f5e9; color: #1b5e20; }
-.badge-cat-accesorio   { background: #fff3e0; color: #e65100; }
+.badge-cat-medicamentos { background: #fce4ec; color: #880e4f; }
+.badge-cat-alimentos    { background: #e8f5e9; color: #1b5e20; }
+.badge-cat-accesorios   { background: #fff3e0; color: #e65100; }
 .badge-cat-higiene     { background: #e3f2fd; color: #1565c0; }
-.badge-cat-otro        { background: #f3e5f5; color: #4a148c; }
+.badge-cat-otros        { background: #f3e5f5; color: #4a148c; }
 
 /* ── Indicadores de stock ─────────────────────────────────── */
 .stock-bajo   { color: #e53e3e; font-weight: 700; }
