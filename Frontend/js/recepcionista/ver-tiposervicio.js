@@ -64,20 +64,16 @@ function renderizarTarjetas(servicios) {
     serviciosContainer.innerHTML = serviciosOrdenados.map(servicio => `
         <div class="tarjeta-servicio" data-nombre="${servicio.Tipo_Consulta.toLowerCase()}" data-descripcion="${(servicio.Descripcion || '').toLowerCase()}">
             <div class="card-header">
-                <div class="card-icon">
-                    ${getIconForService(servicio.Tipo_Consulta)}
-                </div>
                 <h3>${escapeHtml(servicio.Tipo_Consulta)}</h3>
             </div>
             <div class="card-body">
-                <div class="id-servicio">ID: ${servicio.Id}</div>
                 <div class="descripcion-servicio">
                     ${escapeHtml(servicio.Descripcion) || '📝 Sin descripción disponible'}
                 </div>
                 <div class="precio-servicio">
-                    <span class="precio-label">💰 Precio</span>
+                    <span class="precio-label">Precio</span>
                     <span class="precio-valor">
-                        € ${parseFloat(servicio.Precio).toFixed(2)}
+                        $ ${parseFloat(servicio.Precio).toFixed(2)}
                     </span>
                 </div>
             </div>
