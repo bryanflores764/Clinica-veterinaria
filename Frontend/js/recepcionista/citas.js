@@ -22,6 +22,23 @@ function headersAuth() {
     };
 }
 
+function separarFechaHoraBackend(fechaHora) {
+    if (!fechaHora) {
+        return { fecha: "—", hora: "—" };
+    }
+
+    // Respeta exactamente lo que manda el backend, sin convertir zona horaria
+    const valor = String(fechaHora);
+
+    const [fechaParte, horaParteCompleta] = valor.split("T");
+    const horaParte = horaParteCompleta ? horaParteCompleta.slice(0, 5) : "—";
+
+    return {
+        fecha: fechaParte || "—",
+        hora: horaParte
+    };
+}
+
 // ── Cargar tabla de citas ──────────────────────────────────────
 async function cargarCitas() {
     try {
@@ -47,9 +64,7 @@ async function cargarCitas() {
         }
 
         tbody.innerHTML = citas.map(c => {
-            const fechaHora   = new Date(c.FechaHora);
-            const fecha       = fechaHora.toLocaleDateString("es-SV");
-            const hora        = fechaHora.toTimeString().slice(0, 5);
+            const { fecha, hora } = separarFechaHoraBackend(c.FechaHora);
             const estadoTexto = (c.Estado || "").toLowerCase();
 
             let claseEstado = "", textoEstado = "";
@@ -146,18 +161,12 @@ async function abrirEditarCita(id) {
         console.log("📋 Datos de la cita:", cita);
 
         // ── Campos básicos ──────────────────────────────────
-        const fechaHora = new Date(cita.FechaHora);
         document.getElementById("editIdCita").value = cita.IdCita;
 
-        // Fecha y hora locales sin desfase UTC
-        const yyyy  = fechaHora.getFullYear();
-        const mm    = String(fechaHora.getMonth() + 1).padStart(2, "0");
-        const dd    = String(fechaHora.getDate()).padStart(2, "0");
-        const hh    = String(fechaHora.getHours()).padStart(2, "0");
-        const min   = String(fechaHora.getMinutes()).padStart(2, "0");
+        const { fecha, hora } = separarFechaHoraBackend(cita.FechaHora);
 
-        document.getElementById("editFecha").value = `${yyyy}-${mm}-${dd}`;
-        document.getElementById("editHora").value  = `${hh}:${min}`;
+        document.getElementById("editFecha").value = fecha;
+        document.getElementById("editHora").value  = hora;
 
         // ── IDs de los campos relacionados ─────────────────
         const idMascota = cita.Id_Mascota     ?? cita.IdMascota     ?? cita.id_mascota;
