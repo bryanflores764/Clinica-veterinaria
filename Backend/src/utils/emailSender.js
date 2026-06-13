@@ -25,9 +25,10 @@ const enviarFacturaPorCorreo = async (correoDestino, facturaData) => {
     const fechaEmision = facturaData.fechaEmision
       ? new Date(facturaData.fechaEmision).toLocaleString('es-ES', {
           day: 'numeric', month: 'numeric', year: 'numeric',
-          hour: '2-digit', minute: '2-digit', hour12: true
+          hour: '2-digit', minute: '2-digit', hour12: true,
+          timeZone: 'America/El_Salvador'
         })
-      : new Date().toLocaleString('es-ES');
+      : new Date().toLocaleString('es-ES', { timeZone: 'America/El_Salvador' });
 
     const getMetodoPagoTexto = (metodo) => {
       const metodos = {

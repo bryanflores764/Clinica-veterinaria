@@ -415,6 +415,17 @@ async function cambiarEstadoCita(idCita, nuevoEstadoId, nuevoEstadoTexto) {
             throw new Error(errorData || "No se pudo actualizar el estado de la cita.");
         }
 
+        // Actualizar el array local inmediatamente para que el UI refleje el cambio
+        // sin esperar a que el re-fetch complete
+        const idx = citasVeterinario.findIndex(c => String(c.id) === String(idCita));
+        if (idx !== -1) {
+            citasVeterinario[idx] = {
+                ...citasVeterinario[idx],
+                estado: normalizarEstado(nuevoEstadoTexto)
+            };
+            renderizarCitas();
+        }
+
         alert("Estado actualizado correctamente.");
         await cargarCitasVeterinario();
     } catch (error) {
