@@ -16,7 +16,7 @@ Además, al contar con un sistema digital, la clínica puede mejorar el control 
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/bryanfloresaws-droid/TorreHanoi.git
+git clone ghttps://github.com/bryanfloresaws-droid/Cl-nica-veterinaria.git
 ```
 
 ### 2. Entrar al proyecto
